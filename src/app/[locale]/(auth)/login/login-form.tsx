@@ -67,6 +67,7 @@ export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
         <form
           action={formAction}
           onSubmit={handleSubmit}
+          noValidate
           className="space-y-4"
         >
           <div className="space-y-2">

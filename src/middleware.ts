@@ -32,9 +32,15 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Exact segment match to avoid false positives like /dashboard/login-history
+  const segments = pathname.split('/').filter(Boolean);
+  const routeSegments =
+    routing.locales.includes(segments[0] as 'ko' | 'en')
+      ? segments.slice(1)
+      : segments;
   const isPublicRoute =
-    pathname.includes('/login') ||
-    pathname.includes('/signup') ||
+    routeSegments[0] === 'login' ||
+    routeSegments[0] === 'signup' ||
     pathname.startsWith('/api/auth');
 
   if (!user && !isPublicRoute) {
@@ -45,8 +51,9 @@ export async function middleware(request: NextRequest) {
     const redirectUrl = new URL(`/${locale}/login`, request.url);
     const redirectResponse = NextResponse.redirect(redirectUrl);
 
-    supabaseResponse.cookies.getAll().forEach((cookie) => {
-      redirectResponse.cookies.set(cookie.name, cookie.value);
+    // Preserve full cookie attributes when copying
+    supabaseResponse.cookies.getAll().forEach(({ name, value, ...options }) => {
+      redirectResponse.cookies.set(name, value, options);
     });
 
     return redirectResponse;
@@ -54,8 +61,9 @@ export async function middleware(request: NextRequest) {
 
   const intlResponse = intlMiddleware(request);
 
-  supabaseResponse.cookies.getAll().forEach((cookie) => {
-    intlResponse.cookies.set(cookie.name, cookie.value);
+  // Preserve full cookie attributes when copying
+  supabaseResponse.cookies.getAll().forEach(({ name, value, ...options }) => {
+    intlResponse.cookies.set(name, value, options);
   });
 
   return intlResponse;

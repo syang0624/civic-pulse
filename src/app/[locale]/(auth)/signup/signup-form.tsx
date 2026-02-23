@@ -89,6 +89,7 @@ export function SignupForm() {
         <form
           action={formAction}
           onSubmit={handleSubmit}
+          noValidate
           className="space-y-4"
         >
           <div className="space-y-2">

@@ -15,8 +15,15 @@ export async function login(
 ): Promise<AuthState> {
   const supabase = await createClient();
 
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
+  const email = formData.get('email');
+  const password = formData.get('password');
+
+  if (typeof email !== 'string' || !email.trim()) {
+    return { error: 'Email is required' };
+  }
+  if (typeof password !== 'string' || !password) {
+    return { error: 'Password is required' };
+  }
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -37,8 +44,15 @@ export async function signup(
 ): Promise<AuthState> {
   const supabase = await createClient();
 
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
+  const email = formData.get('email');
+  const password = formData.get('password');
+
+  if (typeof email !== 'string' || !email.trim()) {
+    return { error: 'Email is required' };
+  }
+  if (typeof password !== 'string' || !password) {
+    return { error: 'Password is required' };
+  }
 
   const { error } = await supabase.auth.signUp({
     email,

@@ -21,7 +21,11 @@ export function NavBar() {
 
   async function handleLogout() {
     const supabase = createClient();
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Logout failed:', error.message);
+      return;
+    }
     router.push('/login');
   }
 
