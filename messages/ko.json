@@ -82,7 +82,13 @@
     "talkingPoints": "주요 논점",
     "addTalkingPoint": "논점 추가",
     "completeness": "프로필 완성도",
-    "completeProfile": "프로필을 완성하면 더 나은 결과물을 얻을 수 있습니다."
+    "completeProfile": "프로필을 완성하면 더 나은 결과물을 얻을 수 있습니다.",
+    "districtCode": "지역구 코드",
+    "districtName": "지역구명",
+    "saveSuccess": "프로필이 저장되었습니다.",
+    "saveError": "저장에 실패했습니다.",
+    "deleteConfirm": "정말 삭제하시겠습니까?",
+    "noPositions": "아직 등록된 정책이 없습니다."
   },
   "Dashboard": {
     "title": "{district}의 주요 이슈",
