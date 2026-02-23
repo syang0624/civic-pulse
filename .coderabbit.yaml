@@ -1,0 +1,15 @@
+language: en
+reviews:
+  auto_review:
+    enabled: true
+    drafts: false
+  path_instructions:
+    - path: "src/frontend/**"
+      instructions: "Frontend React components using Next.js 16 App Router, next-intl for i18n, and Tailwind v4 with shadcn/ui."
+    - path: "src/backend/**"
+      instructions: "Backend services using Supabase SSR and Claude API. Focus on security, input validation, and error handling."
+    - path: "src/app/api/**"
+      instructions: "Next.js API routes. Check auth, input validation, and proper error responses."
+  tools:
+    eslint:
+      enabled: true
