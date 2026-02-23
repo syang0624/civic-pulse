@@ -26,7 +26,31 @@ export async function middleware(request: NextRequest) {
     },
   );
 
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { pathname } = request.nextUrl;
+
+  const isPublicRoute =
+    pathname.includes('/login') ||
+    pathname.includes('/signup') ||
+    pathname.startsWith('/api/auth');
+
+  if (!user && !isPublicRoute) {
+    const pathLocale = pathname.split('/')[1] ?? '';
+    const locale =
+      routing.locales.find((l) => l === pathLocale) ?? routing.defaultLocale;
+
+    const redirectUrl = new URL(`/${locale}/login`, request.url);
+    const redirectResponse = NextResponse.redirect(redirectUrl);
+
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+
+    return redirectResponse;
+  }
 
   const intlResponse = intlMiddleware(request);
 
