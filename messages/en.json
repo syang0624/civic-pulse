@@ -82,7 +82,13 @@
     "talkingPoints": "Talking Points",
     "addTalkingPoint": "Add talking point",
     "completeness": "Profile Completeness",
-    "completeProfile": "A complete profile produces better results."
+    "completeProfile": "A complete profile produces better results.",
+    "districtCode": "District Code",
+    "districtName": "District Name",
+    "saveSuccess": "Profile saved successfully.",
+    "saveError": "Failed to save.",
+    "deleteConfirm": "Are you sure you want to delete this?",
+    "noPositions": "No positions added yet."
   },
   "Dashboard": {
     "title": "Issues in {district}",
