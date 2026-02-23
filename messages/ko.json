@@ -163,6 +163,23 @@
       "goalCTA": "행동 촉구",
       "charCount": "{count}/{limit}자",
       "hashtags": "해시태그 제안"
+    },
+    "QA": {
+      "title": "Q&A 준비",
+      "subtitle": "준비 중 — 예상 질문에 대한 답변을 준비합니다."
+    },
+    "Sentiment": {
+      "title": "여론 요약",
+      "subtitle": "준비 중 — 주요 이슈에 대한 여론을 분석합니다."
+    },
+    "History": {
+      "title": "생성 기록",
+      "subtitle": "이전에 생성된 콘텐츠를 확인하고 관리합니다.",
+      "noHistory": "생성된 기록이 없습니다. 연설문, 이메일 또는 소셜 미디어 게시물을 작성해보세요.",
+      "viewAll": "전체 보기",
+      "expand": "전체 보기",
+      "collapse": "접기",
+      "generatedAt": "{date} 생성됨"
     }
   },
   "Categories": {

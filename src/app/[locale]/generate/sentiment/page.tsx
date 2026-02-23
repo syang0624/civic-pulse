@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { NavBar } from '@/frontend/components/layout/nav-bar';
 
@@ -12,10 +13,20 @@ export default async function SentimentPage({
   return (
     <>
       <NavBar />
-      <main className="container py-6">
-        <h1 className="text-2xl font-bold">Sentiment Summary</h1>
-        <p className="mt-2 text-muted-foreground">Coming soon — Tier 2</p>
-      </main>
+      <SentimentContent />
     </>
+  );
+}
+
+function SentimentContent() {
+  const t = useTranslations('Generate.Sentiment');
+
+  return (
+    <main className="container max-w-2xl py-6">
+      <div className="mb-8 space-y-2">
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
+        <p className="text-muted-foreground">{t('subtitle')}</p>
+      </div>
+    </main>
   );
 }
