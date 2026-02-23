@@ -41,7 +41,15 @@
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
     "signupLink": "Sign up",
-    "loginLink": "Log in"
+    "loginLink": "Log in",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email address",
+    "passwordRequired": "Password is required",
+    "passwordMin": "Password must be at least 8 characters",
+    "passwordMismatch": "Passwords do not match",
+    "signupSuccess": "Account created successfully! Please log in.",
+    "loggingIn": "Logging in...",
+    "signingUp": "Signing up..."
   },
   "Profile": {
     "title": "Profile Settings",
