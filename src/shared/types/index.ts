@@ -227,6 +227,28 @@ export interface ContextPackage {
   locale: Locale;
 }
 
+// --- Document Summary ---
+
+export interface DocumentSummary {
+  one_line: string;
+  key_changes: string[];
+  who_affected: string[];
+  timeline: string;
+  district_impact: string;
+  talking_points: string[];
+}
+
+export interface DocumentSummarizeRequest {
+  title: string;
+  content: string;
+}
+
+export interface DocumentSummarizeResponse {
+  title: string;
+  summary: DocumentSummary;
+  created_at: string;
+}
+
 // --- API Response Types ---
 
 export interface ApiError {
