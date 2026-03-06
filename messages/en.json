@@ -165,6 +165,33 @@
       "hashtags": "Suggested hashtags"
     }
   },
+  "Documents": {
+    "title": "Document Summarizer",
+    "subtitle": "Paste or upload a policy document and get an AI-powered structured summary.",
+    "pasteLabel": "Document Text",
+    "pastePlaceholder": "Paste the full text of a policy document, bill, or ordinance here...",
+    "titleLabel": "Document Title",
+    "titlePlaceholder": "e.g., 2026 Youth Housing Support Act",
+    "summarize": "Summarize",
+    "summarizing": "Analyzing document...",
+    "clearDocument": "Clear",
+    "summaryTitle": "Structured Summary",
+    "oneLine": "One-Line Summary",
+    "keyChanges": "Key Changes",
+    "whoAffected": "Who Is Affected",
+    "timeline": "Timeline",
+    "yourDistrict": "Impact on Your District",
+    "talkingPoints": "Talking Points",
+    "noDocuments": "No documents analyzed yet. Paste a document above to get started.",
+    "charCount": "{count} characters",
+    "minLength": "Document must be at least 100 characters.",
+    "history": "Recent Summaries",
+    "copyAll": "Copy Summary",
+    "copiedSummary": "Summary copied to clipboard",
+    "newDocument": "New Document",
+    "errorTooShort": "Document text is too short. Please paste at least 100 characters.",
+    "errorFailed": "Failed to summarize document. Please try again."
+  },
   "Categories": {
     "education": "Education",
     "housing": "Housing",

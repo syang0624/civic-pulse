@@ -165,6 +165,33 @@
       "hashtags": "해시태그 제안"
     }
   },
+  "Documents": {
+    "title": "문서 요약",
+    "subtitle": "정책 문서를 붙여넣거나 업로드하면 AI가 구조화된 요약을 생성합니다.",
+    "pasteLabel": "문서 본문",
+    "pastePlaceholder": "정책 문서, 법안, 조례 등의 전문을 여기에 붙여넣으세요...",
+    "titleLabel": "문서 제목",
+    "titlePlaceholder": "예: 2026년 청년 주거 지원법",
+    "summarize": "요약하기",
+    "summarizing": "문서 분석 중...",
+    "clearDocument": "초기화",
+    "summaryTitle": "구조화된 요약",
+    "oneLine": "한 줄 요약",
+    "keyChanges": "주요 변경 사항",
+    "whoAffected": "영향 받는 대상",
+    "timeline": "일정",
+    "yourDistrict": "우리 지역구에 미치는 영향",
+    "talkingPoints": "핵심 논점",
+    "noDocuments": "아직 분석된 문서가 없습니다. 위에 문서를 붙여넣어 시작하세요.",
+    "charCount": "{count}자",
+    "minLength": "문서는 최소 100자 이상이어야 합니다.",
+    "history": "최근 요약",
+    "copyAll": "요약 복사",
+    "copiedSummary": "요약이 클립보드에 복사되었습니다",
+    "newDocument": "새 문서",
+    "errorTooShort": "문서가 너무 짧습니다. 100자 이상 붙여넣어 주세요.",
+    "errorFailed": "문서 요약에 실패했습니다. 다시 시도해 주세요."
+  },
   "Categories": {
     "education": "교육",
     "housing": "주거",
