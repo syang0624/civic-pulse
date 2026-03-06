@@ -41,6 +41,26 @@ export const ISSUE_CATEGORIES: IssueCategory[] = [
 ];
 
 
+export const REGIONS: import('@/shared/types').RegionCode[] = [
+  'seoul',
+  'busan',
+  'daegu',
+  'incheon',
+  'gwangju',
+  'daejeon',
+  'ulsan',
+  'sejong',
+  'gyeonggi',
+  'chungbuk',
+  'chungnam',
+  'jeonbuk',
+  'jeonnam',
+  'gyeongbuk',
+  'gyeongnam',
+  'gangwon',
+  'jeju',
+];
+
 export const PLATFORM_CHAR_LIMITS: Record<string, number> = {
   instagram: 2200,
   facebook: 63206,
