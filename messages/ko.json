@@ -49,7 +49,9 @@
     "passwordMismatch": "비밀번호가 일치하지 않습니다",
     "signupSuccess": "계정이 생성되었습니다! 로그인해주세요.",
     "loggingIn": "로그인 중...",
-    "signingUp": "가입 중..."
+    "signingUp": "가입 중...",
+    "demoAccounts": "데모 계정",
+    "clickToFill": "클릭하면 자동 입력됩니다"
   },
   "Profile": {
     "title": "프로필 설정",
