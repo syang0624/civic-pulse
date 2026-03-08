@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { NavBar } from '@/frontend/components/layout/nav-bar';
+import { HistoryList } from '@/frontend/components/generate/history-list';
 
 export default async function HistoryPage({
   params,
@@ -19,12 +20,15 @@ export default async function HistoryPage({
 }
 
 function HistoryContent() {
-  const t = useTranslations('Nav');
+  const t = useTranslations('Generate.History');
 
   return (
-    <main className="container py-6">
-      <h1 className="text-2xl font-bold">{t('history')}</h1>
-      <p className="mt-2 text-muted-foreground">Coming soon</p>
+    <main className="container max-w-2xl py-6">
+      <div className="mb-8 space-y-2">
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
+        <p className="text-muted-foreground">{t('subtitle')}</p>
+      </div>
+      <HistoryList />
     </main>
   );
 }

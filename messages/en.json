@@ -172,6 +172,23 @@
       "goalCTA": "Call to action",
       "charCount": "{count}/{limit} chars",
       "hashtags": "Suggested hashtags"
+    },
+    "QA": {
+      "title": "Q&A Preparation",
+      "subtitle": "Coming soon — prepare answers for anticipated questions."
+    },
+    "Sentiment": {
+      "title": "Sentiment Summary",
+      "subtitle": "Coming soon — analyze public sentiment on key issues."
+    },
+    "History": {
+      "title": "Generation History",
+      "subtitle": "View and manage your previously generated content.",
+      "noHistory": "No generations yet. Try creating a speech, email, or social media post.",
+      "viewAll": "All",
+      "expand": "Show full text",
+      "collapse": "Show less",
+      "generatedAt": "Generated {date}"
     }
   },
   "Categories": {
