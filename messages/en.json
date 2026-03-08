@@ -49,7 +49,9 @@
     "passwordMismatch": "Passwords do not match",
     "signupSuccess": "Account created successfully! Please log in.",
     "loggingIn": "Logging in...",
-    "signingUp": "Signing up..."
+    "signingUp": "Signing up...",
+    "demoAccounts": "Demo Accounts",
+    "clickToFill": "Click to fill credentials"
   },
   "Profile": {
     "title": "Profile Settings",

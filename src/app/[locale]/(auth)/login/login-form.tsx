@@ -1,14 +1,21 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Loader2 } from 'lucide-react';
 import { login } from '../actions';
 import type { AuthState } from '../actions';
 
+const DEMO_ACCOUNTS = [
+  { email: 'demo@civicpulse.kr', password: 'Test1234' },
+  { email: 'test@civicpulse.kr', password: 'Test1234' },
+];
+
 export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
   const t = useTranslations('Auth');
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const [state, formAction, isPending] = useActionState<AuthState, FormData>(
     login,
     { error: null },
@@ -75,6 +82,7 @@ export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
               {t('email')}
             </label>
             <input
+              ref={emailRef}
               id="email"
               name="email"
               type="email"
@@ -89,6 +97,7 @@ export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
               {t('password')}
             </label>
             <input
+              ref={passwordRef}
               id="password"
               name="password"
               type="password"
@@ -106,6 +115,39 @@ export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
             {isPending ? t('loggingIn') : t('login')}
           </button>
         </form>
+
+        <div className="space-y-3">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                {t('demoAccounts')}
+              </span>
+            </div>
+          </div>
+          <p className="text-center text-xs text-muted-foreground">
+            {t('clickToFill')}
+          </p>
+          <div className="space-y-2">
+            {DEMO_ACCOUNTS.map((account) => (
+              <button
+                key={account.email}
+                type="button"
+                onClick={() => {
+                  if (emailRef.current) emailRef.current.value = account.email;
+                  if (passwordRef.current) passwordRef.current.value = account.password;
+                  setClientError(null);
+                }}
+                className="flex w-full items-center justify-between rounded-md border border-dashed px-3 py-2 text-xs transition-colors hover:bg-muted"
+              >
+                <span className="font-medium">{account.email}</span>
+                <span className="text-muted-foreground">{account.password}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <p className="text-center text-sm text-muted-foreground">
           {t('noAccount')}{' '}
