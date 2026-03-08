@@ -227,7 +227,24 @@ export interface ContextPackage {
   locale: Locale;
 }
 
-// --- Document Summary ---
+export type RegionCode =
+  | 'seoul'
+  | 'busan'
+  | 'daegu'
+  | 'incheon'
+  | 'gwangju'
+  | 'daejeon'
+  | 'ulsan'
+  | 'sejong'
+  | 'gyeonggi'
+  | 'chungbuk'
+  | 'chungnam'
+  | 'jeonbuk'
+  | 'jeonnam'
+  | 'gyeongbuk'
+  | 'gyeongnam'
+  | 'gangwon'
+  | 'jeju';
 
 export interface DocumentSummary {
   one_line: string;
