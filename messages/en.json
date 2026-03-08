@@ -49,7 +49,9 @@
     "passwordMismatch": "Passwords do not match",
     "signupSuccess": "Account created successfully! Please log in.",
     "loggingIn": "Logging in...",
-    "signingUp": "Signing up..."
+    "signingUp": "Signing up...",
+    "demoAccounts": "Demo Accounts",
+    "clickToFill": "Click to fill credentials"
   },
   "Profile": {
     "title": "Profile Settings",
@@ -92,15 +94,20 @@
   },
   "Dashboard": {
     "title": "Issues in {district}",
+    "subtitle": "Stay updated with the latest civic issues in your district.",
     "noIssues": "No issues registered yet.",
     "filterByCategory": "Category",
     "filterByDate": "Date range",
     "filterBySentiment": "Sentiment",
     "filterByTrend": "Trend",
+    "clearFilters": "Clear all",
     "sortBy": "Sort by",
     "sortRecent": "Most recent",
     "sortMentions": "Most mentioned",
     "sortUrgency": "Most urgent",
+    "urgencyHigh": "High",
+    "urgencyMedium": "Medium",
+    "urgencyLow": "Low",
     "trendRising": "Rising",
     "trendStable": "Stable",
     "trendDeclining": "Declining",
@@ -108,7 +115,11 @@
     "sentimentNegative": "Negative",
     "sentimentMixed": "Mixed",
     "mentions": "{count} mentions",
+    "description": "Description",
+    "publicSentiment": "Public Sentiment",
+    "sentimentNote": "Based on analysis of recent mentions and discussions.",
     "writeAbout": "Write about this",
+    "draftSpeech": "Draft Speech",
     "draftReply": "Draft reply",
     "createPost": "Create post",
     "relatedLegislation": "Related legislation"
@@ -163,6 +174,23 @@
       "goalCTA": "Call to action",
       "charCount": "{count}/{limit} chars",
       "hashtags": "Suggested hashtags"
+    },
+    "QA": {
+      "title": "Q&A Preparation",
+      "subtitle": "Coming soon — prepare answers for anticipated questions."
+    },
+    "Sentiment": {
+      "title": "Sentiment Summary",
+      "subtitle": "Coming soon — analyze public sentiment on key issues."
+    },
+    "History": {
+      "title": "Generation History",
+      "subtitle": "View and manage your previously generated content.",
+      "noHistory": "No generations yet. Try creating a speech, email, or social media post.",
+      "viewAll": "All",
+      "expand": "Show full text",
+      "collapse": "Show less",
+      "generatedAt": "Generated {date}"
     }
   },
   "Map": {
@@ -203,6 +231,33 @@
     "gyeongnam": "Gyeongnam",
     "gangwon": "Gangwon",
     "jeju": "Jeju"
+  },
+  "Documents": {
+    "title": "Document Summarizer",
+    "subtitle": "Paste or upload a policy document and get an AI-powered structured summary.",
+    "pasteLabel": "Document Text",
+    "pastePlaceholder": "Paste the full text of a policy document, bill, or ordinance here...",
+    "titleLabel": "Document Title",
+    "titlePlaceholder": "e.g., 2026 Youth Housing Support Act",
+    "summarize": "Summarize",
+    "summarizing": "Analyzing document...",
+    "clearDocument": "Clear",
+    "summaryTitle": "Structured Summary",
+    "oneLine": "One-Line Summary",
+    "keyChanges": "Key Changes",
+    "whoAffected": "Who Is Affected",
+    "timeline": "Timeline",
+    "yourDistrict": "Impact on Your District",
+    "talkingPoints": "Talking Points",
+    "noDocuments": "No documents analyzed yet. Paste a document above to get started.",
+    "charCount": "{count} characters",
+    "minLength": "Document must be at least 100 characters.",
+    "history": "Recent Summaries",
+    "copyAll": "Copy Summary",
+    "copiedSummary": "Summary copied to clipboard",
+    "newDocument": "New Document",
+    "errorTooShort": "Document text is too short. Please paste at least 100 characters.",
+    "errorFailed": "Failed to summarize document. Please try again."
   },
   "Categories": {
     "education": "Education",

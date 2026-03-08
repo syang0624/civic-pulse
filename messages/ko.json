@@ -49,7 +49,9 @@
     "passwordMismatch": "비밀번호가 일치하지 않습니다",
     "signupSuccess": "계정이 생성되었습니다! 로그인해주세요.",
     "loggingIn": "로그인 중...",
-    "signingUp": "가입 중..."
+    "signingUp": "가입 중...",
+    "demoAccounts": "데모 계정",
+    "clickToFill": "클릭하면 자동 입력됩니다"
   },
   "Profile": {
     "title": "프로필 설정",
@@ -92,15 +94,20 @@
   },
   "Dashboard": {
     "title": "{district}의 주요 이슈",
+    "subtitle": "지역의 최신 민생 이슈를 확인하세요.",
     "noIssues": "아직 등록된 이슈가 없습니다.",
     "filterByCategory": "카테고리",
     "filterByDate": "기간",
     "filterBySentiment": "여론",
     "filterByTrend": "추세",
+    "clearFilters": "전체 해제",
     "sortBy": "정렬",
     "sortRecent": "최신순",
     "sortMentions": "언급순",
     "sortUrgency": "긴급순",
+    "urgencyHigh": "높음",
+    "urgencyMedium": "보통",
+    "urgencyLow": "낮음",
     "trendRising": "상승",
     "trendStable": "안정",
     "trendDeclining": "하락",
@@ -108,7 +115,11 @@
     "sentimentNegative": "부정",
     "sentimentMixed": "혼합",
     "mentions": "{count}회 언급",
+    "description": "설명",
+    "publicSentiment": "여론 분석",
+    "sentimentNote": "최근 언급 및 논의 분석에 기반합니다.",
     "writeAbout": "이 이슈로 작성",
+    "draftSpeech": "연설문 작성",
     "draftReply": "답변 초안 작성",
     "createPost": "게시물 작성",
     "relatedLegislation": "관련 법안"
@@ -163,6 +174,23 @@
       "goalCTA": "행동 촉구",
       "charCount": "{count}/{limit}자",
       "hashtags": "해시태그 제안"
+    },
+    "QA": {
+      "title": "Q&A 준비",
+      "subtitle": "준비 중 — 예상 질문에 대한 답변을 준비합니다."
+    },
+    "Sentiment": {
+      "title": "여론 요약",
+      "subtitle": "준비 중 — 주요 이슈에 대한 여론을 분석합니다."
+    },
+    "History": {
+      "title": "생성 기록",
+      "subtitle": "이전에 생성된 콘텐츠를 확인하고 관리합니다.",
+      "noHistory": "생성된 기록이 없습니다. 연설문, 이메일 또는 소셜 미디어 게시물을 작성해보세요.",
+      "viewAll": "전체 보기",
+      "expand": "전체 보기",
+      "collapse": "접기",
+      "generatedAt": "{date} 생성됨"
     }
   },
   "Map": {
@@ -203,6 +231,33 @@
     "gyeongnam": "경남",
     "gangwon": "강원",
     "jeju": "제주"
+  },
+  "Documents": {
+    "title": "문서 요약",
+    "subtitle": "정책 문서를 붙여넣거나 업로드하면 AI가 구조화된 요약을 생성합니다.",
+    "pasteLabel": "문서 본문",
+    "pastePlaceholder": "정책 문서, 법안, 조례 등의 전문을 여기에 붙여넣으세요...",
+    "titleLabel": "문서 제목",
+    "titlePlaceholder": "예: 2026년 청년 주거 지원법",
+    "summarize": "요약하기",
+    "summarizing": "문서 분석 중...",
+    "clearDocument": "초기화",
+    "summaryTitle": "구조화된 요약",
+    "oneLine": "한 줄 요약",
+    "keyChanges": "주요 변경 사항",
+    "whoAffected": "영향 받는 대상",
+    "timeline": "일정",
+    "yourDistrict": "우리 지역구에 미치는 영향",
+    "talkingPoints": "핵심 논점",
+    "noDocuments": "아직 분석된 문서가 없습니다. 위에 문서를 붙여넣어 시작하세요.",
+    "charCount": "{count}자",
+    "minLength": "문서는 최소 100자 이상이어야 합니다.",
+    "history": "최근 요약",
+    "copyAll": "요약 복사",
+    "copiedSummary": "요약이 클립보드에 복사되었습니다",
+    "newDocument": "새 문서",
+    "errorTooShort": "문서가 너무 짧습니다. 100자 이상 붙여넣어 주세요.",
+    "errorFailed": "문서 요약에 실패했습니다. 다시 시도해 주세요."
   },
   "Categories": {
     "education": "교육",
