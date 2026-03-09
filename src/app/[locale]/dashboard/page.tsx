@@ -15,7 +15,7 @@ export default async function DashboardPage({
   setRequestLocale(locale);
 
   const user = await getAuthUser();
-  let districtName = '—';
+  let districtName = '';
 
   if (user) {
     const supabase = await createClient();
@@ -50,7 +50,9 @@ function DashboardHeader({ districtName }: { districtName: string }) {
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-3xl font-bold tracking-tight">
-        {t('title', { district: districtName })}
+        {districtName
+          ? t('title', { district: districtName })
+          : t('titleGeneral')}
       </h1>
       <p className="text-muted-foreground">
         {t('subtitle')}

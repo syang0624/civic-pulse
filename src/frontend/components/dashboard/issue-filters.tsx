@@ -79,7 +79,7 @@ export function IssueFilters() {
           onChange={(e) => updateFilter('urgency', e.target.value)}
           className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         >
-          <option value="">{t('sortUrgency')}</option>
+          <option value="">{t('filterByUrgency')}</option>
           <option value="high">{t('urgencyHigh')}</option>
           <option value="medium">{t('urgencyMedium')}</option>
           <option value="low">{t('urgencyLow')}</option>
