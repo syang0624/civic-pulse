@@ -96,7 +96,8 @@ function IssueDetailContent({ issue, locale }: { issue: Issue; locale: Locale })
                 urgencyColor
               )}>
                 <AlertTriangle className="h-3.5 w-3.5" />
-                {t('sortUrgency')}
+                {issue.urgency === 'high' ? t('urgencyHigh') :
+                 issue.urgency === 'medium' ? t('urgencyMedium') : t('urgencyLow')}
               </span>
 
               <span className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1 text-sm font-medium text-muted-foreground">

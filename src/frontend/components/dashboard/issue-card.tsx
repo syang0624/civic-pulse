@@ -65,7 +65,8 @@ export function IssueCard({ issue }: IssueCardProps) {
               urgencyColor
             )}>
               <AlertTriangle className="h-3 w-3" />
-              {t('sortUrgency')}
+              {issue.urgency === 'high' ? t('urgencyHigh') :
+               issue.urgency === 'medium' ? t('urgencyMedium') : t('urgencyLow')}
             </span>
           </div>
 

@@ -186,6 +186,9 @@ function IssueCard({ issue }: { issue: Issue }) {
     ? tReg(issue.region_code as RegionCode)
     : issue.region_code;
 
+  const urgencyLabel = issue.urgency === 'high' ? t('urgencyHigh') :
+    issue.urgency === 'medium' ? t('urgencyMedium') : t('urgencyLow');
+
   return (
     <div className="flex flex-col rounded-md border p-4 transition-colors hover:bg-accent/50">
       <div className="mb-2 flex items-start justify-between gap-2">
@@ -204,7 +207,7 @@ function IssueCard({ issue }: { issue: Issue }) {
                   : 'bg-green-100 text-green-800'
             }`}
           >
-            {issue.urgency}
+            {urgencyLabel}
           </span>
         </div>
       </div>
