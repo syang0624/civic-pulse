@@ -94,9 +94,12 @@
   },
   "Dashboard": {
     "title": "Issues in {district}",
+    "titleGeneral": "Key Issues",
     "subtitle": "Stay updated with the latest civic issues in your district.",
     "noIssues": "No issues registered yet.",
+    "filter": "Filter",
     "filterByCategory": "Category",
+    "filterByUrgency": "Urgency",
     "filterByDate": "Date range",
     "filterBySentiment": "Sentiment",
     "filterByTrend": "Trend",
