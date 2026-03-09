@@ -1,4 +1,4 @@
-import type { IssueCategory } from '@/shared/types';
+import type { IssueCategory, RegionCode } from '@/shared/types';
 
 
 export const CATEGORY_COLORS: Record<IssueCategory, { bg: string; text: string; hex: string }> = {
@@ -41,7 +41,7 @@ export const ISSUE_CATEGORIES: IssueCategory[] = [
 ];
 
 
-export const REGIONS: import('@/shared/types').RegionCode[] = [
+export const REGIONS: RegionCode[] = [
   'seoul',
   'busan',
   'daegu',
