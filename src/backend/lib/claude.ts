@@ -1,17 +1,18 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenAI } from '@google/genai';
 
-let client: Anthropic | null = null;
+let client: GoogleGenAI | null = null;
 
-export function getClaudeClient(): Anthropic {
+function getGeminiClient(): GoogleGenAI {
   if (!client) {
-    client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY!,
-    });
+    client = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_API_KEY! });
   }
   return client;
 }
 
-export const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+export const GEMINI_MODEL = 'gemini-2.0-flash';
+
+// kept for backward compat — callers reference CLAUDE_MODEL
+export const CLAUDE_MODEL = GEMINI_MODEL;
 
 export interface ClaudeGenerationOptions {
   system: string;
@@ -26,20 +27,22 @@ export async function generateWithClaude({
   maxTokens = 4096,
   temperature = 0.7,
 }: ClaudeGenerationOptions): Promise<string> {
-  const claude = getClaudeClient();
+  const ai = getGeminiClient();
 
-  const response = await claude.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: maxTokens,
-    temperature,
-    system,
-    messages: [{ role: 'user', content: prompt }],
+  const response = await ai.models.generateContent({
+    model: GEMINI_MODEL,
+    contents: prompt,
+    config: {
+      systemInstruction: system,
+      maxOutputTokens: maxTokens,
+      temperature,
+    },
   });
 
-  const textBlock = response.content.find((block) => block.type === 'text');
-  if (!textBlock || textBlock.type !== 'text') {
-    throw new Error('No text response from Claude');
+  const text = response.text;
+  if (!text) {
+    throw new Error('No text response from Gemini');
   }
 
-  return textBlock.text;
+  return text;
 }
