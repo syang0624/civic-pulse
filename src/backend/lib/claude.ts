@@ -29,15 +29,34 @@ export async function generateWithClaude({
 }: ClaudeGenerationOptions): Promise<string> {
   const ai = getGeminiClient();
 
-  const response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
-    contents: prompt,
-    config: {
-      systemInstruction: system,
-      maxOutputTokens: maxTokens,
-      temperature,
-    },
-  });
+  let response;
+  try {
+    response = await ai.models.generateContent({
+      model: GEMINI_MODEL,
+      contents: prompt,
+      config: {
+        systemInstruction: system,
+        maxOutputTokens: maxTokens,
+        temperature,
+      },
+    });
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : String(err);
+
+    // Surface rate-limit / quota errors clearly
+    if (
+      message.includes('RESOURCE_EXHAUSTED') ||
+      message.includes('429') ||
+      message.includes('quota')
+    ) {
+      throw new Error(
+        'AI_RATE_LIMIT: The AI service is temporarily unavailable due to rate limits. Please try again in a minute.',
+      );
+    }
+
+    throw new Error(`AI generation failed: ${message}`);
+  }
 
   const text = response.text;
   if (!text) {
