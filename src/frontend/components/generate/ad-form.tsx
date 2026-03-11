@@ -62,14 +62,20 @@ export function AdForm() {
         }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error(tCommon('error'));
+        const msg = data?.error ?? tCommon('error');
+        throw new Error(
+          msg.includes('AI_RATE_LIMIT') ? tCommon('rateLimitError') : msg,
+        );
       }
 
-      const data: Generation = await res.json();
-      setOutput(data.output_text);
-    } catch {
-      setError(tCommon('error'));
+      setOutput((data as Generation).output_text);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : tCommon('error'),
+      );
     } finally {
       setLoading(false);
     }

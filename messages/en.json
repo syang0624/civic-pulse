@@ -3,6 +3,7 @@
     "appName": "Civic Pulse",
     "loading": "Loading...",
     "error": "An error occurred",
+    "rateLimitError": "AI service is temporarily busy. Please wait a moment and try again.",
     "retry": "Retry",
     "save": "Save",
     "cancel": "Cancel",
