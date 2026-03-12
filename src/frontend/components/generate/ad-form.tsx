@@ -5,6 +5,17 @@ import { useLocale, useTranslations } from 'next-intl';
 import type { AdPlatform, AdGoal, Generation } from '@/shared/types';
 import { PLATFORM_CHAR_LIMITS } from '@/shared/constants';
 
+interface SocialMediaOutput {
+  title: string;
+  content: string;
+  hashtags: string[];
+  image_suggestions: string[];
+}
+
+interface AdGenerationResponse extends Generation {
+  structured?: SocialMediaOutput;
+}
+
 const PLATFORMS: AdPlatform[] = [
   'instagram',
   'facebook',
@@ -31,8 +42,10 @@ export function AdForm() {
   const [topic, setTopic] = useState('');
   const [goal, setGoal] = useState<AdGoal>('awareness');
   const [output, setOutput] = useState<string | null>(null);
+  const [structuredOutput, setStructuredOutput] =
+    useState<SocialMediaOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [copiedSection, setCopiedSection] = useState<string | null>(null);
 
   const goalLabels: Record<AdGoal, string> = {
     awareness: t('goalAwareness'),
@@ -47,6 +60,7 @@ export function AdForm() {
     setLoading(true);
     setError(null);
     setOutput(null);
+    setStructuredOutput(null);
 
     try {
       const res = await fetch('/api/generate/ad', {
@@ -71,7 +85,22 @@ export function AdForm() {
         );
       }
 
-      setOutput((data as Generation).output_text);
+      const apiData = data as AdGenerationResponse;
+      const outputData = apiData.structured || (() => {
+        try {
+          return JSON.parse(apiData.output_text) as SocialMediaOutput;
+        } catch {
+          return {
+            title: '',
+            content: apiData.output_text,
+            hashtags: [],
+            image_suggestions: [],
+          };
+        }
+      })();
+
+      setStructuredOutput(outputData);
+      setOutput(outputData.content);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : tCommon('error'),
@@ -81,11 +110,24 @@ export function AdForm() {
     }
   }
 
-  function handleCopy() {
-    if (!output) return;
-    navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  function copyText(section: string, text: string) {
+    navigator.clipboard.writeText(text);
+    setCopiedSection(section);
+    setTimeout(() => setCopiedSection(null), 2000);
+  }
+
+  function buildCombinedOutput(data: SocialMediaOutput): string {
+    const hashtags = data.hashtags.map((tag) => `#${tag}`).join(' ');
+    const imageSuggestions = data.image_suggestions
+      .map((item, idx) => `${idx + 1}. ${item}`)
+      .join('\n');
+
+    return [
+      `제목 / Title\n${data.title}`,
+      `본문 / Content\n${data.content}`,
+      `해시태그 / Hashtags\n${hashtags}`,
+      `이미지 제안 / Image Suggestions\n${imageSuggestions}`,
+    ].join('\n\n');
   }
 
   const charCount = output ? output.length : 0;
@@ -162,7 +204,7 @@ export function AdForm() {
         </div>
       )}
 
-      {output && (
+      {structuredOutput && (
         <section className="space-y-4 rounded-md border bg-muted/30 p-6">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">{tCommon('showOriginal')}</h3>
@@ -172,15 +214,111 @@ export function AdForm() {
               </span>
               <button
                 type="button"
-                onClick={handleCopy}
+                onClick={() =>
+                  copyText('all', buildCombinedOutput(structuredOutput))
+                }
                 className="text-sm text-primary hover:underline"
               >
-                {copied ? tCommon('copiedToClipboard') : tCommon('copy')}
+                {copiedSection === 'all'
+                  ? tCommon('copiedToClipboard')
+                  : tCommon('copy')}
               </button>
             </div>
           </div>
-          <div className="whitespace-pre-wrap rounded-md bg-background p-4 text-sm leading-relaxed shadow-sm">
-            {output}
+
+          <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+              <h4 className="text-sm font-semibold text-muted-foreground">제목 / Title</h4>
+              <button
+                type="button"
+                onClick={() => copyText('title', structuredOutput.title)}
+                className="text-xs text-primary hover:underline"
+              >
+                {copiedSection === 'title' ? tCommon('copiedToClipboard') : tCommon('copy')}
+              </button>
+            </div>
+            <p className="text-2xl font-bold leading-tight">{structuredOutput.title || '-'}</p>
+          </div>
+
+          <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+              <h4 className="text-sm font-semibold text-muted-foreground">본문 / Content</h4>
+              <button
+                type="button"
+                onClick={() => copyText('content', structuredOutput.content)}
+                className="text-xs text-primary hover:underline"
+              >
+                {copiedSection === 'content' ? tCommon('copiedToClipboard') : tCommon('copy')}
+              </button>
+            </div>
+            <p className="whitespace-pre-wrap text-sm leading-relaxed">{structuredOutput.content || '-'}</p>
+          </div>
+
+          <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+              <h4 className="text-sm font-semibold text-muted-foreground">해시태그 / Hashtags</h4>
+              <button
+                type="button"
+                onClick={() =>
+                  copyText(
+                    'hashtags',
+                    structuredOutput.hashtags.map((tag) => `#${tag}`).join(' '),
+                  )
+                }
+                className="text-xs text-primary hover:underline"
+              >
+                {copiedSection === 'hashtags' ? tCommon('copiedToClipboard') : tCommon('copy')}
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {structuredOutput.hashtags.length > 0 ? (
+                structuredOutput.hashtags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => copyText(`hashtag-${tag}`, `#${tag}`)}
+                    className="rounded-full border bg-muted px-3 py-1 text-xs font-medium text-foreground hover:bg-muted/70"
+                  >
+                    #{tag}
+                  </button>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">-</p>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+              <h4 className="text-sm font-semibold text-muted-foreground">이미지 제안 / Image Suggestions</h4>
+              <button
+                type="button"
+                onClick={() =>
+                  copyText(
+                    'images',
+                    structuredOutput.image_suggestions.join('\n'),
+                  )
+                }
+                className="text-xs text-primary hover:underline"
+              >
+                {copiedSection === 'images' ? tCommon('copiedToClipboard') : tCommon('copy')}
+              </button>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {structuredOutput.image_suggestions.length > 0 ? (
+                structuredOutput.image_suggestions.map((suggestion, idx) => (
+                  <div
+                    key={`${suggestion}-${idx}`}
+                    className="rounded-md border bg-muted/20 p-3 text-sm leading-relaxed"
+                  >
+                    <p className="mb-2 text-xs font-semibold text-muted-foreground">{idx + 1}</p>
+                    <p>{suggestion}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">-</p>
+              )}
+            </div>
           </div>
         </section>
       )}

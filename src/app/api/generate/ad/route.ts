@@ -7,6 +7,13 @@ import { assembleContext, formatIssueContext } from '@/backend/services/context'
 import { buildAdSystemPrompt, buildAdUserPrompt } from '@/backend/prompts/ad';
 import type { Locale } from '@/shared/types';
 
+interface StructuredAdOutput {
+  title: string;
+  content: string;
+  hashtags: string[];
+  image_suggestions: string[];
+}
+
 export async function POST(request: NextRequest) {
   const user = await getAuthUser();
   if (!user) {
@@ -51,6 +58,24 @@ export async function POST(request: NextRequest) {
       temperature: 0.8,
     });
 
+    let structured: StructuredAdOutput;
+    try {
+      const cleaned = outputText
+        .replace(/```json\n?/g, '')
+        .replace(/```\n?/g, '')
+        .trim();
+      structured = JSON.parse(cleaned) as StructuredAdOutput;
+    } catch {
+      structured = {
+        title: '',
+        content: outputText,
+        hashtags: [],
+        image_suggestions: [],
+      };
+    }
+
+    const outputJson = JSON.stringify(structured);
+
     const supabase = await createClient();
     const { data: generation, error: dbError } = await supabase
       .from('generations')
@@ -62,17 +87,20 @@ export async function POST(request: NextRequest) {
           profile_fields: ['name', 'district_name', 'party'],
           issues_referenced: ctx.issues.map((i) => i.title),
         },
-        output_text: outputText,
+        output_text: outputJson,
         locale,
       })
       .select()
       .single();
 
     if (dbError) {
-      return NextResponse.json({ output_text: outputText });
+      return NextResponse.json({ output_text: outputJson, structured });
     }
 
-    return NextResponse.json(generation);
+    return NextResponse.json({
+      ...generation,
+      structured,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Generation failed';
     return NextResponse.json({ error: message }, { status: 500 });
