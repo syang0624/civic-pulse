@@ -12,7 +12,7 @@ export type Tone = 'formal' | 'conversational' | 'passionate' | 'data_driven';
 export type Priority = 'high' | 'medium' | 'low';
 export type Urgency = 'high' | 'medium' | 'low';
 export type Trend = 'rising' | 'stable' | 'declining';
-export type GenerationTool = 'speech' | 'email' | 'ad' | 'qa' | 'sentiment';
+export type GenerationTool = 'speech' | 'ad';
 
 export type IssueCategory =
   | 'education'
@@ -56,8 +56,6 @@ export type AdGoal =
   | 'event_promotion'
   | 'position_statement'
   | 'call_to_action';
-
-export type SessionType = 'plenary' | 'standing_committee' | 'special';
 
 // --- Profile ---
 
@@ -135,18 +133,6 @@ export interface IssueDisplay {
   translated: boolean;
 }
 
-// --- Council Session ---
-
-export interface CouncilSession {
-  id: string;
-  council_name: string;
-  session_type: SessionType | null;
-  date: string;
-  raw_text_url: string | null;
-  processed: boolean;
-  created_at: string;
-}
-
 // --- Generation ---
 
 export interface Generation {
@@ -165,7 +151,6 @@ export interface Generation {
 export interface ContextUsed {
   profile_fields: string[];
   issues_referenced: string[];
-  documents_referenced: string[];
 }
 
 // --- Generation Request Types ---
@@ -176,12 +161,6 @@ export interface SpeechGenerationRequest {
   tone?: Tone;
   length: SpeechLength | number;
   data_level?: DataLevel;
-  issue_id?: string;
-}
-
-export interface EmailGenerationRequest {
-  inbound_email: string;
-  tone?: Tone;
   issue_id?: string;
 }
 
@@ -220,10 +199,6 @@ export interface ContextPackage {
     sub_region: string | null;
     last_seen: string;
   }[];
-  documents: {
-    title: string;
-    summary: string;
-  }[];
   locale: Locale;
 }
 
@@ -245,26 +220,6 @@ export type RegionCode =
   | 'gyeongnam'
   | 'gangwon'
   | 'jeju';
-
-export interface DocumentSummary {
-  one_line: string;
-  key_changes: string[];
-  who_affected: string[];
-  timeline: string;
-  district_impact: string;
-  talking_points: string[];
-}
-
-export interface DocumentSummarizeRequest {
-  title: string;
-  content: string;
-}
-
-export interface DocumentSummarizeResponse {
-  title: string;
-  summary: DocumentSummary;
-  created_at: string;
-}
 
 // --- API Response Types ---
 

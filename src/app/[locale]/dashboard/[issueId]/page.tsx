@@ -6,7 +6,7 @@ import { NavBar } from '@/frontend/components/layout/nav-bar';
 import { getAuthUser } from '@/backend/lib/auth';
 import { createClient } from '@/backend/lib/supabase/server';
 import { CATEGORY_COLORS, CATEGORY_EMOJIS } from '@/shared/constants';
-import { ArrowLeft, MessageSquare, Mic, Mail, Share2, Calendar, MapPin, TrendingUp, TrendingDown, Minus, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Mic, Share2, Calendar, MapPin, TrendingUp, TrendingDown, Minus, AlertTriangle } from 'lucide-react';
 import { cn } from '@/frontend/lib/utils';
 import type { Issue, Locale } from '@/shared/types';
 
@@ -151,14 +151,6 @@ function IssueDetailContent({ issue, locale }: { issue: Issue; locale: Locale })
                 {t('draftSpeech')}
               </Link>
               
-              <Link
-                href={`/generate/email?issueId=${issue.id}`}
-                className="flex w-full items-center justify-center gap-2 rounded-md border bg-background px-4 py-2.5 text-sm font-medium hover:bg-accent transition-colors"
-              >
-                <Mail className="h-4 w-4" />
-                {t('draftReply')}
-              </Link>
-
               <Link
                 href={`/generate/ad?issueId=${issue.id}`}
                 className="flex w-full items-center justify-center gap-2 rounded-md border bg-background px-4 py-2.5 text-sm font-medium hover:bg-accent transition-colors"

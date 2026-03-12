@@ -70,7 +70,6 @@ export async function POST(request: NextRequest) {
         context_used: {
           profile_fields: ['name', 'district_name', 'party', 'tone', 'target_demo'],
           issues_referenced: ctx.issues.map((i) => i.title),
-          documents_referenced: [],
         },
         output_text: outputText,
         locale,
