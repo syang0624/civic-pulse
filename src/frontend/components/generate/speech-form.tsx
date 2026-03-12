@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import type {
   SpeechOccasion,
@@ -29,6 +30,9 @@ export function SpeechForm() {
   const tProfile = useTranslations('Profile'); // For tone labels
   const currentLocale = useLocale();
 
+  const searchParams = useSearchParams();
+  const issueId = searchParams.get('issueId');
+
   const [loading, setLoading] = useState(false);
   const [topic, setTopic] = useState('');
   const [occasion, setOccasion] = useState<SpeechOccasion>('campaign_rally');
@@ -38,6 +42,19 @@ export function SpeechForm() {
   const [output, setOutput] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!issueId) return;
+    fetch(`/api/issues/${issueId}`)
+      .then((res) => res.json())
+      .then((data: { title_ko?: string; title_en?: string }) => {
+        const title = currentLocale === 'ko'
+          ? data.title_ko
+          : (data.title_en || data.title_ko);
+        if (title) setTopic(title);
+      })
+      .catch(() => {});
+  }, [issueId, currentLocale]);
 
   const occasionLabels: Record<SpeechOccasion, string> = {
     campaign_rally: t('occasionRally'),

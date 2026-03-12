@@ -46,7 +46,7 @@ export default async function IssueDetailPage({
   );
 }
 
-function IssueDetailContent({ issue, locale }: { issue: Issue; locale: Locale }) {
+function IssueDetailContent({ issue, locale }: { issue: Issue; locale: string }) {
   const t = useTranslations('Dashboard');
   const tc = useTranslations('Categories');
   const tCommon = useTranslations('Common');
@@ -72,7 +72,7 @@ function IssueDetailContent({ issue, locale }: { issue: Issue; locale: Locale })
   return (
     <main className="container max-w-5xl py-8">
       <Link 
-        href="/dashboard" 
+        href={`/${locale}/dashboard`} 
         className="mb-6 inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="mr-1 h-4 w-4" />
@@ -144,7 +144,7 @@ function IssueDetailContent({ issue, locale }: { issue: Issue; locale: Locale })
             <h3 className="mb-4 font-semibold text-lg">{t('writeAbout')}</h3>
             <div className="grid gap-3">
               <Link
-                href={`/generate/speech?issueId=${issue.id}`}
+                href={`/${locale}/generate/speech?issueId=${issue.id}`}
                 className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
               >
                 <Mic className="h-4 w-4" />
@@ -152,7 +152,7 @@ function IssueDetailContent({ issue, locale }: { issue: Issue; locale: Locale })
               </Link>
               
               <Link
-                href={`/generate/ad?issueId=${issue.id}`}
+                href={`/${locale}/generate/ad?issueId=${issue.id}`}
                 className="flex w-full items-center justify-center gap-2 rounded-md border bg-background px-4 py-2.5 text-sm font-medium hover:bg-accent transition-colors"
               >
                 <Share2 className="h-4 w-4" />

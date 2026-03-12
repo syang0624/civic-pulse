@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import type { AdPlatform, AdGoal, Generation } from '@/shared/types';
 import { PLATFORM_CHAR_LIMITS } from '@/shared/constants';
@@ -37,6 +38,9 @@ export function AdForm() {
   const tCommon = useTranslations('Common');
   const currentLocale = useLocale();
 
+  const searchParams = useSearchParams();
+  const issueId = searchParams.get('issueId');
+
   const [loading, setLoading] = useState(false);
   const [platform, setPlatform] = useState<AdPlatform>('instagram');
   const [topic, setTopic] = useState('');
@@ -46,6 +50,19 @@ export function AdForm() {
     useState<SocialMediaOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!issueId) return;
+    fetch(`/api/issues/${issueId}`)
+      .then((res) => res.json())
+      .then((data: { title_ko?: string; title_en?: string }) => {
+        const title = currentLocale === 'ko'
+          ? data.title_ko
+          : (data.title_en || data.title_ko);
+        if (title) setTopic(title);
+      })
+      .catch(() => {});
+  }, [issueId, currentLocale]);
 
   const goalLabels: Record<AdGoal, string> = {
     awareness: t('goalAwareness'),
