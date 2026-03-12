@@ -1,121 +1,117 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/frontend/lib/utils';
-import { CATEGORY_COLORS, CATEGORY_EMOJIS } from '@/shared/constants';
+import { CATEGORY_COLORS } from '@/shared/constants';
 import type { IssueDisplay } from '@/shared/types';
-import { 
-  MessageSquare, 
-  TrendingUp, 
-  TrendingDown, 
-  Minus,
-  AlertTriangle 
-} from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Newspaper } from 'lucide-react';
 
 interface IssueCardProps {
   issue: IssueDisplay;
+  index?: number;
 }
 
-export function IssueCard({ issue }: IssueCardProps) {
+export function IssueCard({ issue, index = 0 }: IssueCardProps) {
   const t = useTranslations('Dashboard');
   const tc = useTranslations('Categories');
-  
+
   const color = CATEGORY_COLORS[issue.category];
-  const emoji = CATEGORY_EMOJIS[issue.category];
 
   const TrendIcon = {
     rising: TrendingUp,
     declining: TrendingDown,
-    stable: Minus
+    stable: Minus,
   }[issue.trend];
 
-  const urgencyColor = {
-    high: 'bg-red-100 text-red-700 border-red-200',
-    medium: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-    low: 'bg-green-100 text-green-700 border-green-200'
+  const urgencyDot = {
+    high: 'bg-red-500',
+    medium: 'bg-yellow-500',
+    low: 'bg-green-500',
   }[issue.urgency];
 
-  const sentimentPercent = issue.sentiment ?? 50; 
-  let sentimentColor = 'bg-gray-300';
-  if (sentimentPercent > 60) sentimentColor = 'bg-green-500';
-  else if (sentimentPercent < 40) sentimentColor = 'bg-red-500';
-  else sentimentColor = 'bg-yellow-500';
+  const primarySource = issue.sources[0];
 
   return (
-    <Link 
+    <Link
       href={`/dashboard/${issue.id}`}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-xl border bg-card p-5 shadow-sm transition-all hover:shadow-md hover:border-primary/50"
+      style={{ animationDelay: `${index * 60}ms` }}
+      className="group flex flex-col rounded-xl border bg-card opacity-0 animate-fade-in transition-shadow duration-200 hover:shadow-md overflow-hidden"
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-3">
-          <div className="flex flex-wrap gap-2">
-            <span 
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium border",
-                color.bg, color.text, "border-transparent"
-              )}
-            >
-              <span>{emoji}</span>
-              {tc(issue.category)}
-            </span>
-            
-            <span className={cn(
-              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium border",
-              urgencyColor
-            )}>
-              <AlertTriangle className="h-3 w-3" />
-              {issue.urgency === 'high' ? t('urgencyHigh') :
-               issue.urgency === 'medium' ? t('urgencyMedium') : t('urgencyLow')}
-            </span>
-          </div>
-
-          <h3 className="line-clamp-2 text-lg font-semibold leading-snug group-hover:text-primary">
-            {issue.title}
-          </h3>
-
-          {issue.description && (
-            <p className="line-clamp-2 text-sm text-muted-foreground">
-              {issue.description}
-            </p>
-          )}
-        </div>
+      <div className="relative h-[120px] w-full shrink-0">
+        <Image
+          src={`/images/categories/${issue.category}.jpg`}
+          alt={tc(issue.category)}
+          width={800}
+          height={400}
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       </div>
 
-      <div className="mt-5 space-y-3">
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5" title={t('filterByTrend')}>
-              <TrendIcon className={cn(
-                "h-4 w-4",
-                issue.trend === 'rising' ? "text-red-500" : 
-                issue.trend === 'declining' ? "text-green-500" : "text-gray-500"
-              )} />
-              <span className="text-xs font-medium uppercase tracking-wider">
-                {issue.trend === 'rising' ? t('trendRising') :
-                 issue.trend === 'declining' ? t('trendDeclining') : t('trendStable')}
-              </span>
-            </div>
-            
-            <div className="flex items-center gap-1.5">
-              <MessageSquare className="h-3.5 w-3.5" />
-              <span className="text-xs">{t('mentions', { count: issue.mention_count })}</span>
-            </div>
-          </div>
+      <div className="flex flex-1 flex-col justify-between p-5">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-xs">
+          <span
+            className={cn(
+              'rounded-md px-2 py-0.5 font-medium',
+              color.bg,
+              color.text,
+            )}
+          >
+            {tc(issue.category)}
+          </span>
+          <span className="flex items-center gap-1 text-muted-foreground">
+            <span className={cn('inline-block h-1.5 w-1.5 rounded-full', urgencyDot)} />
+            {issue.urgency === 'high'
+              ? t('urgencyHigh')
+              : issue.urgency === 'medium'
+                ? t('urgencyMedium')
+                : t('urgencyLow')}
+          </span>
         </div>
 
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-[10px] uppercase text-muted-foreground font-semibold tracking-wider">
-            <span>{t('filterBySentiment')}</span>
-            <span>{sentimentPercent}%</span>
-          </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-            <div 
-              className={cn("h-full transition-all", sentimentColor)} 
-              style={{ width: `${sentimentPercent}%` }}
+        <h3 className="line-clamp-2 text-base font-semibold leading-snug text-foreground group-hover:text-primary transition-colors">
+          {issue.title}
+        </h3>
+
+        {issue.description && (
+          <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+            {issue.description}
+          </p>
+        )}
+      </div>
+
+      <div className="mt-4 flex items-center justify-between border-t pt-3 text-xs text-muted-foreground">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1">
+            <TrendIcon
+              className={cn(
+                'h-3.5 w-3.5',
+                issue.trend === 'rising'
+                  ? 'text-red-500'
+                  : issue.trend === 'declining'
+                    ? 'text-green-500'
+                    : 'text-muted-foreground',
+              )}
             />
-          </div>
+            {issue.trend === 'rising'
+              ? t('trendRising')
+              : issue.trend === 'declining'
+                ? t('trendDeclining')
+                : t('trendStable')}
+          </span>
+          <span>{t('mentions', { count: issue.mention_count })}</span>
         </div>
+
+        {primarySource && (
+          <span className="flex items-center gap-1 truncate max-w-[120px]">
+            <Newspaper className="h-3 w-3 shrink-0" />
+            {primarySource.name}
+          </span>
+        )}
+      </div>
       </div>
     </Link>
   );

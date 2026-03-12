@@ -76,6 +76,13 @@ export function IssueList() {
   }
 
   const mapIssueToDisplay = (issue: Issue): IssueDisplay => {
+    let sources: import('@/shared/types').IssueSource[] = [];
+    if (issue.source_session) {
+      try {
+        sources = JSON.parse(issue.source_session);
+      } catch { /* invalid JSON — keep empty */ }
+    }
+
     return {
       id: issue.id,
       title: locale === 'ko' ? issue.title_ko : (issue.title_en || issue.title_ko),
@@ -91,37 +98,38 @@ export function IssueList() {
       first_seen: issue.first_seen,
       last_seen: issue.last_seen,
       translated: locale === 'en' && !!issue.title_en,
+      sources,
     };
   };
 
   return (
     <div className="space-y-6">
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {data.data.map((issue) => (
-          <IssueCard key={issue.id} issue={mapIssueToDisplay(issue)} />
+        {data.data.map((issue, idx) => (
+          <IssueCard key={issue.id} issue={mapIssueToDisplay(issue)} index={idx} />
         ))}
       </div>
 
       {data.pagination.total_pages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-4">
+        <div className="flex items-center justify-center gap-4 pt-8 animate-fade-in animation-delay-500">
           <button
             onClick={() => handlePageChange(data.pagination.page - 1)}
             disabled={data.pagination.page <= 1}
-            className="rounded-md border p-2 hover:bg-accent disabled:opacity-50"
+            className="rounded-xl border p-3 hover:bg-accent disabled:opacity-50 transition-all hover:scale-105 active:scale-95"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-5 w-5" />
           </button>
           
-          <span className="text-sm text-muted-foreground">
-            {data.pagination.page} / {data.pagination.total_pages}
+          <span className="text-sm font-medium text-muted-foreground/80">
+            Page {data.pagination.page} of {data.pagination.total_pages}
           </span>
 
           <button
             onClick={() => handlePageChange(data.pagination.page + 1)}
             disabled={data.pagination.page >= data.pagination.total_pages}
-            className="rounded-md border p-2 hover:bg-accent disabled:opacity-50"
+            className="rounded-xl border p-3 hover:bg-accent disabled:opacity-50 transition-all hover:scale-105 active:scale-95"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           </button>
         </div>
       )}
