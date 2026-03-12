@@ -10,14 +10,37 @@ export async function GET() {
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const { data: existing, error } = await supabase
     .from('profiles')
     .select('*, policy_positions(*)')
     .eq('id', user.id)
     .single();
 
+  let data = existing;
+
   if (error || !data) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    const defaults = {
+      id: user.id,
+      name: user.email?.split('@')[0] ?? '',
+      district_code: 'seoul',
+      district_name: '',
+      party: '',
+      tone: 'formal' as const,
+      target_demo: ['youth'] as string[],
+      locale: 'ko' as const,
+    };
+
+    const { data: created, error: createError } = await supabase
+      .from('profiles')
+      .upsert(defaults)
+      .select('*, policy_positions(*)')
+      .single();
+
+    if (createError || !created) {
+      return NextResponse.json({ error: 'Failed to create profile' }, { status: 500 });
+    }
+
+    data = created;
   }
 
   const { policy_positions, ...rest } = data;
