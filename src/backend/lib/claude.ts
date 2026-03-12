@@ -66,32 +66,46 @@ export async function generateWithClaude({
   return text;
 }
 
-export function parseJsonFromAI<T>(raw: string): T | null {
+function escapeNewlinesInJsonStrings(text: string): string {
+  return text.replace(/"(?:[^"\\]|\\.)*"/g, (match) =>
+    match.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t'),
+  );
+}
+
+function tryParse<T>(text: string): T | null {
   try {
-    return JSON.parse(raw) as T;
+    return JSON.parse(text) as T;
   } catch { /* fallthrough */ }
+
+  try {
+    return JSON.parse(escapeNewlinesInJsonStrings(text)) as T;
+  } catch { /* fallthrough */ }
+
+  return null;
+}
+
+export function parseJsonFromAI<T>(raw: string): T | null {
+  const result = tryParse<T>(raw);
+  if (result !== null) return result;
 
   const stripped = raw
     .replace(/^```(?:json|JSON)?\s*\n?/gm, '')
     .replace(/\n?```\s*$/gm, '')
     .trim();
 
-  try {
-    return JSON.parse(stripped) as T;
-  } catch { /* fallthrough */ }
+  const strippedResult = tryParse<T>(stripped);
+  if (strippedResult !== null) return strippedResult;
 
   const objectMatch = raw.match(/\{[\s\S]*\}/);
   if (objectMatch) {
-    try {
-      return JSON.parse(objectMatch[0]) as T;
-    } catch { /* fallthrough */ }
+    const objResult = tryParse<T>(objectMatch[0]);
+    if (objResult !== null) return objResult;
   }
 
   const arrayMatch = raw.match(/\[[\s\S]*\]/);
   if (arrayMatch) {
-    try {
-      return JSON.parse(arrayMatch[0]) as T;
-    } catch { /* fallthrough */ }
+    const arrResult = tryParse<T>(arrayMatch[0]);
+    if (arrResult !== null) return arrResult;
   }
 
   return null;
