@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     const outputText = await generateWithClaude({
       system: systemPrompt,
       prompt: userPrompt,
-      maxTokens: 1024,
+      maxTokens: 8192,
       temperature: 0.8,
       responseSchema: AD_RESPONSE_SCHEMA,
     });
