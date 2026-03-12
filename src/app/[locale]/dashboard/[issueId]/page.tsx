@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { NavBar } from '@/frontend/components/layout/nav-bar';
 import { getAuthUser } from '@/backend/lib/auth';
 import { createClient } from '@/backend/lib/supabase/server';
-import { CATEGORY_COLORS } from '@/shared/constants';
+import { CATEGORY_COLORS, ELECTION_DISTRICTS } from '@/shared/constants';
 import {
   ArrowLeft,
   Mic,
@@ -152,7 +152,7 @@ function IssueDetailContent({ issue, locale }: { issue: Issue; locale: string })
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <MapPin className="h-4 w-4" />
-                {issue.sub_region || issue.region_code}
+                {issue.sub_region || ELECTION_DISTRICTS[issue.region_code]?.name || issue.region_code}
               </span>
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
