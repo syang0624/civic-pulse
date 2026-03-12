@@ -5,6 +5,7 @@ import { getAuthUser } from '@/backend/lib/auth';
 import { createClient } from '@/backend/lib/supabase/server';
 import { IssueFilters } from '@/frontend/components/dashboard/issue-filters';
 import { IssueList } from '@/frontend/components/dashboard/issue-list';
+import { RefreshIssuesButton } from '@/frontend/components/dashboard/refresh-issues-button';
 
 export default async function DashboardPage({
   params,
@@ -48,15 +49,18 @@ function DashboardHeader({ districtName }: { districtName: string }) {
   const t = useTranslations('Dashboard');
   
   return (
-    <div className="flex flex-col gap-2">
-      <h1 className="text-3xl font-bold tracking-tight">
-        {districtName
-          ? t('title', { district: districtName })
-          : t('titleGeneral')}
-      </h1>
-      <p className="text-muted-foreground">
-        {t('subtitle')}
-      </p>
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight">
+          {districtName
+            ? t('title', { district: districtName })
+            : t('titleGeneral')}
+        </h1>
+        <p className="text-muted-foreground">
+          {t('subtitle')}
+        </p>
+      </div>
+      <RefreshIssuesButton />
     </div>
   );
 }
