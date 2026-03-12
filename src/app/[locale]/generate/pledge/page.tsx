@@ -13,7 +13,7 @@ export default async function PledgePage({
   return (
     <>
       <NavBar />
-      <main className="container max-w-4xl space-y-8 py-8">
+      <main className="mx-auto max-w-3xl space-y-8 px-4 py-8">
         <PledgeForm />
       </main>
     </>
