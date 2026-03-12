@@ -22,15 +22,11 @@
   "Nav": {
     "dashboard": "대시보드",
     "generate": "생성",
-    "documents": "문서",
     "profile": "프로필",
     "logout": "로그아웃",
     "speech": "연설문",
-    "email": "이메일",
-    "ad": "소셜 미디어",
-    "qa": "Q&A 준비",
-    "sentiment": "여론 요약",
-    "history": "히스토리"
+    "ad": "SNS",
+    "pledge": "공약"
   },
   "Auth": {
     "login": "로그인",
@@ -86,12 +82,20 @@
     "addTalkingPoint": "논점 추가",
     "completeness": "프로필 완성도",
     "completeProfile": "프로필을 완성하면 더 나은 결과물을 얻을 수 있습니다.",
-    "districtCode": "지역구 코드",
-    "districtName": "지역구명",
+    "districtCode": "시/도 선택",
+    "districtName": "구/시/군 선택",
     "saveSuccess": "프로필이 저장되었습니다.",
     "saveError": "저장에 실패했습니다.",
     "deleteConfirm": "정말 삭제하시겠습니까?",
-    "noPositions": "아직 등록된 정책이 없습니다."
+    "noPositions": "아직 등록된 정책이 없습니다.",
+    "electionType": "출마 선거 유형",
+    "electionMetropolitanMayor": "시/도지사",
+    "electionMetropolitanCouncil": "시/도의회 의원",
+    "electionLocalMayor": "구/시/군의장",
+    "electionLocalCouncil": "구/시/군의회 의원",
+    "electionSuperintendent": "교육감",
+    "selectSido": "시/도 선택",
+    "selectDistrict": "구/시/군 선택"
   },
   "Dashboard": {
     "title": "{district}의 주요 이슈",
@@ -126,7 +130,10 @@
     "draftSpeech": "연설문 작성",
     "draftReply": "답변 초안 작성",
     "createPost": "게시물 작성",
-    "relatedLegislation": "관련 법안"
+    "relatedLegislation": "관련 법안",
+    "refreshIssues": "이슈 새로고침",
+    "crawling": "이슈 수집 중...",
+    "crawlError": "이슈 수집 실패:"
   },
   "Generate": {
     "title": "콘텐츠 생성",
@@ -142,13 +149,13 @@
     "topicPlaceholder": "주제를 입력하거나 이슈를 선택하세요",
     "profileRequired": "프로필에 정책 입장을 추가해야 맞춤 콘텐츠를 생성할 수 있습니다.",
     "Speech": {
-      "title": "연설문 작성",
-      "subtitle": "지역 이슈와 정책 입장을 반영한 맞춤형 연설문을 작성합니다.",
+      "title": "선거 연설문 작성",
+      "subtitle": "지역 이슈와 정책 입장을 반영한 맞춤형 선거 연설문을 작성합니다.",
       "occasion": "행사 유형",
-      "occasionCouncil": "의회 회의",
       "occasionRally": "유세 현장",
+      "occasionDebate": "토론회",
       "occasionTownHall": "주민 간담회",
-      "occasionCommunity": "지역 행사",
+      "occasionPressConference": "기자 회견",
       "occasionOnline": "온라인 영상",
       "length": "분량",
       "length3min": "3분 (~450단어)",
@@ -160,15 +167,8 @@
       "dataMedium": "적절한 통계",
       "dataHeavy": "데이터 중심"
     },
-    "Email": {
-      "title": "이메일 답변 작성",
-      "subtitle": "주민 문의에 대한 맞춤형 답변을 작성합니다.",
-      "inboundEmail": "받은 이메일",
-      "inboundPlaceholder": "주민으로부터 받은 이메일을 붙여넣으세요...",
-      "detectedTopic": "감지된 주제"
-    },
     "Ad": {
-      "title": "소셜 미디어 게시물",
+      "title": "SNS 콘텐츠 생성",
       "subtitle": "플랫폼에 맞는 소셜 미디어 게시물을 생성합니다.",
       "platform": "플랫폼",
       "goal": "목표",
@@ -177,45 +177,29 @@
       "goalPosition": "입장 표명",
       "goalCTA": "행동 촉구",
       "charCount": "{count}/{limit}자",
-      "hashtags": "해시태그 제안"
+      "hashtags": "해시태그 제안",
+      "sectionTitle": "제목",
+      "sectionContent": "본문",
+      "sectionHashtags": "해시태그",
+      "sectionImageSuggestions": "이미지 제안"
     },
-    "QA": {
-      "title": "Q&A 준비",
-      "subtitle": "준비 중 — 예상 질문에 대한 답변을 준비합니다."
-    },
-    "Sentiment": {
-      "title": "여론 요약",
-      "subtitle": "준비 중 — 주요 이슈에 대한 여론을 분석합니다."
-    },
-    "History": {
-      "title": "생성 기록",
-      "subtitle": "이전에 생성된 콘텐츠를 확인하고 관리합니다.",
-      "noHistory": "생성된 기록이 없습니다. 연설문, 이메일 또는 소셜 미디어 게시물을 작성해보세요.",
-      "viewAll": "전체 보기",
-      "expand": "전체 보기",
-      "collapse": "접기",
-      "generatedAt": "{date} 생성됨"
+    "Pledge": {
+      "title": "정책 공약 생성",
+      "subtitle": "지역 이슈를 기반으로 우선순위별 공약을 생성합니다.",
+      "focusAreas": "중점 분야",
+      "numPledges": "공약 수",
+      "regionContext": "추가 지역 맥락",
+      "regionContextPlaceholder": "지역 특수 상황이나 강조하고 싶은 이슈를 입력하세요...",
+      "generate": "공약 생성",
+      "generating": "공약 생성 중...",
+      "problem": "문제점",
+      "solution": "해결 방안",
+      "timeline": "추진 일정",
+      "outcomes": "기대 효과",
+      "talkingPoints": "핵심 논점",
+      "priorityReason": "우선순위 이유",
+      "budget": "예상 예산"
     }
-  },
-  "Map": {
-    "title": "이슈 지도",
-    "subtitle": "대한민국 지역별 주요 이슈를 탐색하세요.",
-    "selectRegion": "지역을 선택하세요",
-    "allRegions": "전체 지역",
-    "issueCount": "{count}건의 이슈",
-    "noIssues": "해당 지역에 등록된 이슈가 없습니다.",
-    "regionLabel": "지역",
-    "filterCategory": "카테고리",
-    "filterUrgency": "긴급도",
-    "allCategories": "전체 카테고리",
-    "allUrgency": "전체 수준",
-    "urgencyHigh": "높음",
-    "urgencyMedium": "보통",
-    "urgencyLow": "낮음",
-    "mentions": "{count}회 언급",
-    "lastSeen": "최근: {date}",
-    "viewDetails": "상세 보기",
-    "writeAbout": "이 이슈로 작성"
   },
   "Regions": {
     "seoul": "서울",
@@ -235,33 +219,6 @@
     "gyeongnam": "경남",
     "gangwon": "강원",
     "jeju": "제주"
-  },
-  "Documents": {
-    "title": "문서 요약",
-    "subtitle": "정책 문서를 붙여넣거나 업로드하면 AI가 구조화된 요약을 생성합니다.",
-    "pasteLabel": "문서 본문",
-    "pastePlaceholder": "정책 문서, 법안, 조례 등의 전문을 여기에 붙여넣으세요...",
-    "titleLabel": "문서 제목",
-    "titlePlaceholder": "예: 2026년 청년 주거 지원법",
-    "summarize": "요약하기",
-    "summarizing": "문서 분석 중...",
-    "clearDocument": "초기화",
-    "summaryTitle": "구조화된 요약",
-    "oneLine": "한 줄 요약",
-    "keyChanges": "주요 변경 사항",
-    "whoAffected": "영향 받는 대상",
-    "timeline": "일정",
-    "yourDistrict": "우리 지역구에 미치는 영향",
-    "talkingPoints": "핵심 논점",
-    "noDocuments": "아직 분석된 문서가 없습니다. 위에 문서를 붙여넣어 시작하세요.",
-    "charCount": "{count}자",
-    "minLength": "문서는 최소 100자 이상이어야 합니다.",
-    "history": "최근 요약",
-    "copyAll": "요약 복사",
-    "copiedSummary": "요약이 클립보드에 복사되었습니다",
-    "newDocument": "새 문서",
-    "errorTooShort": "문서가 너무 짧습니다. 100자 이상 붙여넣어 주세요.",
-    "errorFailed": "문서 요약에 실패했습니다. 다시 시도해 주세요."
   },
   "Categories": {
     "education": "교육",
