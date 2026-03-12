@@ -115,42 +115,56 @@ export function PledgeForm() {
   }
 
   return (
-    <div className="space-y-8">
-      <section className="space-y-6">
+    <div className="space-y-10 animate-fade-in">
+      <section className="space-y-8 rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold">{t('title')}</h1>
-          <p className="text-muted-foreground">{t('subtitle')}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">{t('title')}</h1>
+          <p className="text-lg text-muted-foreground/80">{t('subtitle')}</p>
         </div>
 
-        <div className="space-y-3">
-          <span className="text-sm font-medium">{t('focusAreas')}</span>
-          <div className="grid gap-2 sm:grid-cols-2">
+        <div className="space-y-4">
+          <span className="block text-sm font-semibold tracking-wide text-foreground">{t('focusAreas')}</span>
+          <div className="flex flex-wrap gap-3">
             {ISSUE_CATEGORIES.map((category) => (
-              <label key={category} className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm">
+              <label 
+                key={category} 
+                className={`cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-all hover:scale-105 hover:shadow-sm ${
+                  focusAreas.includes(category)
+                    ? 'border-primary bg-primary/10 text-primary ring-2 ring-primary/20'
+                    : 'bg-background hover:bg-muted/50 text-muted-foreground hover:text-foreground'
+                }`}
+              >
                 <input
                   type="checkbox"
                   checked={focusAreas.includes(category)}
                   onChange={() => toggleCategory(category)}
-                  className="accent-primary"
+                  className="sr-only"
                 />
-                <span>{CATEGORY_EMOJIS[category]}</span>
+                <span className="mr-2">{CATEGORY_EMOJIS[category]}</span>
                 <span>{tc(category)}</span>
               </label>
             ))}
           </div>
         </div>
 
-        <div className="space-y-2">
-          <span className="text-sm font-medium">{t('numPledges')}</span>
-          <div className="flex gap-6">
+        <div className="space-y-4">
+          <span className="block text-sm font-semibold tracking-wide text-foreground">{t('numPledges')}</span>
+          <div className="flex gap-3">
             {[3, 5, 10].map((count) => (
-              <label key={count} className="flex items-center gap-2 text-sm">
+              <label 
+                key={count} 
+                className={`flex min-w-[3rem] cursor-pointer items-center justify-center rounded-full border px-4 py-2 text-sm font-medium transition-all hover:border-primary/50 hover:bg-muted/50 ${
+                  numPledges === count
+                    ? 'border-primary bg-primary/10 text-primary ring-2 ring-primary/20'
+                    : 'bg-background text-muted-foreground'
+                }`}
+              >
                 <input
                   type="radio"
                   name="pledge-count"
                   checked={numPledges === count}
                   onChange={() => setNumPledges(count as 3 | 5 | 10)}
-                  className="accent-primary"
+                  className="sr-only"
                 />
                 {count}
               </label>
@@ -158,8 +172,8 @@ export function PledgeForm() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="pledge-region-context" className="text-sm font-medium">
+        <div className="space-y-4">
+          <label htmlFor="pledge-region-context" className="block text-sm font-semibold tracking-wide text-foreground">
             {t('regionContext')}
           </label>
           <textarea
@@ -168,7 +182,7 @@ export function PledgeForm() {
             onChange={(e) => setRegionContext(e.target.value)}
             placeholder={t('regionContextPlaceholder')}
             rows={4}
-            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+            className="w-full rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all placeholder:text-muted-foreground/50 hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
           />
         </div>
 
@@ -176,20 +190,20 @@ export function PledgeForm() {
           type="button"
           onClick={handleGenerate}
           disabled={loading || focusAreas.length === 0}
-          className="rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          className="w-full rounded-xl bg-primary px-8 py-4 text-base font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:bg-primary/90 hover:shadow-md hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:hover:scale-100"
         >
           {loading ? t('generating') : t('generate')}
         </button>
       </section>
 
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-6 py-4 text-sm font-medium text-destructive animate-fade-in">
           {error}
         </div>
       )}
 
       {pledges.length > 0 && (
-        <section className="space-y-4">
+        <section className="space-y-4 animate-slide-up">
           {[...pledges]
             .sort((a, b) => a.rank - b.rank)
             .map((pledge, index) => {
@@ -197,17 +211,18 @@ export function PledgeForm() {
               return (
                 <details
                   key={`${pledge.rank}-${pledge.title}-${index}`}
-                  className="rounded-md border bg-muted/20"
+                  className="group rounded-2xl border bg-card shadow-sm transition-all hover:shadow-md open:ring-2 open:ring-primary/10"
                   open={index === 0}
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <span className="rounded-full bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 outline-none">
+                    <div className="flex flex-1 items-center gap-4">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
                         #{pledge.rank}
                       </span>
-                      <span className="text-base font-bold">{pledge.title}</span>
+                      <span className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{pledge.title}</span>
                       <span
-                        className={`rounded-full px-2 py-1 text-xs font-medium ${color.bg} ${color.text}`}
+                        className={`hidden sm:inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium border shadow-sm ${color.bg} ${color.text} border-transparent`}
                       >
                         {CATEGORY_EMOJIS[pledge.category]} {tc(pledge.category)}
                       </span>
@@ -218,54 +233,64 @@ export function PledgeForm() {
                         e.preventDefault();
                         void handleCopy(pledge);
                       }}
-                      className="text-sm text-primary hover:underline"
+                      className="rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
                     >
                       {copiedRank === pledge.rank ? tCommon('copiedToClipboard') : tCommon('copy')}
                     </button>
                   </summary>
 
-                  <div className="space-y-4 border-t bg-background px-4 py-4 text-sm">
-                    <div>
-                      <h3 className="mb-1 font-semibold">{t('problem')}</h3>
-                      <p className="whitespace-pre-wrap text-muted-foreground">{pledge.problem}</p>
+                  <div className="space-y-6 border-t border-border/50 bg-muted/5 px-6 py-6 text-base">
+                    <div className="grid gap-6 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t('problem')}</h3>
+                        <p className="whitespace-pre-wrap leading-relaxed text-foreground/90">{pledge.problem}</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t('solution')}</h3>
+                        <p className="whitespace-pre-wrap leading-relaxed text-foreground/90">{pledge.solution}</p>
+                      </div>
                     </div>
 
-                    <div>
-                      <h3 className="mb-1 font-semibold">{t('solution')}</h3>
-                      <p className="whitespace-pre-wrap text-muted-foreground">{pledge.solution}</p>
+                    <div className="grid gap-6 sm:grid-cols-3">
+                      <div className="space-y-2">
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('timeline')}</h3>
+                        <p className="font-medium">{pledge.timeline}</p>
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('budget')}</h3>
+                        <p className="font-medium">{pledge.estimated_budget}</p>
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('priorityReason')}</h3>
+                        <p className="text-sm text-muted-foreground">{pledge.priority_reason}</p>
+                      </div>
                     </div>
 
-                    <div>
-                      <h3 className="mb-1 font-semibold">{t('timeline')}</h3>
-                      <p className="text-muted-foreground">{pledge.timeline}</p>
-                    </div>
+                    <div className="grid gap-6 sm:grid-cols-2">
+                      <div className="space-y-3 rounded-xl bg-background p-5 shadow-sm">
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t('outcomes')}</h3>
+                        <ul className="space-y-2">
+                          {pledge.expected_outcomes.map((item, i) => (
+                            <li key={`${pledge.rank}-outcome-${i}`} className="flex items-start gap-2 text-sm leading-relaxed">
+                              <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary/50" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
 
-                    <div>
-                      <h3 className="mb-1 font-semibold">{t('outcomes')}</h3>
-                      <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
-                        {pledge.expected_outcomes.map((item, i) => (
-                          <li key={`${pledge.rank}-outcome-${i}`}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h3 className="mb-1 font-semibold">{t('talkingPoints')}</h3>
-                      <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
-                        {pledge.talking_points.map((item, i) => (
-                          <li key={`${pledge.rank}-talking-${i}`}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h3 className="mb-1 font-semibold">{t('priorityReason')}</h3>
-                      <p className="text-muted-foreground">{pledge.priority_reason}</p>
-                    </div>
-
-                    <div>
-                      <h3 className="mb-1 font-semibold">{t('budget')}</h3>
-                      <p className="text-muted-foreground">{pledge.estimated_budget}</p>
+                      <div className="space-y-3 rounded-xl bg-background p-5 shadow-sm">
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t('talkingPoints')}</h3>
+                        <ul className="space-y-2">
+                          {pledge.talking_points.map((item, i) => (
+                            <li key={`${pledge.rank}-talking-${i}`} className="flex items-start gap-2 text-sm leading-relaxed">
+                              <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary/50" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </details>
