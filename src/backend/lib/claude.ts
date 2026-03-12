@@ -11,7 +11,9 @@ function getGeminiClient(): GoogleGenAI {
   return client;
 }
 
-export const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'] as const;
+
+export const GEMINI_MODEL = GEMINI_MODELS[0];
 
 // kept for backward compat — callers reference CLAUDE_MODEL
 export const CLAUDE_MODEL = GEMINI_MODEL;
@@ -34,6 +36,14 @@ export interface ClaudeGenerationOptions {
   responseSchema?: GeminiSchema;
 }
 
+function isRateLimitError(message: string): boolean {
+  return (
+    message.includes('RESOURCE_EXHAUSTED') ||
+    message.includes('429') ||
+    message.includes('quota')
+  );
+}
+
 export async function generateWithClaude({
   system,
   prompt,
@@ -47,42 +57,48 @@ export async function generateWithClaude({
     ? { responseMimeType: 'application/json' as const, responseSchema }
     : {};
 
-  let response;
-  try {
-    response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: prompt,
-      config: {
-        systemInstruction: system,
-        maxOutputTokens: maxTokens,
-        temperature,
-        ...jsonConfig,
-      },
-    });
-  } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : String(err);
+  const config = {
+    systemInstruction: system,
+    maxOutputTokens: maxTokens,
+    temperature,
+    ...jsonConfig,
+  };
 
-    // Surface rate-limit / quota errors clearly
-    if (
-      message.includes('RESOURCE_EXHAUSTED') ||
-      message.includes('429') ||
-      message.includes('quota')
-    ) {
-      throw new Error(
-        'AI_RATE_LIMIT: The AI service is temporarily unavailable due to rate limits. Please try again in a minute.',
-      );
+  for (let i = 0; i < GEMINI_MODELS.length; i++) {
+    const model = GEMINI_MODELS[i];
+    const isLastModel = i === GEMINI_MODELS.length - 1;
+
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        contents: prompt,
+        config,
+      });
+
+      const text = response.text;
+      if (!text) {
+        throw new Error('No text response from Gemini');
+      }
+
+      return text;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+
+      if (isRateLimitError(message) && !isLastModel) {
+        continue;
+      }
+
+      if (isRateLimitError(message)) {
+        throw new Error(
+          'AI_RATE_LIMIT: The AI service is temporarily unavailable due to rate limits. Please try again in a minute.',
+        );
+      }
+
+      throw new Error(`AI generation failed: ${message}`);
     }
-
-    throw new Error(`AI generation failed: ${message}`);
   }
 
-  const text = response.text;
-  if (!text) {
-    throw new Error('No text response from Gemini');
-  }
-
-  return text;
+  throw new Error('AI generation failed: all models exhausted');
 }
 
 function escapeNewlinesInJsonStrings(text: string): string {
