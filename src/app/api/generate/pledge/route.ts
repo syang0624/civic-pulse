@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/backend/lib/auth';
 import { createClient } from '@/backend/lib/supabase/server';
-import { generateWithClaude } from '@/backend/lib/claude';
+import { generateWithClaude, parseJsonFromAI } from '@/backend/lib/claude';
 import { pledgeGenerationSchema } from '@/backend/validators/generate';
 import { assembleContext, formatIssueContext } from '@/backend/services/context';
 import {
@@ -67,16 +67,7 @@ export async function POST(request: NextRequest) {
       temperature: 0.7,
     });
 
-    let structured: StructuredPledge[];
-    try {
-      const cleaned = outputText
-        .replace(/```json\n?/g, '')
-        .replace(/```\n?/g, '')
-        .trim();
-      structured = JSON.parse(cleaned) as StructuredPledge[];
-    } catch {
-      structured = [];
-    }
+    const structured: StructuredPledge[] = parseJsonFromAI<StructuredPledge[]>(outputText) ?? [];
 
     const outputJson = JSON.stringify(structured.length > 0 ? structured : outputText);
 
