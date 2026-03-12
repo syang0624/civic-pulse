@@ -65,3 +65,34 @@ export async function generateWithClaude({
 
   return text;
 }
+
+export function parseJsonFromAI<T>(raw: string): T | null {
+  try {
+    return JSON.parse(raw) as T;
+  } catch { /* fallthrough */ }
+
+  const stripped = raw
+    .replace(/^```(?:json|JSON)?\s*\n?/gm, '')
+    .replace(/\n?```\s*$/gm, '')
+    .trim();
+
+  try {
+    return JSON.parse(stripped) as T;
+  } catch { /* fallthrough */ }
+
+  const objectMatch = raw.match(/\{[\s\S]*\}/);
+  if (objectMatch) {
+    try {
+      return JSON.parse(objectMatch[0]) as T;
+    } catch { /* fallthrough */ }
+  }
+
+  const arrayMatch = raw.match(/\[[\s\S]*\]/);
+  if (arrayMatch) {
+    try {
+      return JSON.parse(arrayMatch[0]) as T;
+    } catch { /* fallthrough */ }
+  }
+
+  return null;
+}
