@@ -86,7 +86,6 @@ export async function assembleContext(
       talking_points: p.talking_points as string[],
     })),
     issues,
-    documents: [],
     locale,
   };
 }

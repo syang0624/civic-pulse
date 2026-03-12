@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
-import { LayoutDashboard, PenTool, FileText, User, LogOut } from 'lucide-react';
+import { LayoutDashboard, PenTool, Share2, User, LogOut } from 'lucide-react';
 import { LocaleToggle } from './locale-toggle';
 import { cn } from '@/frontend/lib/utils';
 import { createClient } from '@/backend/lib/supabase/client';
@@ -10,7 +10,7 @@ import { createClient } from '@/backend/lib/supabase/client';
 const navItems = [
   { href: '/dashboard', labelKey: 'dashboard' as const, icon: LayoutDashboard },
   { href: '/generate/speech', labelKey: 'generate' as const, icon: PenTool },
-  { href: '/documents', labelKey: 'documents' as const, icon: FileText },
+  { href: '/generate/ad', labelKey: 'ad' as const, icon: Share2 },
   { href: '/profile', labelKey: 'profile' as const, icon: User },
 ];
 
