@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import type { AdPlatform, AdGoal, Generation } from '@/shared/types';
 import { PLATFORM_CHAR_LIMITS } from '@/shared/constants';
@@ -37,6 +38,9 @@ export function AdForm() {
   const tCommon = useTranslations('Common');
   const currentLocale = useLocale();
 
+  const searchParams = useSearchParams();
+  const issueId = searchParams.get('issueId');
+
   const [loading, setLoading] = useState(false);
   const [platform, setPlatform] = useState<AdPlatform>('instagram');
   const [topic, setTopic] = useState('');
@@ -46,6 +50,19 @@ export function AdForm() {
     useState<SocialMediaOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!issueId) return;
+    fetch(`/api/issues/${issueId}`)
+      .then((res) => res.json())
+      .then((data: { title_ko?: string; title_en?: string }) => {
+        const title = currentLocale === 'ko'
+          ? data.title_ko
+          : (data.title_en || data.title_ko);
+        if (title) setTopic(title);
+      })
+      .catch(() => {});
+  }, [issueId, currentLocale]);
 
   const goalLabels: Record<AdGoal, string> = {
     awareness: t('goalAwareness'),
@@ -134,48 +151,52 @@ export function AdForm() {
   const charLimit = PLATFORM_CHAR_LIMITS[platform];
 
   return (
-    <div className="space-y-8">
-      <section className="space-y-6">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <label htmlFor="ad-platform" className="text-sm font-medium">
+    <div className="space-y-10 animate-fade-in">
+      <section className="space-y-8 rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div className="space-y-3">
+            <label htmlFor="ad-platform" className="block text-sm font-semibold tracking-wide text-foreground">
               {t('platform')}
             </label>
-            <select
-              id="ad-platform"
-              value={platform}
-              onChange={(e) => setPlatform(e.target.value as AdPlatform)}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-            >
-              {PLATFORMS.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                id="ad-platform"
+                value={platform}
+                onChange={(e) => setPlatform(e.target.value as AdPlatform)}
+                className="w-full appearance-none rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+              >
+                {PLATFORMS.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="ad-goal" className="text-sm font-medium">
+          <div className="space-y-3">
+            <label htmlFor="ad-goal" className="block text-sm font-semibold tracking-wide text-foreground">
               {t('goal')}
             </label>
-            <select
-              id="ad-goal"
-              value={goal}
-              onChange={(e) => setGoal(e.target.value as AdGoal)}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-            >
-              {GOALS.map((g) => (
-                <option key={g} value={g}>
-                  {goalLabels[g]}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                id="ad-goal"
+                value={goal}
+                onChange={(e) => setGoal(e.target.value as AdGoal)}
+                className="w-full appearance-none rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+              >
+                {GOALS.map((g) => (
+                  <option key={g} value={g}>
+                    {goalLabels[g]}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="ad-topic" className="text-sm font-medium">
+        <div className="space-y-4">
+          <label htmlFor="ad-topic" className="block text-sm font-semibold tracking-wide text-foreground">
             {tg('topicLabel')}
           </label>
           <input
@@ -184,7 +205,7 @@ export function AdForm() {
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             placeholder={tg('topicPlaceholder')}
-            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+            className="w-full rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all placeholder:text-muted-foreground/50 hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
           />
         </div>
 
@@ -192,24 +213,24 @@ export function AdForm() {
           type="button"
           onClick={handleGenerate}
           disabled={loading || !topic.trim()}
-          className="rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          className="w-full rounded-xl bg-primary px-8 py-4 text-base font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:bg-primary/90 hover:shadow-md hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:hover:scale-100"
         >
           {loading ? tCommon('loading') : tg('generate')}
         </button>
       </section>
 
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-6 py-4 text-sm font-medium text-destructive animate-fade-in">
           {error}
         </div>
       )}
 
       {structuredOutput && (
-        <section className="space-y-4 rounded-md border bg-muted/30 p-6">
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold">{tCommon('showOriginal')}</h3>
+        <section className="space-y-6 rounded-2xl border bg-card p-6 shadow-sm animate-slide-up sm:p-8">
+          <div className="flex items-center justify-between border-b pb-4 border-border/50">
+            <h3 className="text-xl font-bold tracking-tight">{tCommon('showOriginal')}</h3>
             <div className="flex items-center gap-4">
-              <span className={`text-sm ${charCount > charLimit ? 'text-red-600 font-bold' : 'text-muted-foreground'}`}>
+              <span className={`text-sm font-medium ${charCount > charLimit ? 'text-destructive' : 'text-muted-foreground'}`}>
                 {t('charCount', { count: charCount, limit: charLimit })}
               </span>
               <button
@@ -217,7 +238,7 @@ export function AdForm() {
                 onClick={() =>
                   copyText('all', buildCombinedOutput(structuredOutput))
                 }
-                className="text-sm text-primary hover:underline"
+                className="rounded-full bg-muted/50 px-4 py-1.5 text-sm font-medium text-foreground transition-all hover:bg-primary hover:text-primary-foreground"
               >
                 {copiedSection === 'all'
                   ? tCommon('copiedToClipboard')
@@ -226,98 +247,104 @@ export function AdForm() {
             </div>
           </div>
 
-          <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
-            <div className="flex items-center justify-between gap-2">
-              <h4 className="text-sm font-semibold text-muted-foreground">{t('sectionTitle')}</h4>
-              <button
-                type="button"
-                onClick={() => copyText('title', structuredOutput.title)}
-                className="text-xs text-primary hover:underline"
-              >
-                {copiedSection === 'title' ? tCommon('copiedToClipboard') : tCommon('copy')}
-              </button>
+          <div className="grid gap-6">
+            <div className="group relative rounded-xl border bg-muted/30 p-5 transition-all hover:bg-muted/50 hover:shadow-sm">
+              <div className="mb-3 flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('sectionTitle')}</h4>
+                <button
+                  type="button"
+                  onClick={() => copyText('title', structuredOutput.title)}
+                  className="opacity-0 transition-opacity group-hover:opacity-100 text-xs font-medium text-primary hover:underline"
+                >
+                  {copiedSection === 'title' ? tCommon('copiedToClipboard') : tCommon('copy')}
+                </button>
+              </div>
+              <p className="text-xl font-bold leading-tight text-foreground">{structuredOutput.title || '-'}</p>
             </div>
-            <p className="text-2xl font-bold leading-tight">{structuredOutput.title || '-'}</p>
-          </div>
 
-          <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
-            <div className="flex items-center justify-between gap-2">
-              <h4 className="text-sm font-semibold text-muted-foreground">{t('sectionContent')}</h4>
-              <button
-                type="button"
-                onClick={() => copyText('content', structuredOutput.content)}
-                className="text-xs text-primary hover:underline"
-              >
-                {copiedSection === 'content' ? tCommon('copiedToClipboard') : tCommon('copy')}
-              </button>
+            <div className="group relative rounded-xl border bg-muted/30 p-5 transition-all hover:bg-muted/50 hover:shadow-sm">
+              <div className="mb-3 flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('sectionContent')}</h4>
+                <button
+                  type="button"
+                  onClick={() => copyText('content', structuredOutput.content)}
+                  className="opacity-0 transition-opacity group-hover:opacity-100 text-xs font-medium text-primary hover:underline"
+                >
+                  {copiedSection === 'content' ? tCommon('copiedToClipboard') : tCommon('copy')}
+                </button>
+              </div>
+              <p className="whitespace-pre-wrap text-base leading-relaxed text-foreground/90">{structuredOutput.content || '-'}</p>
             </div>
-            <p className="whitespace-pre-wrap text-sm leading-relaxed">{structuredOutput.content || '-'}</p>
-          </div>
 
-          <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
-            <div className="flex items-center justify-between gap-2">
-              <h4 className="text-sm font-semibold text-muted-foreground">{t('sectionHashtags')}</h4>
-              <button
-                type="button"
-                onClick={() =>
-                  copyText(
-                    'hashtags',
-                    structuredOutput.hashtags.map((tag) => `#${tag}`).join(' '),
-                  )
-                }
-                className="text-xs text-primary hover:underline"
-              >
-                {copiedSection === 'hashtags' ? tCommon('copiedToClipboard') : tCommon('copy')}
-              </button>
+            <div className="group relative rounded-xl border bg-muted/30 p-5 transition-all hover:bg-muted/50 hover:shadow-sm">
+              <div className="mb-3 flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('sectionHashtags')}</h4>
+                <button
+                  type="button"
+                  onClick={() =>
+                    copyText(
+                      'hashtags',
+                      structuredOutput.hashtags.map((tag) => `#${tag}`).join(' '),
+                    )
+                  }
+                  className="opacity-0 transition-opacity group-hover:opacity-100 text-xs font-medium text-primary hover:underline"
+                >
+                  {copiedSection === 'hashtags' ? tCommon('copiedToClipboard') : tCommon('copy')}
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {structuredOutput.hashtags.length > 0 ? (
+                  structuredOutput.hashtags.map((tag, i) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => copyText(`hashtag-${tag}`, `#${tag}`)}
+                      style={{ animationDelay: `${i * 50}ms` }}
+                      className="animate-fade-in rounded-full border bg-background px-3 py-1.5 text-sm font-medium text-foreground shadow-sm transition-all hover:scale-105 hover:bg-primary/5 hover:border-primary/30"
+                    >
+                      #{tag}
+                    </button>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">-</p>
+                )}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {structuredOutput.hashtags.length > 0 ? (
-                structuredOutput.hashtags.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => copyText(`hashtag-${tag}`, `#${tag}`)}
-                    className="rounded-full border bg-muted px-3 py-1 text-xs font-medium text-foreground hover:bg-muted/70"
-                  >
-                    #{tag}
-                  </button>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground">-</p>
-              )}
-            </div>
-          </div>
 
-          <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
-            <div className="flex items-center justify-between gap-2">
-              <h4 className="text-sm font-semibold text-muted-foreground">{t('sectionImageSuggestions')}</h4>
-              <button
-                type="button"
-                onClick={() =>
-                  copyText(
-                    'images',
-                    structuredOutput.image_suggestions.join('\n'),
-                  )
-                }
-                className="text-xs text-primary hover:underline"
-              >
-                {copiedSection === 'images' ? tCommon('copiedToClipboard') : tCommon('copy')}
-              </button>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {structuredOutput.image_suggestions.length > 0 ? (
-                structuredOutput.image_suggestions.map((suggestion, idx) => (
-                  <div
-                    key={`${suggestion}-${idx}`}
-                    className="rounded-md border bg-muted/20 p-3 text-sm leading-relaxed"
-                  >
-                    <p className="mb-2 text-xs font-semibold text-muted-foreground">{idx + 1}</p>
-                    <p>{suggestion}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground">-</p>
-              )}
+            <div className="group relative rounded-xl border bg-muted/30 p-5 transition-all hover:bg-muted/50 hover:shadow-sm">
+              <div className="mb-3 flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('sectionImageSuggestions')}</h4>
+                <button
+                  type="button"
+                  onClick={() =>
+                    copyText(
+                      'images',
+                      structuredOutput.image_suggestions.join('\n'),
+                    )
+                  }
+                  className="opacity-0 transition-opacity group-hover:opacity-100 text-xs font-medium text-primary hover:underline"
+                >
+                  {copiedSection === 'images' ? tCommon('copiedToClipboard') : tCommon('copy')}
+                </button>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                {structuredOutput.image_suggestions.length > 0 ? (
+                  structuredOutput.image_suggestions.map((suggestion, idx) => (
+                    <div
+                      key={`${suggestion}-${idx}`}
+                      style={{ animationDelay: `${idx * 100}ms` }}
+                      className="animate-fade-in flex flex-col gap-2 rounded-lg border bg-background p-4 shadow-sm transition-all hover:shadow-md"
+                    >
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                        {idx + 1}
+                      </span>
+                      <p className="text-sm leading-relaxed text-foreground/90">{suggestion}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">-</p>
+                )}
+              </div>
             </div>
           </div>
         </section>

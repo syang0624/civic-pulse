@@ -299,11 +299,11 @@ export function ProfileForm() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10 animate-fade-in">
       {/* Feedback banner */}
       {feedback && (
         <div
-          className={`rounded-md border px-4 py-3 text-sm ${
+          className={`rounded-xl border px-6 py-4 text-sm font-medium animate-fade-in ${
             feedback.type === 'success'
               ? 'border-green-200 bg-green-50 text-green-800'
               : 'border-red-200 bg-red-50 text-red-800'
@@ -314,13 +314,13 @@ export function ProfileForm() {
       )}
 
       {/* ── Basic Info ── */}
-      <section className="space-y-6">
-        <h2 className="text-lg font-semibold">{t('basicInfo')}</h2>
+      <section className="space-y-8 rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
+        <h2 className="text-xl font-bold tracking-tight">{t('basicInfo')}</h2>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2">
           {/* Name */}
-          <div className="space-y-2">
-            <label htmlFor="profile-name" className="text-sm font-medium">
+          <div className="space-y-3">
+            <label htmlFor="profile-name" className="block text-sm font-semibold tracking-wide text-foreground">
               {t('name')}
             </label>
             <input
@@ -328,14 +328,14 @@ export function ProfileForm() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="w-full rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all placeholder:text-muted-foreground/50 hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
               maxLength={100}
             />
           </div>
 
           {/* Party */}
-          <div className="space-y-2">
-            <label htmlFor="profile-party" className="text-sm font-medium">
+          <div className="space-y-3">
+            <label htmlFor="profile-party" className="block text-sm font-semibold tracking-wide text-foreground">
               {t('party')}
             </label>
             <input
@@ -344,88 +344,96 @@ export function ProfileForm() {
               value={party}
               onChange={(e) => setParty(e.target.value)}
               placeholder={t('partyIndependent')}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="w-full rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all placeholder:text-muted-foreground/50 hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <label
               htmlFor="profile-district-code"
-              className="text-sm font-medium"
+              className="block text-sm font-semibold tracking-wide text-foreground"
             >
               {t('districtCode')}
             </label>
-            <select
-              id="profile-district-code"
-              value={districtCode}
-              onChange={(e) => {
-                const nextCode = e.target.value;
-                setDistrictCode(nextCode);
-                const nextSido = ELECTION_DISTRICTS[nextCode];
-                if (!nextSido || nextSido.districts.length === 0) {
-                  setDistrictName('');
-                  return;
-                }
-                if (!nextSido.districts.some((d) => d.name === districtName)) {
-                  setDistrictName('');
-                }
-              }}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-            >
-              <option value="">{t('selectSido')}</option>
-              {SIDO_CODES.map((code) => {
-                const sido = ELECTION_DISTRICTS[code];
-                const label =
-                  languageKey === 'ko'
-                    ? `${sido.shortName} (${sido.name})`
-                    : `${sido.nameEn} (${sido.name})`;
-                return (
-                  <option key={code} value={code}>
-                    {label}
-                  </option>
-                );
-              })}
-            </select>
+            <div className="relative">
+              <select
+                id="profile-district-code"
+                value={districtCode}
+                onChange={(e) => {
+                  const nextCode = e.target.value;
+                  setDistrictCode(nextCode);
+                  const nextSido = ELECTION_DISTRICTS[nextCode];
+                  if (!nextSido || nextSido.districts.length === 0) {
+                    setDistrictName('');
+                    return;
+                  }
+                  if (!nextSido.districts.some((d) => d.name === districtName)) {
+                    setDistrictName('');
+                  }
+                }}
+                className="w-full appearance-none rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+              >
+                <option value="">{t('selectSido')}</option>
+                {SIDO_CODES.map((code) => {
+                  const sido = ELECTION_DISTRICTS[code];
+                  const label =
+                    languageKey === 'ko'
+                      ? `${sido.shortName} (${sido.name})`
+                      : `${sido.nameEn} (${sido.name})`;
+                  return (
+                    <option key={code} value={code}>
+                      {label}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
           </div>
 
           {hasSubDistricts && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <label
                 htmlFor="profile-district-name"
-                className="text-sm font-medium"
+                className="block text-sm font-semibold tracking-wide text-foreground"
               >
                 {t('districtName')}
               </label>
-              <select
-                id="profile-district-name"
-                value={districtName}
-                onChange={(e) => setDistrictName(e.target.value)}
-                disabled={!districtCode}
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm disabled:opacity-50"
-              >
-                <option value="">{t('selectDistrict')}</option>
-                {selectedDistricts.map((district) => (
-                  <option key={district.name} value={district.name}>
-                    {languageKey === 'ko' ? district.name : `${district.nameEn} (${district.name})`}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  id="profile-district-name"
+                  value={districtName}
+                  onChange={(e) => setDistrictName(e.target.value)}
+                  disabled={!districtCode}
+                  className="w-full appearance-none rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:opacity-50"
+                >
+                  <option value="">{t('selectDistrict')}</option>
+                  {selectedDistricts.map((district) => (
+                    <option key={district.name} value={district.name}>
+                      {languageKey === 'ko' ? district.name : `${district.nameEn} (${district.name})`}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
 
-          <div className="space-y-2 sm:col-span-2">
-            <span className="text-sm font-medium">
+          <div className="space-y-3 sm:col-span-2">
+            <span className="block text-sm font-semibold tracking-wide text-foreground">
               {t('electionType')}
             </span>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="flex flex-wrap gap-3">
               {ELECTION_TYPES.map((type) => {
                 const isEnabled = enabledElectionTypes.includes(type);
 
                 return (
                   <label
                     key={type}
-                    className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${
-                      isEnabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
+                    className={`cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-all hover:scale-105 hover:shadow-sm ${
+                      !isEnabled 
+                        ? 'cursor-not-allowed opacity-50 bg-muted text-muted-foreground' 
+                        : electionType === type
+                          ? 'border-primary bg-primary/10 text-primary ring-2 ring-primary/20'
+                          : 'bg-background hover:bg-muted/50 text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     <input
@@ -435,7 +443,7 @@ export function ProfileForm() {
                       checked={electionType === type}
                       onChange={() => setElectionType(type)}
                       disabled={!isEnabled}
-                      className="accent-primary"
+                      className="sr-only"
                     />
                     {t(ELECTION_TYPE_I18N_KEYS[type])}
                   </label>
@@ -446,51 +454,53 @@ export function ProfileForm() {
         </div>
 
         {/* Background */}
-        <div className="space-y-2">
-          <label htmlFor="profile-background" className="text-sm font-medium">
+        <div className="space-y-3">
+          <label htmlFor="profile-background" className="block text-sm font-semibold tracking-wide text-foreground">
             {t('background')}
           </label>
           <textarea
             id="profile-background"
             value={background}
             onChange={(e) => setBackground(e.target.value)}
-            className="min-h-[80px] w-full rounded-md border bg-background px-3 py-2 text-sm"
+            className="min-h-[120px] w-full rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all placeholder:text-muted-foreground/50 hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
           />
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground pl-1">
             {t('backgroundHelper')}
           </p>
         </div>
 
         {/* Tone */}
-        <div className="space-y-2">
-          <label htmlFor="profile-tone" className="text-sm font-medium">
+        <div className="space-y-3">
+          <label htmlFor="profile-tone" className="block text-sm font-semibold tracking-wide text-foreground">
             {t('tone')}
           </label>
-          <select
-            id="profile-tone"
-            value={tone}
-            onChange={(e) => setTone(e.target.value as Tone)}
-            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-          >
-            {TONES.map((toneValue) => (
-              <option key={toneValue} value={toneValue}>
-                {toneLabels[toneValue]}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              id="profile-tone"
+              value={tone}
+              onChange={(e) => setTone(e.target.value as Tone)}
+              className="w-full appearance-none rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+            >
+              {TONES.map((toneValue) => (
+                <option key={toneValue} value={toneValue}>
+                  {toneLabels[toneValue]}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Target Demographics */}
-        <div className="space-y-2">
-          <span className="text-sm font-medium">{t('targetDemo')}</span>
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-3">
+          <span className="block text-sm font-semibold tracking-wide text-foreground">{t('targetDemo')}</span>
+          <div className="flex flex-wrap gap-3">
             {DEMOGRAPHICS.map((demo) => (
               <label
                 key={demo}
-                className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
+                className={`cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-all hover:scale-105 hover:shadow-sm ${
                   targetDemo.includes(demo)
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'bg-background hover:bg-accent'
+                    ? 'border-primary bg-primary/10 text-primary ring-2 ring-primary/20'
+                    : 'bg-background hover:bg-muted/50 text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <input
@@ -506,18 +516,18 @@ export function ProfileForm() {
         </div>
 
         {/* Language */}
-        <div className="space-y-2">
-          <span className="text-sm font-medium">{t('language')}</span>
-          <div className="flex gap-2">
+        <div className="space-y-3">
+          <span className="block text-sm font-semibold tracking-wide text-foreground">{t('language')}</span>
+          <div className="flex gap-3">
             {(['ko', 'en'] as const).map((loc) => (
               <button
                 key={loc}
                 type="button"
                 onClick={() => setLocale(loc)}
-                className={`rounded-md border px-4 py-2 text-sm transition-colors ${
+                className={`rounded-full border px-6 py-2 text-sm font-medium transition-all hover:scale-105 hover:shadow-sm ${
                   locale === loc
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'bg-background hover:bg-accent'
+                    ? 'border-primary bg-primary/10 text-primary ring-2 ring-primary/20'
+                    : 'bg-background hover:bg-muted/50 text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {loc === 'ko' ? '한국어' : 'English'}
@@ -527,24 +537,26 @@ export function ProfileForm() {
         </div>
 
         {/* Save */}
-        <button
-          type="button"
-          onClick={handleSaveProfile}
-          disabled={saving}
-          className="rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-        >
-          {saving ? tCommon('loading') : tCommon('save')}
-        </button>
+        <div className="pt-4">
+          <button
+            type="button"
+            onClick={handleSaveProfile}
+            disabled={saving}
+            className="w-full rounded-xl bg-primary px-8 py-4 text-base font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:bg-primary/90 hover:shadow-md hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:hover:scale-100 sm:w-auto"
+          >
+            {saving ? tCommon('loading') : tCommon('save')}
+          </button>
+        </div>
       </section>
 
       {/* ── Divider ── */}
-      <hr className="border-border" />
+      <hr className="border-border/50" />
 
       {/* ── Policy Positions ── */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold">{t('positions')}</h2>
+      <section className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold tracking-tight">{t('positions')}</h2>
             <p className="text-sm text-muted-foreground">
               {t('positionsSubtitle')}
             </p>
@@ -552,7 +564,7 @@ export function ProfileForm() {
           <button
             type="button"
             onClick={openAddPosition}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
           >
             {t('addPosition')}
           </button>
@@ -560,47 +572,47 @@ export function ProfileForm() {
 
         {/* Position cards */}
         {positions.length === 0 ? (
-          <div className="rounded-md border border-dashed p-8 text-center">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed p-12 text-center">
             <p className="text-muted-foreground">{t('noPositions')}</p>
           </div>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-6">
             {positions.map((pos) => (
-              <div key={pos.id} className="space-y-3 rounded-md border p-4">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold">
+              <div key={pos.id} className="group space-y-4 rounded-2xl border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary/20">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-bold text-lg text-foreground">
                         {tc(pos.topic)}
                       </span>
                       <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                           pos.priority === 'high'
-                            ? 'bg-red-100 text-red-800'
+                            ? 'bg-red-100 text-red-700'
                             : pos.priority === 'medium'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-green-100 text-green-800'
+                              ? 'bg-yellow-100 text-yellow-700'
+                              : 'bg-green-100 text-green-700'
                         }`}
                       >
                         {priorityLabels[pos.priority]}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-base text-muted-foreground leading-relaxed">
                       {pos.stance}
                     </p>
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
                     <button
                       type="button"
                       onClick={() => openEditPosition(pos)}
-                      className="rounded-md px-3 py-1 text-sm text-muted-foreground hover:bg-accent"
+                      className="rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                       {tCommon('edit')}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDeletePosition(pos.id)}
-                      className="rounded-md px-3 py-1 text-sm text-red-600 hover:bg-red-50"
+                      className="rounded-lg px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10"
                     >
                       {tCommon('delete')}
                     </button>
@@ -608,20 +620,25 @@ export function ProfileForm() {
                 </div>
 
                 {pos.key_number && (
-                  <p className="text-sm">
-                    <span className="font-medium">{t('keyNumber')}:</span>{' '}
-                    {pos.key_number}
-                  </p>
+                  <div className="rounded-lg bg-muted/30 p-3">
+                    <p className="text-sm">
+                      <span className="font-semibold text-foreground">{t('keyNumber')}:</span>{' '}
+                      <span className="text-muted-foreground">{pos.key_number}</span>
+                    </p>
+                  </div>
                 )}
 
                 {pos.talking_points.length > 0 && (
-                  <div className="space-y-1">
-                    <span className="text-xs font-medium text-muted-foreground">
+                  <div className="space-y-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       {t('talkingPoints')}
                     </span>
-                    <ul className="list-inside list-disc space-y-0.5 text-sm">
+                    <ul className="space-y-1">
                       {pos.talking_points.map((tp, i) => (
-                        <li key={i}>{tp}</li>
+                        <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary/40" />
+                          <span>{tp}</span>
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -634,58 +651,64 @@ export function ProfileForm() {
 
       {/* ── Position Modal ── */}
       {showPositionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="max-h-[90vh] w-full max-w-lg space-y-4 overflow-y-auto rounded-lg border bg-background p-6 shadow-lg">
-            <h3 className="text-lg font-semibold">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="max-h-[90vh] w-full max-w-lg space-y-6 overflow-y-auto rounded-2xl border bg-background p-6 shadow-2xl animate-scale-in sm:p-8">
+            <h3 className="text-xl font-bold tracking-tight">
               {editingPosition ? t('editPosition') : t('addPosition')}
             </h3>
 
             {/* Topic */}
-            <div className="space-y-2">
-              <label htmlFor="pos-topic" className="text-sm font-medium">
+            <div className="space-y-3">
+              <label htmlFor="pos-topic" className="block text-sm font-semibold tracking-wide text-foreground">
                 {t('topic')}
               </label>
-              <select
-                id="pos-topic"
-                value={posTopic}
-                onChange={(e) => setPosTopic(e.target.value)}
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-              >
-                {ISSUE_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {tc(cat)}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  id="pos-topic"
+                  value={posTopic}
+                  onChange={(e) => setPosTopic(e.target.value)}
+                  className="w-full appearance-none rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+                >
+                  {ISSUE_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {tc(cat)}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Stance */}
-            <div className="space-y-2">
-              <label htmlFor="pos-stance" className="text-sm font-medium">
+            <div className="space-y-3">
+              <label htmlFor="pos-stance" className="block text-sm font-semibold tracking-wide text-foreground">
                 {t('stance')}
               </label>
               <textarea
                 id="pos-stance"
                 value={posStance}
                 onChange={(e) => setPosStance(e.target.value)}
-                className="min-h-[80px] w-full rounded-md border bg-background px-3 py-2 text-sm"
+                className="min-h-[100px] w-full rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all placeholder:text-muted-foreground/50 hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
                 maxLength={500}
               />
             </div>
 
             {/* Priority */}
-            <div className="space-y-2">
-              <span className="text-sm font-medium">{t('priority')}</span>
-              <div className="flex gap-4">
+            <div className="space-y-3">
+              <span className="block text-sm font-semibold tracking-wide text-foreground">{t('priority')}</span>
+              <div className="flex gap-3">
                 {PRIORITIES.map((p) => (
-                  <label key={p} className="flex items-center gap-2 text-sm">
+                  <label key={p} className={`cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-all hover:scale-105 hover:shadow-sm ${
+                    posPriority === p
+                      ? 'border-primary bg-primary/10 text-primary ring-2 ring-primary/20'
+                      : 'bg-background hover:bg-muted/50 text-muted-foreground hover:text-foreground'
+                  }`}>
                     <input
                       type="radio"
                       name="position-priority"
                       value={p}
                       checked={posPriority === p}
                       onChange={() => setPosPriority(p)}
-                      className="accent-primary"
+                      className="sr-only"
                     />
                     {priorityLabels[p]}
                   </label>
@@ -694,8 +717,8 @@ export function ProfileForm() {
             </div>
 
             {/* Key Number */}
-            <div className="space-y-2">
-              <label htmlFor="pos-key-number" className="text-sm font-medium">
+            <div className="space-y-3">
+              <label htmlFor="pos-key-number" className="block text-sm font-semibold tracking-wide text-foreground">
                 {t('keyNumber')}
               </label>
               <input
@@ -703,27 +726,27 @@ export function ProfileForm() {
                 type="text"
                 value={posKeyNumber}
                 onChange={(e) => setPosKeyNumber(e.target.value)}
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                className="w-full rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all placeholder:text-muted-foreground/50 hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
               />
             </div>
 
             {/* Talking Points */}
-            <div className="space-y-2">
-              <span className="text-sm font-medium">{t('talkingPoints')}</span>
-              <div className="space-y-2">
+            <div className="space-y-3">
+              <span className="block text-sm font-semibold tracking-wide text-foreground">{t('talkingPoints')}</span>
+              <div className="space-y-3">
                 {posTalkingPoints.map((tp, i) => (
                   <div key={i} className="flex gap-2">
                     <input
                       type="text"
                       value={tp}
                       onChange={(e) => updateTalkingPoint(i, e.target.value)}
-                      className="flex-1 rounded-md border bg-background px-3 py-2 text-sm"
+                      className="flex-1 rounded-xl border bg-background px-4 py-2.5 text-sm shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
                     />
                     {posTalkingPoints.length > 1 && (
                       <button
                         type="button"
                         onClick={() => removeTalkingPoint(i)}
-                        className="rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-accent"
+                        className="rounded-xl px-3 text-muted-foreground hover:bg-muted hover:text-foreground"
                       >
                         ✕
                       </button>
@@ -735,7 +758,7 @@ export function ProfileForm() {
                 <button
                   type="button"
                   onClick={addTalkingPoint}
-                  className="text-sm text-primary hover:underline"
+                  className="mt-2 text-sm font-medium text-primary hover:underline"
                 >
                   + {t('addTalkingPoint')}
                 </button>
@@ -743,11 +766,11 @@ export function ProfileForm() {
             </div>
 
             {/* Modal actions */}
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-3 pt-4 border-t border-border/50">
               <button
                 type="button"
                 onClick={() => setShowPositionModal(false)}
-                className="rounded-md border px-4 py-2 text-sm hover:bg-accent"
+                className="rounded-xl border px-5 py-2.5 text-sm font-medium transition-all hover:bg-muted hover:text-foreground"
               >
                 {tCommon('cancel')}
               </button>
@@ -755,7 +778,7 @@ export function ProfileForm() {
                 type="button"
                 onClick={handleSavePosition}
                 disabled={positionSaving || !posStance.trim()}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                className="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
               >
                 {positionSaving ? tCommon('loading') : tCommon('save')}
               </button>

@@ -38,10 +38,12 @@ export function NavBar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        <div className="mr-4 font-bold text-lg">
-          <Link href="/dashboard">Civic Pulse</Link>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center px-4">
+        <div className="mr-8 font-semibold text-lg tracking-tight">
+          <Link href="/dashboard" className="flex items-center gap-2 transition-opacity hover:opacity-80">
+            Civic Pulse
+          </Link>
         </div>
 
         <nav className="flex items-center gap-1 text-sm">
@@ -52,8 +54,10 @@ export function NavBar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-2 rounded-md px-3 py-2 transition-colors hover:bg-accent',
-                  isActive && 'bg-accent text-accent-foreground',
+                  'flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200',
+                  isActive 
+                    ? 'bg-secondary text-primary' 
+                    : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
                 )}
               >
                 <item.icon className="h-4 w-4" />
@@ -69,7 +73,7 @@ export function NavBar() {
           <LocaleToggle />
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-destructive/5 hover:text-destructive"
           >
             <LogOut className="h-4 w-4" />
             <span className="hidden sm:inline">{t('logout')}</span>

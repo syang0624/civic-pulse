@@ -52,21 +52,21 @@ export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
   const error = isPending ? null : clientError || state.error;
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-sm space-y-6 rounded-lg border p-6">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md space-y-8 rounded-2xl border bg-card p-10 shadow-lg animate-fade-in">
         <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-bold">Civic Pulse</h1>
-          <p className="text-sm text-muted-foreground">{t('login')}</p>
+          <h1 className="text-3xl font-bold tracking-tight">Civic Pulse</h1>
+          <p className="text-muted-foreground">{t('login')}</p>
         </div>
 
         {signupSuccess && (
-          <div className="rounded-md bg-green-50 p-3 text-center text-sm text-green-700 dark:bg-green-950 dark:text-green-300">
+          <div className="rounded-xl bg-green-50 p-4 text-center text-sm text-green-700 dark:bg-green-950 dark:text-green-300">
             {t('signupSuccess')}
           </div>
         )}
 
         {error && (
-          <div className="rounded-md bg-destructive/10 p-3 text-center text-sm text-destructive">
+          <div className="rounded-xl bg-destructive/10 p-4 text-center text-sm text-destructive">
             {error}
           </div>
         )}
@@ -75,7 +75,7 @@ export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
           action={formAction}
           onSubmit={handleSubmit}
           noValidate
-          className="space-y-4"
+          className="space-y-6"
         >
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
@@ -87,7 +87,7 @@ export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
               name="email"
               type="email"
               autoComplete="email"
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="w-full rounded-xl border bg-background/50 px-4 py-3 text-sm shadow-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none"
               placeholder="name@example.com"
             />
           </div>
@@ -102,35 +102,33 @@ export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
               name="password"
               type="password"
               autoComplete="current-password"
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="w-full rounded-xl border bg-background/50 px-4 py-3 text-sm shadow-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={isPending}
-            className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] hover:bg-primary/90 disabled:opacity-50"
           >
             {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
             {isPending ? t('loggingIn') : t('login')}
           </button>
         </form>
 
-        <div className="space-y-3">
+        <div className="space-y-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="bg-background px-4 text-muted-foreground">
                 {t('demoAccounts')}
               </span>
             </div>
           </div>
-          <p className="text-center text-xs text-muted-foreground">
-            {t('clickToFill')}
-          </p>
-          <div className="space-y-2">
+          
+          <div className="grid gap-3">
             {DEMO_ACCOUNTS.map((account) => (
               <button
                 key={account.email}
@@ -140,9 +138,9 @@ export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
                   if (passwordRef.current) passwordRef.current.value = account.password;
                   setClientError(null);
                 }}
-                className="flex w-full items-center justify-between rounded-md border border-dashed px-3 py-2 text-xs transition-colors hover:bg-muted"
+                className="group flex w-full items-center justify-between rounded-xl border border-dashed px-4 py-3 text-xs transition-colors hover:bg-secondary/50 hover:border-primary/30"
               >
-                <span className="font-medium">{account.email}</span>
+                <span className="font-medium group-hover:text-primary transition-colors">{account.email}</span>
                 <span className="text-muted-foreground">{account.password}</span>
               </button>
             ))}
@@ -153,7 +151,7 @@ export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
           {t('noAccount')}{' '}
           <Link
             href="/signup"
-            className="font-medium text-primary hover:underline"
+            className="font-medium text-primary hover:underline underline-offset-4"
           >
             {t('signupLink')}
           </Link>

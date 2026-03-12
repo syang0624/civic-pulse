@@ -106,7 +106,6 @@
     "filterByCategory": "Category",
     "filterByUrgency": "Urgency",
     "filterByDate": "Date range",
-    "filterBySentiment": "Sentiment",
     "filterByTrend": "Trend",
     "clearFilters": "Clear all",
     "sortBy": "Sort by",
@@ -119,13 +118,8 @@
     "trendRising": "Rising",
     "trendStable": "Stable",
     "trendDeclining": "Declining",
-    "sentimentPositive": "Positive",
-    "sentimentNegative": "Negative",
-    "sentimentMixed": "Mixed",
     "mentions": "{count} mentions",
     "description": "Description",
-    "publicSentiment": "Public Sentiment",
-    "sentimentNote": "Based on analysis of recent mentions and discussions.",
     "writeAbout": "Write about this",
     "draftSpeech": "Draft Speech",
     "draftReply": "Draft reply",
@@ -133,7 +127,9 @@
     "relatedLegislation": "Related legislation",
     "refreshIssues": "Refresh Issues",
     "crawling": "Crawling issues...",
-    "crawlError": "Failed to crawl issues:"
+    "crawlError": "Failed to crawl issues:",
+    "sources": "Sources",
+    "sourcesMethodology": "Issues are derived from real-time news articles collected via Google News and analyzed by AI."
   },
   "Generate": {
     "title": "Content Generation",

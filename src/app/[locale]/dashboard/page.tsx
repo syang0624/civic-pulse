@@ -33,9 +33,8 @@ export default async function DashboardPage({
   return (
     <>
       <NavBar />
-      <main className="container max-w-7xl space-y-8 py-8">
+      <main className="mx-auto max-w-6xl space-y-10 px-4 py-10">
         <DashboardHeader districtName={districtName} />
-        
         <div className="space-y-6">
           <IssueFilters />
           <IssueList />
@@ -49,14 +48,14 @@ function DashboardHeader({ districtName }: { districtName: string }) {
   const t = useTranslations('Dashboard');
   
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">
+    <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-3">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
           {districtName
             ? t('title', { district: districtName })
             : t('titleGeneral')}
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-lg text-muted-foreground/80 max-w-2xl leading-relaxed">
           {t('subtitle')}
         </p>
       </div>
