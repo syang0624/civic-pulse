@@ -64,6 +64,7 @@ export interface Profile {
   name: string;
   district_code: string;
   district_name: string;
+  election_type: string;
   party: string;
   background: string | null;
   tone: Tone;
@@ -177,6 +178,7 @@ export interface ContextPackage {
   profile: {
     name: string;
     district_name: string;
+    election_type: string;
     party: string;
     background: string | null;
     tone: Tone;
@@ -201,25 +203,6 @@ export interface ContextPackage {
   }[];
   locale: Locale;
 }
-
-export type RegionCode =
-  | 'seoul'
-  | 'busan'
-  | 'daegu'
-  | 'incheon'
-  | 'gwangju'
-  | 'daejeon'
-  | 'ulsan'
-  | 'sejong'
-  | 'gyeonggi'
-  | 'chungbuk'
-  | 'chungnam'
-  | 'jeonbuk'
-  | 'jeonnam'
-  | 'gyeongbuk'
-  | 'gyeongnam'
-  | 'gangwon'
-  | 'jeju';
 
 // --- API Response Types ---
 

@@ -73,6 +73,7 @@ export async function assembleContext(
     profile: {
       name: profile.name,
       district_name: profile.district_name,
+      election_type: profile.election_type ?? 'local_mayor',
       party: profile.party,
       background: profile.background,
       tone: profile.tone,

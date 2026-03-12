@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import type {
   PolicyPosition,
   Tone,
@@ -9,7 +9,13 @@ import type {
   Demographic,
   Locale as AppLocale,
 } from '@/shared/types';
-import { ISSUE_CATEGORIES } from '@/shared/constants';
+import {
+  ISSUE_CATEGORIES,
+  ELECTION_DISTRICTS,
+  SIDO_CODES,
+  ELECTION_TYPES,
+  type ElectionType,
+} from '@/shared/constants';
 
 const TONES: Tone[] = ['formal', 'conversational', 'passionate', 'data_driven'];
 const PRIORITIES: Priority[] = ['high', 'medium', 'low'];
@@ -22,11 +28,21 @@ const DEMOGRAPHICS: Demographic[] = [
   'students',
 ];
 
+const electionTypeLabels: Record<ElectionType, Record<'ko' | 'en', string>> = {
+  metropolitan_mayor: { ko: '시/도지사', en: 'Governor' },
+  metropolitan_council: { ko: '시/도의회 의원', en: 'Metro Council' },
+  local_mayor: { ko: '구/시/군의장', en: 'Local Mayor' },
+  local_council: { ko: '구/시/군의회 의원', en: 'Local Council' },
+  superintendent: { ko: '교육감', en: 'Superintendent' },
+};
+
 export function ProfileForm() {
   const t = useTranslations('Profile');
   const tc = useTranslations('Categories');
   const td = useTranslations('Demographics');
   const tCommon = useTranslations('Common');
+  const currentLocale = useLocale();
+  const languageKey: 'ko' | 'en' = currentLocale === 'ko' ? 'ko' : 'en';
 
 
   const [loading, setLoading] = useState(true);
@@ -40,6 +56,7 @@ export function ProfileForm() {
   const [name, setName] = useState('');
   const [districtCode, setDistrictCode] = useState('');
   const [districtName, setDistrictName] = useState('');
+  const [electionType, setElectionType] = useState<ElectionType>('local_mayor');
   const [party, setParty] = useState('');
   const [background, setBackground] = useState('');
   const [tone, setTone] = useState<Tone>('formal');
@@ -88,6 +105,7 @@ export function ProfileForm() {
           setName(data.name);
           setDistrictCode(data.district_code);
           setDistrictName(data.district_name);
+          setElectionType((data.election_type ?? 'local_mayor') as ElectionType);
           setParty(data.party);
           setBackground(data.background ?? '');
           setTone(data.tone);
@@ -119,6 +137,7 @@ export function ProfileForm() {
           name,
           district_code: districtCode,
           district_name: districtName,
+          election_type: electionType,
           party,
           background: background || undefined,
           tone,
@@ -254,6 +273,23 @@ export function ProfileForm() {
     );
   }
 
+  const selectedSido = districtCode ? ELECTION_DISTRICTS[districtCode] : undefined;
+  const selectedDistricts = selectedSido?.districts ?? [];
+  const hasSubDistricts = selectedDistricts.length > 0;
+  const hasSelectedSubDistrict = hasSubDistricts && districtName.length > 0;
+  const enabledElectionTypes = ELECTION_TYPES.filter((type) => {
+    if (type === 'local_mayor' || type === 'local_council') {
+      return hasSelectedSubDistrict;
+    }
+    return true;
+  });
+
+  useEffect(() => {
+    if (!hasSelectedSubDistrict && (electionType === 'local_mayor' || electionType === 'local_council')) {
+      setElectionType('metropolitan_mayor');
+    }
+  }, [hasSelectedSubDistrict, electionType]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -312,7 +348,6 @@ export function ProfileForm() {
             />
           </div>
 
-          {/* District Code */}
           <div className="space-y-2">
             <label
               htmlFor="profile-district-code"
@@ -320,30 +355,94 @@ export function ProfileForm() {
             >
               {t('districtCode')}
             </label>
-            <input
+            <select
               id="profile-district-code"
-              type="text"
               value={districtCode}
-              onChange={(e) => setDistrictCode(e.target.value)}
+              onChange={(e) => {
+                const nextCode = e.target.value;
+                setDistrictCode(nextCode);
+                const nextSido = ELECTION_DISTRICTS[nextCode];
+                if (!nextSido || nextSido.districts.length === 0) {
+                  setDistrictName('');
+                  return;
+                }
+                if (!nextSido.districts.some((d) => d.name === districtName)) {
+                  setDistrictName('');
+                }
+              }}
               className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-            />
+            >
+              <option value="">{languageKey === 'ko' ? '시/도 선택' : 'Select region'}</option>
+              {SIDO_CODES.map((code) => {
+                const sido = ELECTION_DISTRICTS[code];
+                const label =
+                  languageKey === 'ko'
+                    ? `${sido.shortName} (${sido.name})`
+                    : `${sido.nameEn} (${sido.name})`;
+                return (
+                  <option key={code} value={code}>
+                    {label}
+                  </option>
+                );
+              })}
+            </select>
           </div>
 
-          {/* District Name */}
-          <div className="space-y-2">
-            <label
-              htmlFor="profile-district-name"
-              className="text-sm font-medium"
-            >
-              {t('districtName')}
-            </label>
-            <input
-              id="profile-district-name"
-              type="text"
-              value={districtName}
-              onChange={(e) => setDistrictName(e.target.value)}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-            />
+          {hasSubDistricts && (
+            <div className="space-y-2">
+              <label
+                htmlFor="profile-district-name"
+                className="text-sm font-medium"
+              >
+                {t('districtName')}
+              </label>
+              <select
+                id="profile-district-name"
+                value={districtName}
+                onChange={(e) => setDistrictName(e.target.value)}
+                disabled={!districtCode}
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm disabled:opacity-50"
+              >
+                <option value="">{languageKey === 'ko' ? '구/시/군 선택' : 'Select district'}</option>
+                {selectedDistricts.map((district) => (
+                  <option key={district.name} value={district.name}>
+                    {languageKey === 'ko' ? district.name : `${district.nameEn} (${district.name})`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="space-y-2 sm:col-span-2">
+            <span className="text-sm font-medium">
+              {languageKey === 'ko' ? '출마 선거 유형' : 'Election type'}
+            </span>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {ELECTION_TYPES.map((type) => {
+                const isEnabled = enabledElectionTypes.includes(type);
+                const label = electionTypeLabels[type][languageKey];
+
+                return (
+                  <label
+                    key={type}
+                    className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${
+                      isEnabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="profile-election-type"
+                      value={type}
+                      checked={electionType === type}
+                      onChange={() => setElectionType(type)}
+                      disabled={!isEnabled}
+                      className="accent-primary"
+                    />
+                    {label}
+                  </label>
+                );
+              })}
+            </div>
           </div>
         </div>
 
