@@ -10,11 +10,13 @@ export async function GET() {
   }
 
   const supabase = await createClient();
-  let { data, error } = await supabase
+  const { data: existing, error } = await supabase
     .from('profiles')
     .select('*, policy_positions(*)')
     .eq('id', user.id)
     .single();
+
+  let data = existing;
 
   if (error || !data) {
     const defaults = {
