@@ -1,11 +1,11 @@
 import type { ContextPackage, SpeechOccasion, DataLevel, Tone } from '@/shared/types';
 
 const OCCASION_LABELS: Record<SpeechOccasion, string> = {
-  council_session: 'a council session speech',
-  campaign_rally: 'a campaign rally speech',
-  town_hall: 'a town hall meeting speech',
-  community_event: 'a community event speech',
-  online_video: 'an online video script',
+  campaign_rally: 'a campaign rally speech (유세 연설)',
+  debate: 'a debate response (토론회 발언)',
+  town_hall: 'a town hall meeting speech (주민 간담회 발언)',
+  press_conference: 'a press conference statement (기자 회견 발표)',
+  online_video: 'an online campaign video script (온라인 선거 영상)',
 };
 
 const DATA_LEVEL_INSTRUCTION: Record<DataLevel, string> = {
@@ -23,30 +23,30 @@ const TONE_INSTRUCTION: Record<Tone, string> = {
 
 export function buildSpeechSystemPrompt(ctx: ContextPackage): string {
   const { profile, positions, locale } = ctx;
-
   const lang = locale === 'ko' ? 'Korean' : 'English';
   const positionsSummary = positions
     .map((p) => `- ${p.topic}: ${p.stance} (Priority: ${p.priority})`)
     .join('\n');
 
-  return `You are a professional speechwriter for a local politician in South Korea.
+  return `You are a professional campaign speechwriter for an independent candidate running in the Korean 전국동시지방선거 (nationwide local elections).
 
-POLITICIAN PROFILE:
+CANDIDATE PROFILE:
 - Name: ${profile.name}
-- District: ${profile.district_name}
-- Party: ${profile.party}
+- Running for: ${profile.election_type ?? 'local office'} in ${profile.district_name}
+- Party: ${profile.party || '무소속 (Independent)'}
 - Background: ${profile.background ?? 'Not specified'}
 - Preferred tone: ${profile.tone}
-- Target demographics: ${profile.target_demo.join(', ')}
+- Target voters: ${profile.target_demo.join(', ')}
 
 POLICY POSITIONS:
 ${positionsSummary || 'No specific positions provided.'}
 
 RULES:
 - Write the entire speech in ${lang}.
-- Match the politician's voice and policy positions.
+- Frame as an INDEPENDENT CANDIDATE speech — emphasize independence from party politics, direct connection to the community.
+- Reference specific local issues and conditions of the election district.
 - Include natural transitions between sections.
-- End with a memorable closing that reinforces the core message.
+- End with a compelling call to vote and a memorable closing.
 - Do NOT include stage directions or speaker labels.
 - Output ONLY the speech text, no preamble or commentary.`;
 }

@@ -3,10 +3,10 @@ import { z } from 'zod';
 export const speechGenerationSchema = z.object({
   topic: z.string().min(1).max(500),
   occasion: z.enum([
-    'council_session',
     'campaign_rally',
+    'debate',
     'town_hall',
-    'community_event',
+    'press_conference',
     'online_video',
   ]),
   tone: z
@@ -17,7 +17,7 @@ export const speechGenerationSchema = z.object({
     z.number().int().min(100).max(5000),
   ]),
   data_level: z.enum(['light', 'medium', 'heavy']).optional(),
-  issue_id: z.string().uuid().optional(),
+  issue_id: z.uuid().optional(),
 });
 
 export const adGenerationSchema = z.object({
@@ -35,5 +35,5 @@ export const adGenerationSchema = z.object({
     'position_statement',
     'call_to_action',
   ]),
-  issue_id: z.string().uuid().optional(),
+  issue_id: z.uuid().optional(),
 });

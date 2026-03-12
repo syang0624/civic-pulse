@@ -11,10 +11,10 @@ import type {
 } from '@/shared/types';
 
 const OCCASIONS: SpeechOccasion[] = [
-  'council_session',
   'campaign_rally',
+  'debate',
   'town_hall',
-  'community_event',
+  'press_conference',
   'online_video',
 ];
 
@@ -31,7 +31,7 @@ export function SpeechForm() {
 
   const [loading, setLoading] = useState(false);
   const [topic, setTopic] = useState('');
-  const [occasion, setOccasion] = useState<SpeechOccasion>('council_session');
+  const [occasion, setOccasion] = useState<SpeechOccasion>('campaign_rally');
   const [tone, setTone] = useState<Tone>('formal');
   const [length, setLength] = useState<SpeechLength>('3min');
   const [dataLevel, setDataLevel] = useState<DataLevel>('medium');
@@ -40,11 +40,11 @@ export function SpeechForm() {
   const [copied, setCopied] = useState(false);
 
   const occasionLabels: Record<SpeechOccasion, string> = {
-    council_session: t('occasionCouncil'),
-    campaign_rally: t('occasionRally'),
-    town_hall: t('occasionTownHall'),
-    community_event: t('occasionCommunity'),
-    online_video: t('occasionOnline'),
+    campaign_rally: currentLocale === 'ko' ? '유세 현장' : 'Campaign Rally',
+    debate: currentLocale === 'ko' ? '토론회' : 'Debate',
+    town_hall: currentLocale === 'ko' ? '주민 간담회' : 'Town Hall',
+    press_conference: currentLocale === 'ko' ? '기자 회견' : 'Press Conference',
+    online_video: currentLocale === 'ko' ? '온라인 영상' : 'Online Video',
   };
 
   const lengthLabels: Record<SpeechLength, string> = {

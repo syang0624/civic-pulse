@@ -35,10 +35,10 @@ export type Demographic =
   | 'students';
 
 export type SpeechOccasion =
-  | 'council_session'
   | 'campaign_rally'
+  | 'debate'
   | 'town_hall'
-  | 'community_event'
+  | 'press_conference'
   | 'online_video';
 
 export type SpeechLength = '3min' | '5min' | '10min';
