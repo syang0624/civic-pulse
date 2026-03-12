@@ -123,10 +123,10 @@ export function AdForm() {
       .join('\n');
 
     return [
-      `제목 / Title\n${data.title}`,
-      `본문 / Content\n${data.content}`,
-      `해시태그 / Hashtags\n${hashtags}`,
-      `이미지 제안 / Image Suggestions\n${imageSuggestions}`,
+      `${t('sectionTitle')}\n${data.title}`,
+      `${t('sectionContent')}\n${data.content}`,
+      `${t('sectionHashtags')}\n${hashtags}`,
+      `${t('sectionImageSuggestions')}\n${imageSuggestions}`,
     ].join('\n\n');
   }
 
@@ -228,7 +228,7 @@ export function AdForm() {
 
           <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
             <div className="flex items-center justify-between gap-2">
-              <h4 className="text-sm font-semibold text-muted-foreground">제목 / Title</h4>
+              <h4 className="text-sm font-semibold text-muted-foreground">{t('sectionTitle')}</h4>
               <button
                 type="button"
                 onClick={() => copyText('title', structuredOutput.title)}
@@ -242,7 +242,7 @@ export function AdForm() {
 
           <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
             <div className="flex items-center justify-between gap-2">
-              <h4 className="text-sm font-semibold text-muted-foreground">본문 / Content</h4>
+              <h4 className="text-sm font-semibold text-muted-foreground">{t('sectionContent')}</h4>
               <button
                 type="button"
                 onClick={() => copyText('content', structuredOutput.content)}
@@ -256,7 +256,7 @@ export function AdForm() {
 
           <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
             <div className="flex items-center justify-between gap-2">
-              <h4 className="text-sm font-semibold text-muted-foreground">해시태그 / Hashtags</h4>
+              <h4 className="text-sm font-semibold text-muted-foreground">{t('sectionHashtags')}</h4>
               <button
                 type="button"
                 onClick={() =>
@@ -290,7 +290,7 @@ export function AdForm() {
 
           <div className="space-y-3 rounded-md bg-background p-4 shadow-sm">
             <div className="flex items-center justify-between gap-2">
-              <h4 className="text-sm font-semibold text-muted-foreground">이미지 제안 / Image Suggestions</h4>
+              <h4 className="text-sm font-semibold text-muted-foreground">{t('sectionImageSuggestions')}</h4>
               <button
                 type="button"
                 onClick={() =>
