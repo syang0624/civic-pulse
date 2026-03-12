@@ -82,7 +82,8 @@ export async function PUT(request: Request) {
     .single();
 
   if (error && isColumnMissing(error.message)) {
-    const { election_type: _dropped, ...withoutElection } = result.data as Record<string, unknown>;
+    const { election_type: _unused, ...withoutElection } = result.data as Record<string, unknown>;
+    void _unused;
     const { data: retryData, error: retryError } = await supabase
       .from('profiles')
       .upsert({ id: user.id, ...withoutElection })
