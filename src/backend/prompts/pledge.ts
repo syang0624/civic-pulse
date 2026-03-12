@@ -35,7 +35,7 @@ export function buildPledgeUserPrompt(params: {
 }): string {
   const { focusAreas, numPledges, regionContext, issueContext } = params;
 
-  let prompt = `Generate exactly ${numPledges} campaign pledges (공약).
+  const prompt = `Generate exactly ${numPledges} campaign pledges (공약).
 
 FOCUS AREAS: ${focusAreas.join(', ')}
 ${regionContext ? `\nADDITIONAL REGIONAL CONTEXT: ${regionContext}` : ''}
