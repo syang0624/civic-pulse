@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/backend/lib/auth';
 import { createClient } from '@/backend/lib/supabase/server';
-import { generateWithClaude, parseJsonFromAI } from '@/backend/lib/claude';
+import { generateWithClaude, parseJsonFromAI, Type } from '@/backend/lib/claude';
 import { adGenerationSchema } from '@/backend/validators/generate';
 import { assembleContext, formatIssueContext } from '@/backend/services/context';
 import { buildAdSystemPrompt, buildAdUserPrompt } from '@/backend/prompts/ad';
@@ -13,6 +13,17 @@ interface StructuredAdOutput {
   hashtags: string[];
   image_suggestions: string[];
 }
+
+const AD_RESPONSE_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    title: { type: Type.STRING },
+    content: { type: Type.STRING },
+    hashtags: { type: Type.ARRAY, items: { type: Type.STRING } },
+    image_suggestions: { type: Type.ARRAY, items: { type: Type.STRING } },
+  },
+  required: ['title', 'content', 'hashtags', 'image_suggestions'],
+};
 
 export async function POST(request: NextRequest) {
   const user = await getAuthUser();
@@ -56,6 +67,7 @@ export async function POST(request: NextRequest) {
       prompt: userPrompt,
       maxTokens: 1024,
       temperature: 0.8,
+      responseSchema: AD_RESPONSE_SCHEMA,
     });
 
     const structured: StructuredAdOutput = parseJsonFromAI<StructuredAdOutput>(outputText) ?? {
