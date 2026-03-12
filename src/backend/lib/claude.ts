@@ -47,7 +47,7 @@ function isRateLimitError(message: string): boolean {
 export async function generateWithClaude({
   system,
   prompt,
-  maxTokens = 4096,
+  maxTokens = 16384,
   temperature = 0.7,
   responseSchema,
 }: ClaudeGenerationOptions): Promise<string> {
