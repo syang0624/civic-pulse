@@ -24,6 +24,7 @@ export async function GET() {
       name: user.email?.split('@')[0] ?? '',
       district_code: 'seoul',
       district_name: '',
+      election_type: 'local_mayor',
       party: '',
       tone: 'formal' as const,
       target_demo: ['youth'] as string[],
@@ -44,7 +45,11 @@ export async function GET() {
   }
 
   const { policy_positions, ...rest } = data;
-  const profile = { ...rest, positions: policy_positions ?? [] };
+  const profile = {
+    ...rest,
+    election_type: rest.election_type ?? 'local_mayor',
+    positions: policy_positions ?? [],
+  };
 
   return NextResponse.json(profile);
 }
