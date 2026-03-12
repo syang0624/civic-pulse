@@ -10,10 +10,9 @@ import { TrendingUp, TrendingDown, Minus, Newspaper } from 'lucide-react';
 
 interface IssueCardProps {
   issue: IssueDisplay;
-  index?: number;
 }
 
-export function IssueCard({ issue, index = 0 }: IssueCardProps) {
+export function IssueCard({ issue }: IssueCardProps) {
   const t = useTranslations('Dashboard');
   const tc = useTranslations('Categories');
 
@@ -36,8 +35,7 @@ export function IssueCard({ issue, index = 0 }: IssueCardProps) {
   return (
     <Link
       href={`/dashboard/${issue.id}`}
-      style={{ animationDelay: `${index * 60}ms` }}
-      className="group flex flex-col rounded-xl border bg-card opacity-0 animate-fade-in transition-shadow duration-200 hover:shadow-md overflow-hidden"
+      className="group flex flex-col rounded-xl border bg-card transition-shadow duration-200 hover:shadow-md overflow-hidden"
     >
       <div className="relative h-[120px] w-full shrink-0">
         <Image
