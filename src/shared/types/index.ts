@@ -92,6 +92,15 @@ export interface PolicyPosition {
   updated_at: string;
 }
 
+// --- Issue Source ---
+
+export interface IssueSource {
+  url: string;
+  name: string;
+  title: string;
+  published_at: string;
+}
+
 // --- Issue ---
 
 export interface Issue {
@@ -116,7 +125,6 @@ export interface Issue {
   created_at: string;
 }
 
-/** Locale-resolved issue (title/description picked by locale) */
 export interface IssueDisplay {
   id: string;
   title: string;
@@ -132,6 +140,7 @@ export interface IssueDisplay {
   first_seen: string;
   last_seen: string;
   translated: boolean;
+  sources: IssueSource[];
 }
 
 // --- Generation ---
