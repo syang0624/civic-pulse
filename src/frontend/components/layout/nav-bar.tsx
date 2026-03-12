@@ -1,7 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useLocale } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import {
   LayoutDashboard,
@@ -17,7 +16,7 @@ import { createClient } from '@/backend/lib/supabase/client';
 
 const navItems = [
   { href: '/dashboard', labelKey: 'dashboard' as const, icon: LayoutDashboard },
-  { href: '/generate/speech', labelKey: 'generate' as const, icon: PenTool },
+  { href: '/generate/speech', labelKey: 'speech' as const, icon: PenTool },
   { href: '/generate/ad', labelKey: 'ad' as const, icon: Share2 },
   { href: '/generate/pledge', labelKey: 'pledge' as const, icon: ScrollText },
   { href: '/profile', labelKey: 'profile' as const, icon: User },
@@ -25,7 +24,6 @@ const navItems = [
 
 export function NavBar() {
   const t = useTranslations('Nav');
-  const currentLocale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -60,11 +58,7 @@ export function NavBar() {
               >
                 <item.icon className="h-4 w-4" />
                 <span className="hidden sm:inline">
-                  {item.labelKey === 'pledge'
-                    ? currentLocale === 'ko'
-                      ? '공약'
-                      : 'Pledges'
-                    : t(item.labelKey)}
+                  {t(item.labelKey)}
                 </span>
               </Link>
             );
