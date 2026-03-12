@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server';
 import { getAuthUser } from '@/backend/lib/auth';
 import { generateWithClaude } from '@/backend/lib/claude';
 import { createClient } from '@/backend/lib/supabase/server';
+import { createAdminClient } from '@/backend/lib/supabase/admin';
 import { ELECTION_DISTRICTS } from '@/shared/constants';
-import type { IssueCategory, Trend, Urgency } from '@/shared/types';
+import { fetchDistrictNews } from '@/backend/lib/news-fetcher';
+import type { NewsArticle } from '@/backend/lib/news-fetcher';
+import type { IssueCategory, IssueSource, Trend, Urgency } from '@/shared/types';
 
 interface GeneratedIssue {
   title_ko: string;
@@ -15,6 +18,7 @@ interface GeneratedIssue {
   trend: Trend;
   sentiment: number;
   mention_count: number;
+  source_indices: number[];
 }
 
 const VALID_CATEGORIES: IssueCategory[] = [
@@ -54,6 +58,9 @@ function parseGeneratedIssues(rawText: string): GeneratedIssue[] {
       const trend = String(item.trend ?? '').trim() as Trend;
       const sentimentRaw = Number(item.sentiment ?? 50);
       const mentionCountRaw = Number(item.mention_count ?? 50);
+      const sourceIndices = Array.isArray(item.source_indices)
+        ? (item.source_indices as number[]).filter((n) => typeof n === 'number')
+        : [];
 
       return {
         title_ko: String(item.title_ko ?? '').trim(),
@@ -69,6 +76,7 @@ function parseGeneratedIssues(rawText: string): GeneratedIssue[] {
         mention_count: Number.isFinite(mentionCountRaw)
           ? Math.min(500, Math.max(10, Math.round(mentionCountRaw)))
           : 50,
+        source_indices: sourceIndices,
       };
     })
     .filter((issue) => issue.title_ko.length > 0)
@@ -87,6 +95,7 @@ function deduplicateByTitle(issues: GeneratedIssue[]): GeneratedIssue[] {
         ...existing,
         mention_count: existing.mention_count + issue.mention_count,
         sentiment: Math.round((existing.sentiment + issue.sentiment) / 2),
+        source_indices: [...new Set([...existing.source_indices, ...issue.source_indices])],
       });
       continue;
     }
@@ -97,13 +106,95 @@ function deduplicateByTitle(issues: GeneratedIssue[]): GeneratedIssue[] {
   return Array.from(deduped.values());
 }
 
-export async function POST() {
+function buildSources(sourceIndices: number[], articles: NewsArticle[]): IssueSource[] {
+  return sourceIndices
+    .map((i) => articles[i - 1])
+    .filter(Boolean)
+    .map((a) => ({
+      url: a.link,
+      name: a.sourceName || '뉴스',
+      title: a.title,
+      published_at: a.publishedAt,
+    }));
+}
+
+function buildPromptWithArticles(
+  articles: NewsArticle[],
+  regionName: string,
+  districtSuffix: string,
+): string {
+  const articleList = articles
+    .map(
+      (a, i) =>
+        `${i + 1}. "${a.title}" (${a.sourceName}, ${new Date(a.publishedAt).toLocaleDateString('ko-KR')})`,
+    )
+    .join('\n');
+
+  return `다음은 ${regionName}${districtSuffix} 관련 최근 실제 뉴스 기사 목록입니다:
+
+${articleList}
+
+위 뉴스 기사들을 바탕으로, 이 지역의 주요 이슈 최대 10개를 정리하세요.
+
+중요 규칙:
+1. 각 이슈의 제목(title_ko)은 반드시 해당 기사가 실제로 보도한 내용을 직접적으로 반영해야 합니다. 기사 내용을 재해석하거나 창의적으로 바꾸지 마세요.
+2. 설명(description_ko)은 기사가 실제로 보도한 사실만 요약하세요. 추측이나 해석을 추가하지 마세요.
+3. 관련 기사가 여러 개인 경우 하나의 이슈로 묶되, 제목은 핵심 사실을 정확히 반영해야 합니다.
+4. 기사와 무관한 이슈를 만들어내지 마세요.
+
+예시:
+- 기사: "서울시 증여세 신고 건수 전년 대비 30% 증가" → 제목: "증여세 신고 건수 급증" ✓
+- 기사: "서울시 증여세 신고 건수 전년 대비 30% 증가" → 제목: "새로운 나눔 문화 확산" ✗ (기사 내용과 다름)
+
+각 이슈에 대해 다음 필드를 포함하는 JSON 배열을 반환하세요:
+- title_ko: 이슈 제목 (한국어, 기사 내용을 직접 반영하는 간결한 헤드라인)
+- title_en: 이슈 제목 (영어 번역)
+- category: 다음 중 하나: education, housing, transport, safety, environment, economy, welfare, governance, healthcare, culture
+- description_ko: 2-3문장 설명 (한국어, 기사가 보도한 사실만 요약)
+- description_en: 2-3문장 설명 (영어 번역)
+- urgency: 다음 중 하나: high, medium, low
+- trend: 다음 중 하나: rising, stable, declining
+- sentiment: 0-100 숫자 (기사의 보도 논조. 0=매우 부정적 보도, 100=매우 긍정적 보도)
+- mention_count: 이 이슈와 관련된 기사 수
+- source_indices: 이 이슈의 출처 기사 번호 배열 (1부터 시작)
+
+JSON 배열만 반환하세요. 마크다운 코드 블록 없이.`;
+}
+
+function buildFallbackPrompt(regionName: string, districtSuffix: string): string {
+  return `${regionName}${districtSuffix} 지역의 현재 주요 이슈 10개를 생성하세요.
+
+중요 규칙:
+1. 각 이슈는 이 지역에서 실제로 논의되고 있을 법한 구체적이고 사실적인 주제여야 합니다.
+2. 추상적이거나 모호한 제목 대신, 구체적인 사안을 다루세요.
+3. 다양한 카테고리에 걸쳐 이슈를 분배하세요.
+
+각 이슈에 대해 다음 필드를 포함하는 JSON 배열을 반환하세요:
+- title_ko: 이슈 제목 (한국어, 간결한 뉴스 헤드라인 스타일)
+- title_en: 이슈 제목 (영어 번역)
+- category: 다음 중 하나: education, housing, transport, safety, environment, economy, welfare, governance, healthcare, culture
+- description_ko: 2-3문장 설명 (한국어)
+- description_en: 2-3문장 설명 (영어 번역)
+- urgency: 다음 중 하나: high, medium, low
+- trend: 다음 중 하나: rising, stable, declining
+- sentiment: 50
+- mention_count: 예상 언급 수 (10-500)
+- source_indices: []
+
+JSON 배열만 반환하세요. 마크다운 코드 블록 없이.`;
+}
+
+export async function POST(request: Request) {
   const user = await getAuthUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const { searchParams } = new URL(request.url);
+  const force = searchParams.get('force') === 'true';
+
   const supabase = await createClient();
+  const admin = createAdminClient();
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
@@ -123,19 +214,55 @@ export async function POST() {
   const regionName = ELECTION_DISTRICTS[districtCode]?.name ?? districtCode;
   const districtSuffix = districtName ? ` (${districtName})` : '';
   const nowIso = new Date().toISOString();
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
 
-  const system =
-    'You are a Korean local news analyst. Generate realistic, current local issues for a specific region in South Korea. These should be issues that a candidate running in the 전국동시지방선거 (nationwide local elections) would need to know about.';
+  if (force) {
+    await admin
+      .from('issues')
+      .delete()
+      .eq('region_code', districtCode)
+      .gte('first_seen', todayStart.toISOString());
+  } else {
+    const { count: todayCount } = await admin
+      .from('issues')
+      .select('id', { count: 'exact', head: true })
+      .eq('region_code', districtCode)
+      .gte('first_seen', todayStart.toISOString());
 
-  const prompt = `Generate exactly 10 current local issues for ${regionName}${districtSuffix}.\n\nFor each issue, provide a JSON array with these fields:\n- title_ko: Issue title in Korean (concise, news-headline style)\n- title_en: Issue title in English\n- category: One of: education, housing, transport, safety, environment, economy, welfare, governance, healthcare, culture\n- description_ko: 2-3 sentence description in Korean\n- description_en: 2-3 sentence description in English\n- urgency: One of: high, medium, low\n- trend: One of: rising, stable, declining\n- sentiment: Number 0-100 (0=very negative, 100=very positive public sentiment)\n- mention_count: Estimated number of recent mentions (10-500)\n\nMake the issues realistic, diverse across categories, and specific to the region. Include both ongoing issues and emerging ones.\n\nReturn ONLY a valid JSON array, no markdown code blocks, no explanation.`;
+    if (todayCount && todayCount >= 10) {
+      return NextResponse.json({
+        data: [],
+        inserted: 0,
+        updated: 0,
+        skipped: true,
+        message: 'Issues already crawled today for this district',
+      });
+    }
+  }
+
+  const articles = await fetchDistrictNews(
+    districtName || regionName,
+    regionName,
+  );
+
+  const hasRealNews = articles.length > 0;
+
+  const system = hasRealNews
+    ? 'You are a Korean local news analyst. Analyze real news articles and extract the key local issues for a specific region in South Korea. Focus on issues relevant to candidates running in 전국동시지방선거 (nationwide local elections).'
+    : 'You are a Korean local news analyst. Generate realistic, current local issues for a specific region in South Korea. These should be issues that a candidate running in the 전국동시지방선거 would need to know about.';
+
+  const prompt = hasRealNews
+    ? buildPromptWithArticles(articles, regionName, districtSuffix)
+    : buildFallbackPrompt(regionName, districtSuffix);
 
   let generatedIssues: GeneratedIssue[] = [];
   try {
     const rawResult = await generateWithClaude({
       system,
       prompt,
-      maxTokens: 4096,
-      temperature: 0.7,
+      maxTokens: 16384,
+      temperature: 0.4,
     });
     generatedIssues = deduplicateByTitle(parseGeneratedIssues(rawResult));
   } catch (error) {
@@ -154,7 +281,7 @@ export async function POST() {
   }
 
   const generatedTitles = generatedIssues.map((issue) => issue.title_ko);
-  const { data: existingIssues, error: existingError } = await supabase
+  const { data: existingIssues, error: existingError } = await admin
     .from('issues')
     .select('id, title_ko, mention_count')
     .eq('region_code', districtCode)
@@ -173,13 +300,17 @@ export async function POST() {
 
   for (const issue of generatedIssues) {
     const existing = existingByTitle.get(issue.title_ko.toLowerCase());
+    const sources = hasRealNews
+      ? buildSources(issue.source_indices, articles)
+      : [];
 
     if (existing) {
-      const { error: updateError } = await supabase
+      const { error: updateError } = await admin
         .from('issues')
         .update({
           last_seen: nowIso,
           mention_count: (existing.mention_count ?? 0) + issue.mention_count,
+          source_session: sources.length > 0 ? JSON.stringify(sources) : null,
         })
         .eq('id', existing.id);
 
@@ -208,7 +339,7 @@ export async function POST() {
       mention_count: issue.mention_count,
       first_seen: nowIso,
       last_seen: nowIso,
-      source_session: null,
+      source_session: sources.length > 0 ? JSON.stringify(sources) : null,
     });
   }
 
@@ -216,7 +347,7 @@ export async function POST() {
     return NextResponse.json({ data: [], inserted: 0, updated: updatedCount });
   }
 
-  const { data: insertedIssues, error: insertError } = await supabase
+  const { data: insertedIssues, error: insertError } = await admin
     .from('issues')
     .insert(issuesToInsert)
     .select('*');
@@ -229,5 +360,6 @@ export async function POST() {
     data: insertedIssues ?? [],
     inserted: insertedIssues?.length ?? 0,
     updated: updatedCount,
+    source_count: articles.length,
   });
 }
