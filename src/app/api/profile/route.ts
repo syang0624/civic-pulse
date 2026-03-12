@@ -3,6 +3,10 @@ import { getAuthUser } from '@/backend/lib/auth';
 import { createClient } from '@/backend/lib/supabase/server';
 import { profileUpdateSchema } from '@/backend/validators/profile';
 
+function isColumnMissing(errorMsg: string): boolean {
+  return errorMsg.includes('column') && errorMsg.includes('schema cache');
+}
+
 export async function GET() {
   const user = await getAuthUser();
   if (!user) {
@@ -24,7 +28,6 @@ export async function GET() {
       name: user.email?.split('@')[0] ?? '',
       district_code: 'seoul',
       district_name: '',
-      election_type: 'local_mayor',
       party: '',
       tone: 'formal' as const,
       target_demo: ['youth'] as string[],
@@ -71,11 +74,30 @@ export async function PUT(request: Request) {
   }
 
   const supabase = await createClient();
+
   const { data, error } = await supabase
     .from('profiles')
     .upsert({ id: user.id, ...result.data })
     .select()
     .single();
+
+  if (error && isColumnMissing(error.message)) {
+    const { election_type: _dropped, ...withoutElection } = result.data as Record<string, unknown>;
+    const { data: retryData, error: retryError } = await supabase
+      .from('profiles')
+      .upsert({ id: user.id, ...withoutElection })
+      .select()
+      .single();
+
+    if (retryError) {
+      return NextResponse.json({ error: retryError.message }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      ...retryData,
+      election_type: (result.data as Record<string, unknown>).election_type ?? 'local_mayor',
+    });
+  }
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
