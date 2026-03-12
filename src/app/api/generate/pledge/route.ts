@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/backend/lib/auth';
 import { createClient } from '@/backend/lib/supabase/server';
-import { generateWithClaude, parseJsonFromAI } from '@/backend/lib/claude';
+import { generateWithClaude, parseJsonFromAI, Type } from '@/backend/lib/claude';
 import { pledgeGenerationSchema } from '@/backend/validators/generate';
 import { assembleContext, formatIssueContext } from '@/backend/services/context';
 import {
@@ -22,6 +22,30 @@ interface StructuredPledge {
   priority_reason: string;
   estimated_budget: string;
 }
+
+const PLEDGE_RESPONSE_SCHEMA = {
+  type: Type.ARRAY,
+  items: {
+    type: Type.OBJECT,
+    properties: {
+      rank: { type: Type.INTEGER },
+      title: { type: Type.STRING },
+      category: { type: Type.STRING },
+      problem: { type: Type.STRING },
+      solution: { type: Type.STRING },
+      timeline: { type: Type.STRING },
+      expected_outcomes: { type: Type.ARRAY, items: { type: Type.STRING } },
+      talking_points: { type: Type.ARRAY, items: { type: Type.STRING } },
+      priority_reason: { type: Type.STRING },
+      estimated_budget: { type: Type.STRING },
+    },
+    required: [
+      'rank', 'title', 'category', 'problem', 'solution',
+      'timeline', 'expected_outcomes', 'talking_points',
+      'priority_reason', 'estimated_budget',
+    ],
+  },
+};
 
 export async function POST(request: NextRequest) {
   const user = await getAuthUser();
@@ -63,8 +87,9 @@ export async function POST(request: NextRequest) {
     const outputText = await generateWithClaude({
       system: systemPrompt,
       prompt: userPrompt,
-      maxTokens: 3000,
+      maxTokens: 4096,
       temperature: 0.7,
+      responseSchema: PLEDGE_RESPONSE_SCHEMA,
     });
 
     const structured: StructuredPledge[] = parseJsonFromAI<StructuredPledge[]>(outputText) ?? [];
