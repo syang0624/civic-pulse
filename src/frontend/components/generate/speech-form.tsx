@@ -40,11 +40,11 @@ export function SpeechForm() {
   const [copied, setCopied] = useState(false);
 
   const occasionLabels: Record<SpeechOccasion, string> = {
-    campaign_rally: currentLocale === 'ko' ? '유세 현장' : 'Campaign Rally',
-    debate: currentLocale === 'ko' ? '토론회' : 'Debate',
-    town_hall: currentLocale === 'ko' ? '주민 간담회' : 'Town Hall',
-    press_conference: currentLocale === 'ko' ? '기자 회견' : 'Press Conference',
-    online_video: currentLocale === 'ko' ? '온라인 영상' : 'Online Video',
+    campaign_rally: t('occasionRally'),
+    debate: t('occasionDebate'),
+    town_hall: t('occasionTownHall'),
+    press_conference: t('occasionPressConference'),
+    online_video: t('occasionOnline'),
   };
 
   const lengthLabels: Record<SpeechLength, string> = {

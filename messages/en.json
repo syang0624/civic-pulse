@@ -22,15 +22,11 @@
   "Nav": {
     "dashboard": "Dashboard",
     "generate": "Generate",
-    "documents": "Documents",
     "profile": "Profile",
     "logout": "Log out",
     "speech": "Speech",
-    "email": "Email",
     "ad": "Social Media",
-    "qa": "Q&A Prep",
-    "sentiment": "Sentiment",
-    "history": "History"
+    "pledge": "Pledges"
   },
   "Auth": {
     "login": "Log in",
@@ -86,12 +82,20 @@
     "addTalkingPoint": "Add talking point",
     "completeness": "Profile Completeness",
     "completeProfile": "A complete profile produces better results.",
-    "districtCode": "District Code",
-    "districtName": "District Name",
+    "districtCode": "Region",
+    "districtName": "District",
     "saveSuccess": "Profile saved successfully.",
     "saveError": "Failed to save.",
     "deleteConfirm": "Are you sure you want to delete this?",
-    "noPositions": "No positions added yet."
+    "noPositions": "No positions added yet.",
+    "electionType": "Election Type",
+    "electionMetropolitanMayor": "Governor",
+    "electionMetropolitanCouncil": "Metro Council",
+    "electionLocalMayor": "Local Mayor",
+    "electionLocalCouncil": "Local Council",
+    "electionSuperintendent": "Superintendent",
+    "selectSido": "Select region",
+    "selectDistrict": "Select district"
   },
   "Dashboard": {
     "title": "Issues in {district}",
@@ -126,7 +130,10 @@
     "draftSpeech": "Draft Speech",
     "draftReply": "Draft reply",
     "createPost": "Create post",
-    "relatedLegislation": "Related legislation"
+    "relatedLegislation": "Related legislation",
+    "refreshIssues": "Refresh Issues",
+    "crawling": "Crawling issues...",
+    "crawlError": "Failed to crawl issues:"
   },
   "Generate": {
     "title": "Content Generation",
@@ -142,14 +149,14 @@
     "topicPlaceholder": "Enter a topic or select an issue",
     "profileRequired": "Add policy positions to your profile for personalized content.",
     "Speech": {
-      "title": "Speech Writer",
-      "subtitle": "Generate a personalized speech using your district issues and policy positions.",
+      "title": "Campaign Speech Writer",
+      "subtitle": "Generate a personalized campaign speech using your district issues and policy positions.",
       "occasion": "Occasion",
-      "occasionCouncil": "Council session",
-      "occasionRally": "Campaign rally",
-      "occasionTownHall": "Town hall",
-      "occasionCommunity": "Community event",
-      "occasionOnline": "Online video",
+      "occasionRally": "Campaign Rally",
+      "occasionDebate": "Debate",
+      "occasionTownHall": "Town Hall",
+      "occasionPressConference": "Press Conference",
+      "occasionOnline": "Online Video",
       "length": "Length",
       "length3min": "3 min (~450 words)",
       "length5min": "5 min (~750 words)",
@@ -159,13 +166,6 @@
       "dataLight": "Story-driven",
       "dataMedium": "Some stats",
       "dataHeavy": "Data-rich"
-    },
-    "Email": {
-      "title": "Email Responder",
-      "subtitle": "Generate a personalized reply to constituent emails.",
-      "inboundEmail": "Inbound Email",
-      "inboundPlaceholder": "Paste the email you received from a constituent...",
-      "detectedTopic": "Detected topic"
     },
     "Ad": {
       "title": "Social Media Post",
@@ -177,45 +177,29 @@
       "goalPosition": "Position statement",
       "goalCTA": "Call to action",
       "charCount": "{count}/{limit} chars",
-      "hashtags": "Suggested hashtags"
+      "hashtags": "Suggested hashtags",
+      "sectionTitle": "Title",
+      "sectionContent": "Content",
+      "sectionHashtags": "Hashtags",
+      "sectionImageSuggestions": "Image Suggestions"
     },
-    "QA": {
-      "title": "Q&A Preparation",
-      "subtitle": "Coming soon — prepare answers for anticipated questions."
-    },
-    "Sentiment": {
-      "title": "Sentiment Summary",
-      "subtitle": "Coming soon — analyze public sentiment on key issues."
-    },
-    "History": {
-      "title": "Generation History",
-      "subtitle": "View and manage your previously generated content.",
-      "noHistory": "No generations yet. Try creating a speech, email, or social media post.",
-      "viewAll": "All",
-      "expand": "Show full text",
-      "collapse": "Show less",
-      "generatedAt": "Generated {date}"
+    "Pledge": {
+      "title": "Policy Pledge Generator",
+      "subtitle": "Generate prioritized campaign pledges based on local issues.",
+      "focusAreas": "Focus Areas",
+      "numPledges": "Number of Pledges",
+      "regionContext": "Additional Regional Context",
+      "regionContextPlaceholder": "Enter region-specific context or issues to emphasize...",
+      "generate": "Generate Pledges",
+      "generating": "Generating pledges...",
+      "problem": "Problem",
+      "solution": "Solution",
+      "timeline": "Timeline",
+      "outcomes": "Expected Outcomes",
+      "talkingPoints": "Talking Points",
+      "priorityReason": "Priority Reason",
+      "budget": "Estimated Budget"
     }
-  },
-  "Map": {
-    "title": "Issue Map",
-    "subtitle": "Explore civic issues by region across South Korea.",
-    "selectRegion": "Select a region",
-    "allRegions": "All Regions",
-    "issueCount": "{count} issues",
-    "noIssues": "No issues found for this region.",
-    "regionLabel": "Region",
-    "filterCategory": "Category",
-    "filterUrgency": "Urgency",
-    "allCategories": "All categories",
-    "allUrgency": "All levels",
-    "urgencyHigh": "High",
-    "urgencyMedium": "Medium",
-    "urgencyLow": "Low",
-    "mentions": "{count} mentions",
-    "lastSeen": "Last seen: {date}",
-    "viewDetails": "View Details",
-    "writeAbout": "Write about this"
   },
   "Regions": {
     "seoul": "Seoul",
@@ -235,33 +219,6 @@
     "gyeongnam": "Gyeongnam",
     "gangwon": "Gangwon",
     "jeju": "Jeju"
-  },
-  "Documents": {
-    "title": "Document Summarizer",
-    "subtitle": "Paste or upload a policy document and get an AI-powered structured summary.",
-    "pasteLabel": "Document Text",
-    "pastePlaceholder": "Paste the full text of a policy document, bill, or ordinance here...",
-    "titleLabel": "Document Title",
-    "titlePlaceholder": "e.g., 2026 Youth Housing Support Act",
-    "summarize": "Summarize",
-    "summarizing": "Analyzing document...",
-    "clearDocument": "Clear",
-    "summaryTitle": "Structured Summary",
-    "oneLine": "One-Line Summary",
-    "keyChanges": "Key Changes",
-    "whoAffected": "Who Is Affected",
-    "timeline": "Timeline",
-    "yourDistrict": "Impact on Your District",
-    "talkingPoints": "Talking Points",
-    "noDocuments": "No documents analyzed yet. Paste a document above to get started.",
-    "charCount": "{count} characters",
-    "minLength": "Document must be at least 100 characters.",
-    "history": "Recent Summaries",
-    "copyAll": "Copy Summary",
-    "copiedSummary": "Summary copied to clipboard",
-    "newDocument": "New Document",
-    "errorTooShort": "Document text is too short. Please paste at least 100 characters.",
-    "errorFailed": "Failed to summarize document. Please try again."
   },
   "Categories": {
     "education": "Education",

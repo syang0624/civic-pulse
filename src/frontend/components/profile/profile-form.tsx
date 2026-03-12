@@ -28,12 +28,12 @@ const DEMOGRAPHICS: Demographic[] = [
   'students',
 ];
 
-const electionTypeLabels: Record<ElectionType, Record<'ko' | 'en', string>> = {
-  metropolitan_mayor: { ko: '시/도지사', en: 'Governor' },
-  metropolitan_council: { ko: '시/도의회 의원', en: 'Metro Council' },
-  local_mayor: { ko: '구/시/군의장', en: 'Local Mayor' },
-  local_council: { ko: '구/시/군의회 의원', en: 'Local Council' },
-  superintendent: { ko: '교육감', en: 'Superintendent' },
+const ELECTION_TYPE_I18N_KEYS: Record<ElectionType, string> = {
+  metropolitan_mayor: 'electionMetropolitanMayor',
+  metropolitan_council: 'electionMetropolitanCouncil',
+  local_mayor: 'electionLocalMayor',
+  local_council: 'electionLocalCouncil',
+  superintendent: 'electionSuperintendent',
 };
 
 export function ProfileForm() {
@@ -372,7 +372,7 @@ export function ProfileForm() {
               }}
               className="w-full rounded-md border bg-background px-3 py-2 text-sm"
             >
-              <option value="">{languageKey === 'ko' ? '시/도 선택' : 'Select region'}</option>
+              <option value="">{t('selectSido')}</option>
               {SIDO_CODES.map((code) => {
                 const sido = ELECTION_DISTRICTS[code];
                 const label =
@@ -403,7 +403,7 @@ export function ProfileForm() {
                 disabled={!districtCode}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm disabled:opacity-50"
               >
-                <option value="">{languageKey === 'ko' ? '구/시/군 선택' : 'Select district'}</option>
+                <option value="">{t('selectDistrict')}</option>
                 {selectedDistricts.map((district) => (
                   <option key={district.name} value={district.name}>
                     {languageKey === 'ko' ? district.name : `${district.nameEn} (${district.name})`}
@@ -415,12 +415,11 @@ export function ProfileForm() {
 
           <div className="space-y-2 sm:col-span-2">
             <span className="text-sm font-medium">
-              {languageKey === 'ko' ? '출마 선거 유형' : 'Election type'}
+              {t('electionType')}
             </span>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {ELECTION_TYPES.map((type) => {
                 const isEnabled = enabledElectionTypes.includes(type);
-                const label = electionTypeLabels[type][languageKey];
 
                 return (
                   <label
@@ -438,7 +437,7 @@ export function ProfileForm() {
                       disabled={!isEnabled}
                       className="accent-primary"
                     />
-                    {label}
+                    {t(ELECTION_TYPE_I18N_KEYS[type])}
                   </label>
                 );
               })}

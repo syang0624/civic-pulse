@@ -22,40 +22,7 @@ export function PledgeForm() {
   const currentLocale = useLocale();
   const tCommon = useTranslations('Common');
   const tc = useTranslations('Categories');
-
-  const labels = currentLocale === 'ko' ? {
-    title: '정책 공약 생성',
-    subtitle: '지역 이슈를 기반으로 우선순위별 공약을 생성합니다.',
-    focusAreas: '중점 분야',
-    numPledges: '공약 수',
-    regionContext: '추가 지역 맥락',
-    regionContextPlaceholder: '지역 특수 상황이나 강조하고 싶은 이슈를 입력하세요...',
-    generate: '공약 생성',
-    generating: '공약 생성 중...',
-    problem: '문제점',
-    solution: '해결 방안',
-    timeline: '추진 일정',
-    outcomes: '기대 효과',
-    talkingPoints: '핵심 논점',
-    priorityReason: '우선순위 이유',
-    budget: '예상 예산',
-  } : {
-    title: 'Policy Pledge Generator',
-    subtitle: 'Generate prioritized campaign pledges based on local issues.',
-    focusAreas: 'Focus Areas',
-    numPledges: 'Number of Pledges',
-    regionContext: 'Additional Regional Context',
-    regionContextPlaceholder: 'Enter region-specific context or issues to emphasize...',
-    generate: 'Generate Pledges',
-    generating: 'Generating pledges...',
-    problem: 'Problem',
-    solution: 'Solution',
-    timeline: 'Timeline',
-    outcomes: 'Expected Outcomes',
-    talkingPoints: 'Talking Points',
-    priorityReason: 'Priority Reason',
-    budget: 'Estimated Budget',
-  };
+  const t = useTranslations('Generate.Pledge');
 
   const [loading, setLoading] = useState(false);
   const [focusAreas, setFocusAreas] = useState<IssueCategory[]>(['education', 'housing']);
@@ -129,15 +96,15 @@ export function PledgeForm() {
   function buildPledgeCopyText(pledge: PledgeItem): string {
     return [
       `#${pledge.rank} ${pledge.title}`,
-      `${labels.problem}: ${pledge.problem}`,
-      `${labels.solution}: ${pledge.solution}`,
-      `${labels.timeline}: ${pledge.timeline}`,
-      `${labels.outcomes}:`,
+      `${t('problem')}: ${pledge.problem}`,
+      `${t('solution')}: ${pledge.solution}`,
+      `${t('timeline')}: ${pledge.timeline}`,
+      `${t('outcomes')}:`,
       ...pledge.expected_outcomes.map((item) => `- ${item}`),
-      `${labels.talkingPoints}:`,
+      `${t('talkingPoints')}:`,
       ...pledge.talking_points.map((item) => `- ${item}`),
-      `${labels.priorityReason}: ${pledge.priority_reason}`,
-      `${labels.budget}: ${pledge.estimated_budget}`,
+      `${t('priorityReason')}: ${pledge.priority_reason}`,
+      `${t('budget')}: ${pledge.estimated_budget}`,
     ].join('\n');
   }
 
@@ -151,12 +118,12 @@ export function PledgeForm() {
     <div className="space-y-8">
       <section className="space-y-6">
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold">{labels.title}</h1>
-          <p className="text-muted-foreground">{labels.subtitle}</p>
+          <h1 className="text-2xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
 
         <div className="space-y-3">
-          <span className="text-sm font-medium">{labels.focusAreas}</span>
+          <span className="text-sm font-medium">{t('focusAreas')}</span>
           <div className="grid gap-2 sm:grid-cols-2">
             {ISSUE_CATEGORIES.map((category) => (
               <label key={category} className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm">
@@ -174,7 +141,7 @@ export function PledgeForm() {
         </div>
 
         <div className="space-y-2">
-          <span className="text-sm font-medium">{labels.numPledges}</span>
+          <span className="text-sm font-medium">{t('numPledges')}</span>
           <div className="flex gap-6">
             {[3, 5, 10].map((count) => (
               <label key={count} className="flex items-center gap-2 text-sm">
@@ -193,13 +160,13 @@ export function PledgeForm() {
 
         <div className="space-y-2">
           <label htmlFor="pledge-region-context" className="text-sm font-medium">
-            {labels.regionContext}
+            {t('regionContext')}
           </label>
           <textarea
             id="pledge-region-context"
             value={regionContext}
             onChange={(e) => setRegionContext(e.target.value)}
-            placeholder={labels.regionContextPlaceholder}
+            placeholder={t('regionContextPlaceholder')}
             rows={4}
             className="w-full rounded-md border bg-background px-3 py-2 text-sm"
           />
@@ -211,7 +178,7 @@ export function PledgeForm() {
           disabled={loading || focusAreas.length === 0}
           className="rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
         >
-          {loading ? labels.generating : labels.generate}
+          {loading ? t('generating') : t('generate')}
         </button>
       </section>
 
@@ -259,22 +226,22 @@ export function PledgeForm() {
 
                   <div className="space-y-4 border-t bg-background px-4 py-4 text-sm">
                     <div>
-                      <h3 className="mb-1 font-semibold">{labels.problem}</h3>
+                      <h3 className="mb-1 font-semibold">{t('problem')}</h3>
                       <p className="whitespace-pre-wrap text-muted-foreground">{pledge.problem}</p>
                     </div>
 
                     <div>
-                      <h3 className="mb-1 font-semibold">{labels.solution}</h3>
+                      <h3 className="mb-1 font-semibold">{t('solution')}</h3>
                       <p className="whitespace-pre-wrap text-muted-foreground">{pledge.solution}</p>
                     </div>
 
                     <div>
-                      <h3 className="mb-1 font-semibold">{labels.timeline}</h3>
+                      <h3 className="mb-1 font-semibold">{t('timeline')}</h3>
                       <p className="text-muted-foreground">{pledge.timeline}</p>
                     </div>
 
                     <div>
-                      <h3 className="mb-1 font-semibold">{labels.outcomes}</h3>
+                      <h3 className="mb-1 font-semibold">{t('outcomes')}</h3>
                       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
                         {pledge.expected_outcomes.map((item, i) => (
                           <li key={`${pledge.rank}-outcome-${i}`}>{item}</li>
@@ -283,7 +250,7 @@ export function PledgeForm() {
                     </div>
 
                     <div>
-                      <h3 className="mb-1 font-semibold">{labels.talkingPoints}</h3>
+                      <h3 className="mb-1 font-semibold">{t('talkingPoints')}</h3>
                       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
                         {pledge.talking_points.map((item, i) => (
                           <li key={`${pledge.rank}-talking-${i}`}>{item}</li>
@@ -292,12 +259,12 @@ export function PledgeForm() {
                     </div>
 
                     <div>
-                      <h3 className="mb-1 font-semibold">{labels.priorityReason}</h3>
+                      <h3 className="mb-1 font-semibold">{t('priorityReason')}</h3>
                       <p className="text-muted-foreground">{pledge.priority_reason}</p>
                     </div>
 
                     <div>
-                      <h3 className="mb-1 font-semibold">{labels.budget}</h3>
+                      <h3 className="mb-1 font-semibold">{t('budget')}</h3>
                       <p className="text-muted-foreground">{pledge.estimated_budget}</p>
                     </div>
                   </div>
