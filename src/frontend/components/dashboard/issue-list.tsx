@@ -105,8 +105,8 @@ export function IssueList() {
   return (
     <div className="space-y-6">
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {data.data.map((issue, idx) => (
-          <IssueCard key={issue.id} issue={mapIssueToDisplay(issue)} index={idx} />
+        {data.data.map((issue) => (
+          <IssueCard key={issue.id} issue={mapIssueToDisplay(issue)} />
         ))}
       </div>
 

@@ -25,6 +25,14 @@ const PLATFORMS: AdPlatform[] = [
   'blog_naver',
 ];
 
+const PLATFORM_LABELS: Record<AdPlatform, string> = {
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  x: 'X (Twitter)',
+  kakaostory: '카카오스토리',
+  blog_naver: '네이버 블로그',
+};
+
 const GOALS: AdGoal[] = [
   'awareness',
   'event_promotion',
@@ -167,7 +175,7 @@ export function AdForm() {
               >
                 {PLATFORMS.map((p) => (
                   <option key={p} value={p}>
-                    {p}
+                    {PLATFORM_LABELS[p]}
                   </option>
                 ))}
               </select>
