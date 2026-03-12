@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/backend/lib/auth';
 import { createClient } from '@/backend/lib/supabase/server';
-import { generateWithClaude } from '@/backend/lib/claude';
+import { generateWithClaude, parseJsonFromAI } from '@/backend/lib/claude';
 import { adGenerationSchema } from '@/backend/validators/generate';
 import { assembleContext, formatIssueContext } from '@/backend/services/context';
 import { buildAdSystemPrompt, buildAdUserPrompt } from '@/backend/prompts/ad';
@@ -58,21 +58,12 @@ export async function POST(request: NextRequest) {
       temperature: 0.8,
     });
 
-    let structured: StructuredAdOutput;
-    try {
-      const cleaned = outputText
-        .replace(/```json\n?/g, '')
-        .replace(/```\n?/g, '')
-        .trim();
-      structured = JSON.parse(cleaned) as StructuredAdOutput;
-    } catch {
-      structured = {
-        title: '',
-        content: outputText,
-        hashtags: [],
-        image_suggestions: [],
-      };
-    }
+    const structured: StructuredAdOutput = parseJsonFromAI<StructuredAdOutput>(outputText) ?? {
+      title: '',
+      content: outputText,
+      hashtags: [],
+      image_suggestions: [],
+    };
 
     const outputJson = JSON.stringify(structured);
 
