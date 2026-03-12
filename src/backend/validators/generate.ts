@@ -20,14 +20,6 @@ export const speechGenerationSchema = z.object({
   issue_id: z.string().uuid().optional(),
 });
 
-export const emailGenerationSchema = z.object({
-  inbound_email: z.string().min(1).max(10000),
-  tone: z
-    .enum(['formal', 'conversational', 'passionate', 'data_driven'])
-    .optional(),
-  issue_id: z.string().uuid().optional(),
-});
-
 export const adGenerationSchema = z.object({
   platform: z.enum([
     'instagram',
