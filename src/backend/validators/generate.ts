@@ -37,3 +37,9 @@ export const adGenerationSchema = z.object({
   ]),
   issue_id: z.uuid().optional(),
 });
+
+export const pledgeGenerationSchema = z.object({
+  focus_areas: z.array(z.string()).min(1).max(10),
+  num_pledges: z.union([z.literal(3), z.literal(5), z.literal(10)]),
+  region_context: z.string().optional(),
+});
