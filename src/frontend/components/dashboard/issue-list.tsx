@@ -7,7 +7,7 @@ import type { Issue, IssueDisplay, PaginatedResponse, Locale } from '@/shared/ty
 import { IssueCard } from './issue-card';
 import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 
-export function IssueList() {
+export function IssueList({ districtCode }: { districtCode?: string }) {
   const t = useTranslations('Dashboard');
   const tCommon = useTranslations('Common');
   const searchParams = useSearchParams();
@@ -24,8 +24,11 @@ export function IssueList() {
       setLoading(true);
       setError(false);
       try {
-        const query = searchParams.toString();
-        const res = await fetch(`/api/issues?${query}`);
+        const params = new URLSearchParams(searchParams.toString());
+        if (districtCode) {
+          params.set('region_code', districtCode);
+        }
+        const res = await fetch(`/api/issues?${params.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch');
         const json = await res.json();
         setData(json);
@@ -37,7 +40,7 @@ export function IssueList() {
     }
 
     fetchIssues();
-  }, [searchParams]);
+  }, [searchParams, districtCode]);
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams.toString());

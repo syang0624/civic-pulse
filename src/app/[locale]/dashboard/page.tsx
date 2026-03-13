@@ -43,7 +43,7 @@ export default async function DashboardPage({
         <ExecutiveSummary districtCode={districtCode} districtName={districtName} />
         <div className="space-y-6">
           <IssueFilters />
-          <IssueList />
+          <IssueList districtCode={districtCode} />
         </div>
       </main>
     </>
