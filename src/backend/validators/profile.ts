@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 export const profileUpdateSchema = z.object({
-  name: z.string().max(100),
-  district_code: z.string(),
-  district_name: z.string(),
+  name: z.string().max(100).optional(),
+  district_code: z.string().optional(),
+  district_name: z.string().optional(),
   election_type: z
     .enum([
       'metropolitan_mayor',
@@ -13,13 +13,13 @@ export const profileUpdateSchema = z.object({
       'superintendent',
     ])
     .optional(),
-  party: z.string(),
+  party: z.string().optional(),
   background: z.string().optional(),
-  tone: z.enum(['formal', 'conversational', 'passionate', 'data_driven']),
+  tone: z.enum(['formal', 'conversational', 'passionate', 'data_driven']).optional(),
   target_demo: z.array(
     z.enum(['youth', 'elderly', 'families', 'businessOwners', 'workers', 'students']),
-  ),
-  locale: z.enum(['ko', 'en']),
+  ).optional(),
+  locale: z.enum(['ko', 'en']).optional(),
 });
 
 export const positionCreateSchema = z.object({

@@ -21,6 +21,7 @@ export function OnboardingWizard() {
 
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<{
     electionType: ElectionType | '';
     sido: string;
@@ -47,6 +48,7 @@ export function OnboardingWizard() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setError(null);
     try {
       let districtName = '';
       if (data.sido) {
@@ -62,29 +64,32 @@ export function OnboardingWizard() {
         }
       }
 
+      const body: Record<string, unknown> = {
+        locale: locale,
+      };
+      if (data.sido) body.district_code = data.sido;
+      if (districtName) body.district_name = districtName;
+      if (data.electionType) body.election_type = data.electionType;
+      if (data.tone) body.tone = data.tone;
+      if (data.targetDemo.length > 0) body.target_demo = data.targetDemo;
+
       const res = await fetch('/api/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          district_code: data.sido,
-          district_name: districtName,
-          election_type: data.electionType,
-          tone: data.tone,
-          target_demo: data.targetDemo,
-          locale: locale,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
-        throw new Error('Failed to save profile');
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.error || t('saveFailed'));
       }
       
       router.push(`/${locale}/dashboard`);
       router.refresh();
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('saveFailed'));
       setIsSubmitting(false);
     }
   };
@@ -161,7 +166,12 @@ export function OnboardingWizard() {
       </div>
 
       <div className="mt-20 w-full max-w-lg space-y-8">
-        
+        {error && (
+          <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-6 py-4 text-sm font-medium text-destructive">
+            {error}
+          </div>
+        )}
+
         {step === 2 && (
           <div className="space-y-6">
             <h2 className="text-3xl font-bold">{t('step1Title')}</h2>

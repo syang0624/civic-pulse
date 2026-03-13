@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/backend/lib/supabase/server';
+import { createAdminClient } from '@/backend/lib/supabase/admin';
 import { redirect } from 'next/navigation';
 import { getLocale } from 'next-intl/server';
 
@@ -54,13 +55,18 @@ export async function signup(
     return { error: 'Password is required' };
   }
 
-  const { error } = await supabase.auth.signUp({
+  const admin = createAdminClient();
+  const { error: createError } = await admin.auth.admin.createUser({
     email,
     password,
+    email_confirm: true,
   });
 
-  if (error) {
-    return { error: error.message };
+  if (createError) {
+    if (createError.message.includes('already been registered')) {
+      return { error: 'Email already registered' };
+    }
+    return { error: createError.message };
   }
 
   const { error: signInError } = await supabase.auth.signInWithPassword({
