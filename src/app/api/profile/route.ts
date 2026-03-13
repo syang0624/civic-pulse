@@ -75,9 +75,13 @@ export async function PUT(request: Request) {
 
   const supabase = await createClient();
 
+  const cleanData = Object.fromEntries(
+    Object.entries(result.data).filter(([, v]) => v !== undefined),
+  );
+
   const { data, error } = await supabase
     .from('profiles')
-    .upsert({ id: user.id, ...result.data })
+    .upsert({ id: user.id, ...cleanData })
     .select()
     .single();
 
