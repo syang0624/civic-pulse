@@ -52,15 +52,15 @@ export function SignupForm() {
   const error = isPending ? null : clientError || state.error;
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-sm space-y-6 rounded-lg border p-6">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md space-y-8 rounded-2xl border bg-card p-10 shadow-lg animate-fade-in">
         <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-bold">Civic Pulse</h1>
-          <p className="text-sm text-muted-foreground">{t('signup')}</p>
+          <h1 className="text-3xl font-bold tracking-tight">Civic Pulse</h1>
+          <p className="text-muted-foreground">{t('signup')}</p>
         </div>
 
         {error && (
-          <div className="rounded-md bg-destructive/10 p-3 text-center text-sm text-destructive">
+          <div className="rounded-xl bg-destructive/10 p-4 text-center text-sm text-destructive">
             {error}
           </div>
         )}
@@ -69,7 +69,7 @@ export function SignupForm() {
           action={formAction}
           onSubmit={handleSubmit}
           noValidate
-          className="space-y-4"
+          className="space-y-6"
         >
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
@@ -80,7 +80,7 @@ export function SignupForm() {
               name="email"
               type="email"
               autoComplete="email"
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="w-full rounded-xl border bg-background/50 px-4 py-3 text-sm shadow-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none"
               placeholder="name@example.com"
             />
           </div>
@@ -94,7 +94,7 @@ export function SignupForm() {
               name="password"
               type="password"
               autoComplete="new-password"
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="w-full rounded-xl border bg-background/50 px-4 py-3 text-sm shadow-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none"
             />
           </div>
 
@@ -107,14 +107,14 @@ export function SignupForm() {
               name="confirmPassword"
               type="password"
               autoComplete="new-password"
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="w-full rounded-xl border bg-background/50 px-4 py-3 text-sm shadow-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={isPending}
-            className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] hover:bg-primary/90 disabled:opacity-50"
           >
             {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
             {isPending ? t('signingUp') : t('signup')}
@@ -125,7 +125,7 @@ export function SignupForm() {
           {t('hasAccount')}{' '}
           <Link
             href="/login"
-            className="font-medium text-primary hover:underline"
+            className="font-medium text-primary hover:underline underline-offset-4"
           >
             {t('loginLink')}
           </Link>
