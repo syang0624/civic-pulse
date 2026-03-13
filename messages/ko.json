@@ -50,6 +50,25 @@
     "demoAccounts": "데모 계정",
     "clickToFill": "클릭하면 자동 입력됩니다"
   },
+  "Onboarding": {
+    "welcomeTitle": "Civic Pulse에 오신 것을 환영합니다",
+    "welcomeDesc": "AI 기반 선거 전략 파트너와 함께 승리를 준비하세요.",
+    "start": "시작하기",
+    "step1Title": "어떤 선거에 출마하시나요?",
+    "step2Title": "출마 지역을 선택해 주세요",
+    "step3Title": "선호하는 소통 스타일은?",
+    "step4Title": "주요 타겟 유권자를 선택해 주세요",
+    "maxSelection": "최대 {count}개 선택 가능",
+    "next": "다음",
+    "complete": "프로필 설정 완료!",
+    "completing": "설정 중...",
+    "selectSido": "시/도 선택",
+    "selectDistrict": "구/시/군 선택",
+    "formalDesc": "공식적이고 품격 있는 표현",
+    "conversationalDesc": "친근하고 따뜻한 톤",
+    "passionateDesc": "강한 의지와 감정 전달",
+    "dataDrivenDesc": "수치와 근거 중심"
+  },
   "Profile": {
     "title": "프로필 설정",
     "subtitle": "AI가 맞춤 콘텐츠를 생성하기 위해 프로필 정보를 입력해주세요.",
@@ -129,7 +148,14 @@
     "crawling": "이슈 수집 중...",
     "crawlError": "이슈 수집 실패:",
     "sources": "출처",
-    "sourcesMethodology": "Google 뉴스에서 실시간으로 수집한 기사를 AI가 분석하여 지역 이슈를 도출합니다."
+    "sourcesMethodology": "Google 뉴스에서 실시간으로 수집한 기사를 AI가 분석하여 지역 이슈를 도출합니다.",
+    "summaryTotalIssues": "수집된 이슈",
+    "summaryLast30Days": "최근 30일",
+    "summaryUrgencyDist": "긴급도 분포",
+    "summaryTopCategories": "주요 카테고리",
+    "summaryTrending": "이슈 분석",
+    "summaryNoIssues": "아직 수집된 이슈가 없습니다. 이슈 새로고침을 눌러 최신 이슈를 수집하세요.",
+    "summaryTrendText": "현재 {district}에서는 {top_category} 관련 이슈가 가장 활발하며, {high_urgency_count}건의 긴급 이슈가 있습니다."
   },
   "Generate": {
     "title": "콘텐츠 생성",

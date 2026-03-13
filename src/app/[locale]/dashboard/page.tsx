@@ -6,6 +6,7 @@ import { createClient } from '@/backend/lib/supabase/server';
 import { IssueFilters } from '@/frontend/components/dashboard/issue-filters';
 import { IssueList } from '@/frontend/components/dashboard/issue-list';
 import { RefreshIssuesButton } from '@/frontend/components/dashboard/refresh-issues-button';
+import { ExecutiveSummary } from '@/frontend/components/dashboard/executive-summary';
 
 export default async function DashboardPage({
   params,
@@ -17,16 +18,20 @@ export default async function DashboardPage({
 
   const user = await getAuthUser();
   let districtName = '';
+  let districtCode = '';
 
   if (user) {
     const supabase = await createClient();
     const { data } = await supabase
       .from('profiles')
-      .select('district_name')
+      .select('district_name, district_code')
       .eq('id', user.id)
       .single();
     if (data?.district_name) {
       districtName = data.district_name;
+    }
+    if (data?.district_code) {
+      districtCode = data.district_code;
     }
   }
 
@@ -35,6 +40,7 @@ export default async function DashboardPage({
       <NavBar />
       <main className="mx-auto max-w-6xl space-y-10 px-4 py-10">
         <DashboardHeader districtName={districtName} />
+        <ExecutiveSummary districtCode={districtCode} districtName={districtName} />
         <div className="space-y-6">
           <IssueFilters />
           <IssueList />
