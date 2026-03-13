@@ -51,27 +51,6 @@ export function SignupForm() {
 
   const error = isPending ? null : clientError || state.error;
 
-  if (state.success) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="w-full max-w-sm space-y-6 rounded-lg border p-6">
-          <div className="space-y-2 text-center">
-            <h1 className="text-2xl font-bold">Civic Pulse</h1>
-          </div>
-          <div className="rounded-md bg-green-50 p-3 text-center text-sm text-green-700 dark:bg-green-950 dark:text-green-300">
-            {t('signupSuccess')}
-          </div>
-          <Link
-            href="/login"
-            className="block w-full rounded-md bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            {t('loginLink')}
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-sm space-y-6 rounded-lg border p-6">

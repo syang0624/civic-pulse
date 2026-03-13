@@ -63,5 +63,15 @@ export async function signup(
     return { error: error.message };
   }
 
-  return { error: null, success: true };
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (signInError) {
+    return { error: signInError.message };
+  }
+
+  const locale = await getLocale();
+  redirect(`/${locale}/onboarding`);
 }
