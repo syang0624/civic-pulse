@@ -24,10 +24,10 @@ function SpeechContent() {
   const t = useTranslations('Generate.Speech');
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-8">
-      <div className="mb-8 space-y-2">
-        <h1 className="text-2xl font-bold">{t('title')}</h1>
-        <p className="text-muted-foreground">{t('subtitle')}</p>
+    <main className="mx-auto max-w-4xl space-y-10 px-4 py-10">
+      <div className="flex flex-col gap-3">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl text-foreground">{t('title')}</h1>
+        <p className="text-lg text-muted-foreground/80 max-w-2xl leading-relaxed">{t('subtitle')}</p>
       </div>
       <Suspense>
         <SpeechForm />

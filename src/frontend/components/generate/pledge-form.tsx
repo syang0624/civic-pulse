@@ -117,11 +117,6 @@ export function PledgeForm() {
   return (
     <div className="space-y-10 animate-fade-in">
       <section className="space-y-8 rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">{t('title')}</h1>
-          <p className="text-lg text-muted-foreground/80">{t('subtitle')}</p>
-        </div>
-
         <div className="space-y-4">
           <span className="block text-sm font-semibold tracking-wide text-foreground">{t('focusAreas')}</span>
           <div className="flex flex-wrap gap-3">
