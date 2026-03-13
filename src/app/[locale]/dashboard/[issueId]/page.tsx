@@ -165,7 +165,7 @@ function IssueDetailContent({ issue, locale }: { issue: Issue; locale: string })
           </div>
 
           {description && (
-            <div className="rounded-lg border bg-card p-6">
+            <div className="rounded-2xl border bg-card p-6 shadow-sm">
               <p className="whitespace-pre-wrap leading-relaxed text-foreground/90">
                 {description}
               </p>
@@ -187,7 +187,7 @@ function IssueDetailContent({ issue, locale }: { issue: Issue; locale: string })
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-start gap-3 rounded-lg border p-3 text-sm transition-colors hover:bg-muted/50"
+                    className="flex items-start gap-3 rounded-xl border p-3 text-sm transition-colors hover:bg-muted/50"
                   >
                     <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                     <div className="min-w-0">
@@ -211,19 +211,19 @@ function IssueDetailContent({ issue, locale }: { issue: Issue; locale: string })
         </div>
 
         <aside className="space-y-6">
-          <div className="rounded-lg border bg-card p-5">
+          <div className="rounded-2xl border bg-card p-5 shadow-sm">
             <h3 className="mb-4 text-sm font-semibold">{t('writeAbout')}</h3>
             <div className="grid gap-3">
               <Link
                 href={`/${locale}/generate/speech?issueId=${issue.id}`}
-                className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                className="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 <Mic className="h-4 w-4" />
                 {t('draftSpeech')}
               </Link>
               <Link
                 href={`/${locale}/generate/ad?issueId=${issue.id}`}
-                className="flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+                className="flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
               >
                 <Share2 className="h-4 w-4" />
                 {t('createPost')}

@@ -23,12 +23,12 @@ function ProfileContent() {
   const t = useTranslations('Profile');
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-2xl font-bold">{t('title')}</h1>
-      <p className="mt-2 text-muted-foreground">{t('subtitle')}</p>
-      <div className="mt-6">
-        <ProfileForm />
+    <main className="mx-auto max-w-6xl space-y-10 px-4 py-10">
+      <div className="flex flex-col gap-3">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl text-foreground">{t('title')}</h1>
+        <p className="text-lg text-muted-foreground/80 max-w-2xl leading-relaxed">{t('subtitle')}</p>
       </div>
+      <ProfileForm />
     </main>
   );
 }
