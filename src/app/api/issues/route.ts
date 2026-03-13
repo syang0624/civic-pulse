@@ -31,13 +31,16 @@ export async function GET(request: NextRequest) {
   if (regionCode) query = query.eq('region_code', regionCode);
   if (q) query = query.or(`title_ko.ilike.%${q}%,title_en.ilike.%${q}%`);
 
-  const sortMap: Record<string, { column: string; ascending: boolean }> = {
-    recent: { column: 'last_seen', ascending: false },
-    mentions: { column: 'mention_count', ascending: false },
-    urgency: { column: 'urgency', ascending: true },
+  const sortMap: Record<string, { column: string; ascending: boolean; secondary?: { column: string; ascending: boolean } }> = {
+    recent:   { column: 'last_seen',      ascending: false, secondary: { column: 'urgency',       ascending: true  } },
+    mentions: { column: 'mention_count',   ascending: false, secondary: { column: 'last_seen',     ascending: false } },
+    urgency:  { column: 'urgency',         ascending: true,  secondary: { column: 'mention_count', ascending: false } },
   };
-  const { column, ascending } = sortMap[sort] ?? sortMap.recent;
+  const { column, ascending, secondary } = sortMap[sort] ?? sortMap.recent;
   query = query.order(column, { ascending });
+  if (secondary) {
+    query = query.order(secondary.column, { ascending: secondary.ascending });
+  }
 
   const from = (page - 1) * limit;
   query = query.range(from, from + limit - 1);
