@@ -67,7 +67,8 @@
     "formalDesc": "공식적이고 품격 있는 표현",
     "conversationalDesc": "친근하고 따뜻한 톤",
     "passionateDesc": "강한 의지와 감정 전달",
-    "dataDrivenDesc": "수치와 근거 중심"
+    "dataDrivenDesc": "수치와 근거 중심",
+    "saveFailed": "프로필 저장에 실패했습니다. 다시 시도해 주세요."
   },
   "Profile": {
     "title": "프로필 설정",

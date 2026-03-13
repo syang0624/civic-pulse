@@ -67,7 +67,8 @@
     "formalDesc": "Official and dignified expression",
     "conversationalDesc": "Friendly and warm tone",
     "passionateDesc": "Strong will and emotional delivery",
-    "dataDrivenDesc": "Focus on numbers and evidence"
+    "dataDrivenDesc": "Focus on numbers and evidence",
+    "saveFailed": "Failed to save profile. Please try again."
   },
   "Profile": {
     "title": "Profile Settings",

@@ -41,6 +41,7 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute =
     routeSegments[0] === 'login' ||
     routeSegments[0] === 'signup' ||
+    routeSegments[0] === 'onboarding' ||
     pathname.startsWith('/api/auth');
 
   if (!user && !isPublicRoute) {
