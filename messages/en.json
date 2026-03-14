@@ -77,6 +77,7 @@
     "passwordRequired": "Password is required",
     "passwordMin": "Password must be at least 8 characters",
     "passwordMismatch": "Passwords do not match",
+    "adminEmailBlocked": "This email prefix is reserved for administrators and cannot be used for signup.",
     "signupSuccess": "Account created successfully! Please log in.",
     "loggingIn": "Logging in...",
     "signingUp": "Signing up...",

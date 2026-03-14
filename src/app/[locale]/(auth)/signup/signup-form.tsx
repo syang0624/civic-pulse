@@ -37,6 +37,12 @@ export function SignupForm() {
       return;
     }
 
+    if (email.trim().toLowerCase().startsWith('admin@')) {
+      e.preventDefault();
+      setClientError(t('adminEmailBlocked'));
+      return;
+    }
+
     if (!password || password.length < 8) {
       e.preventDefault();
       setClientError(t('passwordMin'));

@@ -55,6 +55,11 @@ export async function signup(
     return { error: 'Password is required' };
   }
 
+  // Block admin@ prefix emails from signup — admin accounts are pre-provisioned only
+  if (email.trim().toLowerCase().startsWith('admin@')) {
+    return { error: 'This email prefix is reserved and cannot be used for signup.' };
+  }
+
   const admin = createAdminClient();
   const { error: createError } = await admin.auth.admin.createUser({
     email,

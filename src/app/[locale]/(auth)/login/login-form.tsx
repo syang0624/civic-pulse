@@ -9,7 +9,6 @@ import type { AuthState } from '../actions';
 import { LocaleToggle } from '@/frontend/components/layout/locale-toggle';
 
 const DEMO_ACCOUNTS = [
-  { email: 'demo@civicpulse.kr', password: 'Test1234' },
   { email: 'test@civicpulse.kr', password: 'Test1234' },
 ];
 
