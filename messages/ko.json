@@ -213,7 +213,8 @@
       "dataLevel": "데이터 수준",
       "dataLight": "스토리 중심",
       "dataMedium": "적절한 통계",
-      "dataHeavy": "데이터 중심"
+      "dataHeavy": "데이터 중심",
+      "openTeleprompter": "텔레프롬프터로 열기"
     },
     "Ad": {
       "title": "SNS 콘텐츠 생성",
@@ -314,7 +315,21 @@
     "exportDocx": "DOCX 내보내기",
     "exporting": "내보내는 중...",
     "totalItems": "총 {count}개",
-    "page": "{page} / {total} 페이지"
+    "page": "{page} / {total} 페이지",
+    "teleprompter": "텔레프롬프터"
+  },
+  "Teleprompter": {
+    "title": "텔레프롬프터",
+    "play": "재생",
+    "pause": "일시정지",
+    "speed": "속도",
+    "fontSize": "글자 크기",
+    "mirror": "거울 모드",
+    "exit": "나가기",
+    "fullscreen": "전체 화면",
+    "controls": "컨트롤",
+    "progress": "진행률",
+    "shortcutsHint": "Space: 재생/정지 | 위/아래: 속도 | +/-: 크기 | M: 거울 | F: 전체화면 | Esc: 나가기"
   },
   "Regions": {
     "seoul": "서울",

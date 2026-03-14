@@ -213,7 +213,8 @@
       "dataLevel": "Data Level",
       "dataLight": "Story-driven",
       "dataMedium": "Some stats",
-      "dataHeavy": "Data-rich"
+      "dataHeavy": "Data-rich",
+      "openTeleprompter": "Open in Teleprompter"
     },
     "Ad": {
       "title": "Social Media Post",
@@ -314,7 +315,21 @@
     "exportDocx": "Export DOCX",
     "exporting": "Exporting...",
     "totalItems": "{count} items",
-    "page": "Page {page} of {total}"
+    "page": "Page {page} of {total}",
+    "teleprompter": "Teleprompter"
+  },
+  "Teleprompter": {
+    "title": "Teleprompter",
+    "play": "Play",
+    "pause": "Pause",
+    "speed": "Speed",
+    "fontSize": "Font Size",
+    "mirror": "Mirror",
+    "exit": "Exit",
+    "fullscreen": "Fullscreen",
+    "controls": "Controls",
+    "progress": "Progress",
+    "shortcutsHint": "Space: Play/Pause | Up/Down: Speed | +/-: Size | M: Mirror | F: Fullscreen | Esc: Exit"
   },
   "Regions": {
     "seoul": "Seoul",

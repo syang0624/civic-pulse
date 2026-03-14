@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import { Monitor } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 import type {
   SpeechOccasion,
   SpeechLength,
@@ -40,6 +42,7 @@ export function SpeechForm() {
   const [length, setLength] = useState<SpeechLength>('3min');
   const [dataLevel, setDataLevel] = useState<DataLevel>('medium');
   const [output, setOutput] = useState<string | null>(null);
+  const [generationId, setGenerationId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -109,13 +112,16 @@ export function SpeechForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        const msg = data?.error ?? tCommon('error');
+        const msg = (data as { error?: string })?.error ?? tCommon('error');
         throw new Error(
           msg.includes('AI_RATE_LIMIT') ? tCommon('rateLimitError') : msg,
         );
       }
 
-      setOutput((data as Generation).output_text);
+      const generation = data as Generation;
+
+      setOutput(generation.output_text);
+      setGenerationId(generation.id);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : tCommon('error'),
@@ -270,13 +276,24 @@ export function SpeechForm() {
         <section className="space-y-4 rounded-2xl border bg-card p-6 shadow-sm animate-slide-up sm:p-8">
           <div className="flex items-center justify-between border-b pb-4">
             <h3 className="text-lg font-bold">{tCommon('showOriginal')}</h3>
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="rounded-full bg-muted/50 px-4 py-1.5 text-sm font-medium text-foreground transition-all hover:bg-primary hover:text-primary-foreground"
-            >
-              {copied ? tCommon('copiedToClipboard') : tCommon('copy')}
-            </button>
+            <div className="flex items-center gap-2">
+              {generationId && (
+                <Link
+                  href={`/teleprompter/${generationId}`}
+                  className="flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary transition-all hover:bg-primary/20"
+                >
+                  <Monitor className="h-4 w-4" />
+                  {t('openTeleprompter')}
+                </Link>
+              )}
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="rounded-full bg-muted/50 px-4 py-1.5 text-sm font-medium text-foreground transition-all hover:bg-primary hover:text-primary-foreground"
+              >
+                {copied ? tCommon('copiedToClipboard') : tCommon('copy')}
+              </button>
+            </div>
           </div>
           <div className="prose prose-stone max-w-none whitespace-pre-wrap rounded-xl bg-muted/30 p-6 text-base leading-loose text-foreground/90 dark:prose-invert">
             {output}

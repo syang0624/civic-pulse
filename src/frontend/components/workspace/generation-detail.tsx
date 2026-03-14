@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import {
   ArrowLeft,
   Check,
@@ -9,6 +10,7 @@ import {
   Download,
   FileText,
   Loader2,
+  Monitor,
   Pencil,
   Save,
   Trash2,
@@ -89,6 +91,7 @@ export function GenerationDetail({
   const t = useTranslations('Workspace');
   const tCommon = useTranslations('Common');
   const locale = useLocale() as Locale;
+  const router = useRouter();
   const [isEditMode, setIsEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -272,6 +275,16 @@ export function GenerationDetail({
                   <Pencil className="h-4 w-4" />
                   {t('editContent')}
                 </button>
+                {generation.tool === 'speech' && (
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/teleprompter/${generation.id}`)}
+                    className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
+                  >
+                    <Monitor className="h-4 w-4" />
+                    {t('teleprompter')}
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => handleExport('pdf')}
