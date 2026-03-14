@@ -109,17 +109,19 @@ export function SpeechForm() {
         }),
       });
 
-      const data = await res.json() as Generation;
+      const data = await res.json();
 
       if (!res.ok) {
-        const msg = (data as any)?.error ?? tCommon('error');
+        const msg = (data as { error?: string })?.error ?? tCommon('error');
         throw new Error(
           msg.includes('AI_RATE_LIMIT') ? tCommon('rateLimitError') : msg,
         );
       }
 
-      setOutput(data.output_text);
-      setGenerationId(data.id);
+      const generation = data as Generation;
+
+      setOutput(generation.output_text);
+      setGenerationId(generation.id);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : tCommon('error'),

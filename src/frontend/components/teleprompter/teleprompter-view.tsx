@@ -47,34 +47,34 @@ export function TeleprompterView({ content, title }: TeleprompterViewProps) {
     }
   }, []);
 
-  const animate = useCallback((timestamp: number) => {
-    if (!isPlaying || !containerRef.current) return;
-
-    if (!lastScrollTimeRef.current) lastScrollTimeRef.current = timestamp;
-    
-    const elapsed = timestamp - lastScrollTimeRef.current;
-    
-    const pixelsPerSecond = speed * 30; 
-    const pixelsToScroll = (pixelsPerSecond * elapsed) / 1000;
-    
-    if (pixelsToScroll >= 1) {
-      containerRef.current.scrollTop += pixelsToScroll;
-      lastScrollTimeRef.current = timestamp;
-    }
-
-    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-    if (Math.abs(scrollHeight - clientHeight - scrollTop) < 5) {
-      setIsPlaying(false);
-      return;
-    }
-
-    animationRef.current = requestAnimationFrame(animate);
-  }, [isPlaying, speed]);
-
   useEffect(() => {
+    function tick(timestamp: number) {
+      if (!containerRef.current) return;
+
+      if (!lastScrollTimeRef.current) lastScrollTimeRef.current = timestamp;
+
+      const elapsed = timestamp - lastScrollTimeRef.current;
+
+      const pixelsPerSecond = speed * 30;
+      const pixelsToScroll = (pixelsPerSecond * elapsed) / 1000;
+
+      if (pixelsToScroll >= 1) {
+        containerRef.current.scrollTop += pixelsToScroll;
+        lastScrollTimeRef.current = timestamp;
+      }
+
+      const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+      if (Math.abs(scrollHeight - clientHeight - scrollTop) < 5) {
+        setIsPlaying(false);
+        return;
+      }
+
+      animationRef.current = requestAnimationFrame(tick);
+    }
+
     if (isPlaying) {
       lastScrollTimeRef.current = 0;
-      animationRef.current = requestAnimationFrame(animate);
+      animationRef.current = requestAnimationFrame(tick);
     } else {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -86,7 +86,7 @@ export function TeleprompterView({ content, title }: TeleprompterViewProps) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isPlaying, animate]);
+  }, [isPlaying, speed]);
 
   const handleScroll = useCallback(() => {
     if (!containerRef.current) return;
