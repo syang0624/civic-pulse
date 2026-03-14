@@ -310,6 +310,9 @@
     "platform": "Platform",
     "goal": "Goal",
     "focusAreas": "Focus Areas",
+    "exportPdf": "Export PDF",
+    "exportDocx": "Export DOCX",
+    "exporting": "Exporting...",
     "totalItems": "{count} items",
     "page": "Page {page} of {total}"
   },

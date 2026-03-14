@@ -1,17 +1,20 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import {
   ArrowLeft,
   Check,
   Clipboard,
+  Download,
+  FileText,
+  Loader2,
   Pencil,
   Save,
   Trash2,
   X,
 } from 'lucide-react';
-import type { Generation } from '@/shared/types';
+import type { Generation, Locale } from '@/shared/types';
 
 interface GenerationDetailProps {
   generation: Generation;
@@ -39,6 +42,36 @@ interface PledgeStructured {
   estimated_budget?: string;
 }
 
+interface StrategyStructured {
+  issue_summary?: string;
+  key_voter_groups?: Array<{
+    group?: string;
+    concern?: string;
+    approach?: string;
+  }>;
+  messaging_angle?: {
+    core_message?: string;
+    framing?: string;
+    tone_recommendation?: string;
+  };
+  campaign_actions?: Array<{
+    action?: string;
+    timeline?: string;
+    expected_impact?: string;
+  }>;
+  talking_points?: string[];
+  social_media_strategy?: {
+    key_hashtags?: string[];
+    content_themes?: string[];
+    recommended_platforms?: string[];
+    post_frequency?: string;
+  };
+  risks_and_counters?: Array<{
+    risk?: string;
+    counter?: string;
+  }>;
+}
+
 function parseJson<T>(input: string): T | null {
   try {
     return JSON.parse(input) as T;
@@ -55,9 +88,11 @@ export function GenerationDetail({
 }: GenerationDetailProps) {
   const t = useTranslations('Workspace');
   const tCommon = useTranslations('Common');
+  const locale = useLocale() as Locale;
   const [isEditMode, setIsEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [exporting, setExporting] = useState<'pdf' | 'docx' | null>(null);
   const [draft, setDraft] = useState(generation.edited_text ?? generation.output_text);
 
   const content = generation.edited_text?.trim() || generation.output_text;
@@ -75,10 +110,81 @@ export function GenerationDetail({
     return Array.isArray(parsed) ? parsed : [];
   }, [content, generation.tool]);
 
+  const strategyStructured = useMemo(
+    () => (generation.tool === 'strategy' ? parseJson<StrategyStructured>(content) : null),
+    [content, generation.tool],
+  );
+
+  const toolLabel = useMemo(() => {
+    if (generation.tool === 'speech') return t('tabs.speech');
+    if (generation.tool === 'ad') return t('tabs.ad');
+    if (generation.tool === 'strategy') return t('tabs.strategy');
+    return t('tabs.pledge');
+  }, [generation.tool, t]);
+
+  function buildCopyContent() {
+    if (generation.tool === 'ad' && adStructured) {
+      const hashtags = (adStructured.hashtags ?? []).map((tag) => `#${tag}`).join(' ');
+      const images = (adStructured.image_suggestions ?? []).map((item, idx) => `${idx + 1}. ${item}`).join('\n');
+      return [
+        `Title\n${adStructured.title ?? '-'}`,
+        `Content\n${adStructured.content ?? '-'}`,
+        `Hashtags\n${hashtags || '-'}`,
+        `Image Suggestions\n${images || '-'}`,
+      ].join('\n\n');
+    }
+
+    if (generation.tool === 'pledge' && pledges.length > 0) {
+      return pledges
+        .map((pledge, index) => [
+          `${pledge.rank ?? index + 1}. ${pledge.title ?? 'Pledge'}`,
+          `Problem: ${pledge.problem ?? '-'}`,
+          `Solution: ${pledge.solution ?? '-'}`,
+          `Timeline: ${pledge.timeline ?? '-'}`,
+          `Budget: ${pledge.estimated_budget ?? '-'}`,
+        ].join('\n'))
+        .join('\n\n');
+    }
+
+    if (generation.tool === 'strategy' && strategyStructured) {
+      return [
+        `Issue Summary\n${strategyStructured.issue_summary ?? '-'}`,
+        `Key Voter Groups\n${(strategyStructured.key_voter_groups ?? []).map((group, index) => `${index + 1}. ${group.group ?? '-'} | ${group.concern ?? '-'} | ${group.approach ?? '-'}`).join('\n') || '-'}`,
+        `Messaging Angle\n- Core Message: ${strategyStructured.messaging_angle?.core_message ?? '-'}\n- Framing: ${strategyStructured.messaging_angle?.framing ?? '-'}\n- Tone Recommendation: ${strategyStructured.messaging_angle?.tone_recommendation ?? '-'}`,
+        `Campaign Actions\n${(strategyStructured.campaign_actions ?? []).map((action, index) => `${index + 1}. ${action.action ?? '-'} (${action.timeline ?? '-'}) - ${action.expected_impact ?? '-'}`).join('\n') || '-'}`,
+        `Talking Points\n${(strategyStructured.talking_points ?? []).map((point, index) => `${index + 1}. ${point}`).join('\n') || '-'}`,
+        `Social Media Strategy\n- Hashtags: ${(strategyStructured.social_media_strategy?.key_hashtags ?? []).join(', ') || '-'}\n- Themes: ${(strategyStructured.social_media_strategy?.content_themes ?? []).join(', ') || '-'}\n- Platforms: ${(strategyStructured.social_media_strategy?.recommended_platforms ?? []).join(', ') || '-'}\n- Frequency: ${strategyStructured.social_media_strategy?.post_frequency ?? '-'}`,
+        `Risks & Counters\n${(strategyStructured.risks_and_counters ?? []).map((item, index) => `${index + 1}. ${item.risk ?? '-'} -> ${item.counter ?? '-'}`).join('\n') || '-'}`,
+      ].join('\n\n');
+    }
+
+    return content;
+  }
+
   async function handleCopy() {
-    await navigator.clipboard.writeText(content);
+    await navigator.clipboard.writeText(buildCopyContent());
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleExport(format: 'pdf' | 'docx') {
+    setExporting(format);
+    try {
+      const res = await fetch(`/api/export/${generation.id}?format=${format}`, {
+        headers: { 'x-locale': locale },
+      });
+      if (!res.ok) throw new Error('Export failed');
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${toolLabel.toLowerCase().replace(/\s+/g, '-')}-${generation.id.slice(0, 8)}.${format === 'pdf' ? 'pdf' : 'docx'}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(null);
+    }
   }
 
   async function handleSave() {
@@ -165,6 +271,24 @@ export function GenerationDetail({
                 >
                   <Pencil className="h-4 w-4" />
                   {t('editContent')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleExport('pdf')}
+                  disabled={exporting !== null}
+                  className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
+                >
+                  {exporting === 'pdf' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                  {exporting === 'pdf' ? t('exporting') : t('exportPdf')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleExport('docx')}
+                  disabled={exporting !== null}
+                  className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
+                >
+                  {exporting === 'docx' ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
+                  {exporting === 'docx' ? t('exporting') : t('exportDocx')}
                 </button>
               </div>
             )}
