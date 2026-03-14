@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Search, Newspaper, Brain, ListChecks, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/frontend/lib/utils';
 
@@ -10,18 +11,19 @@ interface CrawlProgressOverlayProps {
 }
 
 type Stage = {
-  label: string;
+  labelKey: string;
   icon: React.ElementType;
 };
 
 const STAGES: Stage[] = [
-  { label: '뉴스 검색 중...', icon: Search },
-  { label: '기사 수집 중...', icon: Newspaper },
-  { label: 'AI 분석 중...', icon: Brain },
-  { label: '이슈 정리 중...', icon: ListChecks },
+  { labelKey: 'crawlStage1', icon: Search },
+  { labelKey: 'crawlStage2', icon: Newspaper },
+  { labelKey: 'crawlStage3', icon: Brain },
+  { labelKey: 'crawlStage4', icon: ListChecks },
 ];
 
 export function CrawlProgressOverlay({ isActive, onComplete }: CrawlProgressOverlayProps) {
+  const t = useTranslations('Dashboard');
   const [progress, setProgress] = useState(0);
   const [currentStageIndex, setCurrentStageIndex] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -50,7 +52,7 @@ export function CrawlProgressOverlay({ isActive, onComplete }: CrawlProgressOver
   if (!isVisible) return null;
 
   const CurrentIcon = isCompleted ? CheckCircle2 : STAGES[currentStageIndex].icon;
-  const currentLabel = isCompleted ? '완료!' : STAGES[currentStageIndex].label;
+  const currentLabel = isCompleted ? t('crawlComplete') : t(STAGES[currentStageIndex].labelKey);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
@@ -69,7 +71,7 @@ export function CrawlProgressOverlay({ isActive, onComplete }: CrawlProgressOver
         </h3>
         
         <p className="mb-6 text-sm text-muted-foreground">
-          잠시만 기다려주세요. 실시간으로 분석 중입니다.
+          {t('crawlWaiting')}
         </p>
 
         <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">

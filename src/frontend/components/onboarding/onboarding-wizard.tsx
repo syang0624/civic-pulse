@@ -7,12 +7,14 @@ import { cn } from '@/frontend/lib/utils';
 import { ELECTION_DISTRICTS, SIDO_CODES, ELECTION_TYPES } from '@/shared/constants';
 import type { ElectionType } from '@/shared/constants';
 import type { Tone, Demographic } from '@/shared/types';
-import { Loader2, Check } from 'lucide-react';
+import { Loader2, Check, ChevronLeft } from 'lucide-react';
+import { LocaleToggle } from '@/frontend/components/layout/locale-toggle';
 
 const TOTAL_STEPS = 5;
 
 export function OnboardingWizard() {
   const t = useTranslations('Onboarding');
+  const tCommon = useTranslations('Common');
   const tProfile = useTranslations('Profile');
   const tRegions = useTranslations('Regions');
   const tDemographics = useTranslations('Demographics');
@@ -96,35 +98,14 @@ export function OnboardingWizard() {
 
   const handleSelection = <K extends keyof typeof data>(field: K, value: typeof data[K]) => {
     setData((prev) => ({ ...prev, [field]: value }));
-    
-    if (field !== 'targetDemo' && field !== 'sido' && field !== 'district') {
-      setTimeout(() => {
-        handleNext();
-      }, 300);
-    }
   };
 
   const handleSidoSelect = (sidoCode: string) => {
-    setData((prev) => ({ ...prev, sido: sidoCode, district: '' })); 
-    
-    const isMetropolitan = [
-      'metropolitan_mayor',
-      'metropolitan_council',
-      'superintendent'
-    ].includes(data.electionType);
-
-    if (isMetropolitan) {
-      setTimeout(() => {
-        handleNext();
-      }, 300);
-    }
+    setData((prev) => ({ ...prev, sido: sidoCode, district: '' }));
   };
 
   const handleDistrictSelect = (districtName: string) => {
     setData((prev) => ({ ...prev, district: districtName }));
-    setTimeout(() => {
-      handleNext();
-    }, 300);
   };
 
   const toggleDemographic = (demo: Demographic) => {
@@ -142,6 +123,9 @@ export function OnboardingWizard() {
   if (step === 1) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
+        <div className="fixed top-4 right-4 z-10">
+          <LocaleToggle />
+        </div>
         <div className="mb-8 max-w-md space-y-4">
           <h1 className="text-4xl font-bold tracking-tight">{t('welcomeTitle')}</h1>
           <p className="text-xl text-muted-foreground">{t('welcomeDesc')}</p>
@@ -163,6 +147,17 @@ export function OnboardingWizard() {
           className="h-full bg-primary transition-all duration-500 ease-out"
           style={{ width: `${progress}%` }}
         />
+      </div>
+
+      <div className="fixed top-4 left-4 right-4 z-10 flex items-center justify-between">
+        <button
+          onClick={() => setStep(step - 1)}
+          className="flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          {tCommon('back')}
+        </button>
+        <LocaleToggle />
       </div>
 
       <div className="mt-20 w-full max-w-lg space-y-8">
