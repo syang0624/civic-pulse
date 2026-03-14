@@ -82,7 +82,7 @@ export function OnboardingWizard() {
       const resolvedParty = data.party === 'custom'
         ? data.partyCustom.trim()
         : data.party === 'independent'
-          ? ''
+          ? '무소속'
           : data.party;
 
       const body: Record<string, unknown> = {
