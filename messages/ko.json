@@ -177,7 +177,9 @@
     "crawlStage3": "AI 분석 중...",
     "crawlStage4": "이슈 정리 중...",
     "crawlComplete": "완료!",
-    "crawlWaiting": "잠시만 기다려주세요. 실시간으로 분석 중입니다."
+    "crawlWaiting": "잠시만 기다려주세요. 실시간으로 분석 중입니다.",
+    "lastUpdated": "마지막 업데이트: {time}",
+    "autoUpdateEnabled": "매일 자동 업데이트"
   },
   "Generate": {
     "title": "콘텐츠 생성",

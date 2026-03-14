@@ -39,7 +39,7 @@ export default async function DashboardPage({
     <>
       <NavBar />
       <main className="mx-auto max-w-6xl space-y-10 px-4 py-10">
-        <DashboardHeader districtName={districtName} />
+        <DashboardHeader districtName={districtName} districtCode={districtCode} />
         <ExecutiveSummary districtCode={districtCode} districtName={districtName} />
         <div className="space-y-6">
           <IssueFilters />
@@ -50,7 +50,7 @@ export default async function DashboardPage({
   );
 }
 
-function DashboardHeader({ districtName }: { districtName: string }) {
+function DashboardHeader({ districtName, districtCode }: { districtName: string; districtCode: string }) {
   const t = useTranslations('Dashboard');
   
   return (
@@ -65,7 +65,7 @@ function DashboardHeader({ districtName }: { districtName: string }) {
           {t('subtitle')}
         </p>
       </div>
-      <RefreshIssuesButton />
+      <RefreshIssuesButton districtCode={districtCode} />
     </div>
   );
 }

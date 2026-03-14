@@ -177,7 +177,9 @@
     "crawlStage3": "AI analyzing...",
     "crawlStage4": "Organizing issues...",
     "crawlComplete": "Complete!",
-    "crawlWaiting": "Please wait. Analyzing in real-time."
+    "crawlWaiting": "Please wait. Analyzing in real-time.",
+    "lastUpdated": "Last updated: {time}",
+    "autoUpdateEnabled": "Daily auto-update"
   },
   "Generate": {
     "title": "Content Generation",
