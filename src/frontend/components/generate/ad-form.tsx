@@ -25,12 +25,12 @@ const PLATFORMS: AdPlatform[] = [
   'blog_naver',
 ];
 
-const PLATFORM_LABELS: Record<AdPlatform, string> = {
-  instagram: 'Instagram',
-  facebook: 'Facebook',
-  x: 'X (Twitter)',
-  kakaostory: '카카오스토리',
-  blog_naver: '네이버 블로그',
+const PLATFORM_LABEL_KEYS: Record<AdPlatform, string> = {
+  instagram: 'platformInstagram',
+  facebook: 'platformFacebook',
+  x: 'platformX',
+  kakaostory: 'platformKakaoStory',
+  blog_naver: 'platformNaverBlog',
 };
 
 const GOALS: AdGoal[] = [
@@ -175,7 +175,7 @@ export function AdForm() {
               >
                 {PLATFORMS.map((p) => (
                   <option key={p} value={p}>
-                    {PLATFORM_LABELS[p]}
+                    {t(PLATFORM_LABEL_KEYS[p])}
                   </option>
                 ))}
               </select>

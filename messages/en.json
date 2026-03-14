@@ -156,7 +156,14 @@
     "summaryTopCategories": "Top Categories",
     "summaryTrending": "Analysis",
     "summaryNoIssues": "No issues collected yet. Refresh issues to collect the latest data.",
-    "summaryTrendText": "Currently in {district}, {top_category} issues are most active, with {high_urgency_count} high urgency issues."
+    "summaryTrendText": "Currently in {district}, {top_category} issues are most active, with {high_urgency_count} high urgency issues.",
+    "pagination": "Page {page} of {total}",
+    "crawlStage1": "Searching news...",
+    "crawlStage2": "Collecting articles...",
+    "crawlStage3": "AI analyzing...",
+    "crawlStage4": "Organizing issues...",
+    "crawlComplete": "Complete!",
+    "crawlWaiting": "Please wait. Analyzing in real-time."
   },
   "Generate": {
     "title": "Content Generation",
@@ -199,6 +206,11 @@
       "goalEvent": "Event promotion",
       "goalPosition": "Position statement",
       "goalCTA": "Call to action",
+      "platformInstagram": "Instagram",
+      "platformFacebook": "Facebook",
+      "platformX": "X (Twitter)",
+      "platformKakaoStory": "KakaoStory",
+      "platformNaverBlog": "Naver Blog",
       "charCount": "{count}/{limit} chars",
       "hashtags": "Suggested hashtags",
       "sectionTitle": "Title",

@@ -6,6 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { Loader2 } from 'lucide-react';
 import { login } from '../actions';
 import type { AuthState } from '../actions';
+import { LocaleToggle } from '@/frontend/components/layout/locale-toggle';
 
 const DEMO_ACCOUNTS = [
   { email: 'demo@civicpulse.kr', password: 'Test1234' },
@@ -53,6 +54,9 @@ export function LoginForm({ signupSuccess }: { signupSuccess: boolean }) {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="fixed top-4 right-4 z-10">
+        <LocaleToggle />
+      </div>
       <div className="w-full max-w-md space-y-8 rounded-2xl border bg-card p-10 shadow-lg animate-fade-in">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold tracking-tight">Civic Pulse</h1>

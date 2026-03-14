@@ -156,7 +156,14 @@
     "summaryTopCategories": "주요 카테고리",
     "summaryTrending": "이슈 분석",
     "summaryNoIssues": "아직 수집된 이슈가 없습니다. 이슈 새로고침을 눌러 최신 이슈를 수집하세요.",
-    "summaryTrendText": "현재 {district}에서는 {top_category} 관련 이슈가 가장 활발하며, {high_urgency_count}건의 긴급 이슈가 있습니다."
+    "summaryTrendText": "현재 {district}에서는 {top_category} 관련 이슈가 가장 활발하며, {high_urgency_count}건의 긴급 이슈가 있습니다.",
+    "pagination": "{page} / {total} 페이지",
+    "crawlStage1": "뉴스 검색 중...",
+    "crawlStage2": "기사 수집 중...",
+    "crawlStage3": "AI 분석 중...",
+    "crawlStage4": "이슈 정리 중...",
+    "crawlComplete": "완료!",
+    "crawlWaiting": "잠시만 기다려주세요. 실시간으로 분석 중입니다."
   },
   "Generate": {
     "title": "콘텐츠 생성",
@@ -199,6 +206,11 @@
       "goalEvent": "행사 홍보",
       "goalPosition": "입장 표명",
       "goalCTA": "행동 촉구",
+      "platformInstagram": "Instagram",
+      "platformFacebook": "Facebook",
+      "platformX": "X (Twitter)",
+      "platformKakaoStory": "카카오스토리",
+      "platformNaverBlog": "네이버 블로그",
       "charCount": "{count}/{limit}자",
       "hashtags": "해시태그 제안",
       "sectionTitle": "제목",

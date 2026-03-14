@@ -124,7 +124,7 @@ export function IssueList({ districtCode }: { districtCode?: string }) {
           </button>
           
           <span className="text-sm font-medium text-muted-foreground/80">
-            Page {data.pagination.page} of {data.pagination.total_pages}
+            {t('pagination', { page: data.pagination.page, total: data.pagination.total_pages })}
           </span>
 
           <button
