@@ -9,7 +9,6 @@ type AdminUser = {
   email: string | null;
   name: string | null;
   district_name: string | null;
-  election_type: string | null;
   party: string | null;
   created_at: string;
   generations_count: number;
@@ -144,7 +143,6 @@ export function UserList() {
                 <th className="px-4 py-3 font-medium">{t('userName')}</th>
                 <th className="px-4 py-3 font-medium">{t('userEmail')}</th>
                 <th className="px-4 py-3 font-medium">{t('userRegion')}</th>
-                <th className="px-4 py-3 font-medium">{t('userElection')}</th>
                 <th className="px-4 py-3 font-medium">{t('userParty')}</th>
                 <th className="px-4 py-3 font-medium">{t('userSignup')}</th>
                 <th className="px-4 py-3 text-right font-medium">{t('userGenerations')}</th>
@@ -154,7 +152,7 @@ export function UserList() {
             <tbody>
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
                     {t('noUsers')}
                   </td>
                 </tr>
@@ -164,7 +162,6 @@ export function UserList() {
                     <td className="px-4 py-3 font-medium">{user.name ?? '-'}</td>
                     <td className="px-4 py-3 text-muted-foreground">{user.email ?? '-'}</td>
                     <td className="px-4 py-3">{user.district_name ?? '-'}</td>
-                    <td className="px-4 py-3">{user.election_type ?? '-'}</td>
                     <td className="px-4 py-3">{user.party ?? '-'}</td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {new Date(user.created_at).toLocaleDateString()}
