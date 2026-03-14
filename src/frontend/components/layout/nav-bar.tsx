@@ -15,6 +15,7 @@ import {
 import { LocaleToggle } from './locale-toggle';
 import { cn } from '@/frontend/lib/utils';
 import { createClient } from '@/backend/lib/supabase/client';
+import { AdminNavItem } from './admin-nav-item';
 
 const navItems = [
   { href: '/dashboard', labelKey: 'dashboard' as const, icon: LayoutDashboard },
@@ -71,6 +72,7 @@ export function NavBar() {
               </Link>
             );
           })}
+          <AdminNavItem />
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
