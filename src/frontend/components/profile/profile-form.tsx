@@ -104,7 +104,17 @@ export function ProfileForm() {
           const data = await res.json();
           setName(data.name);
           setDistrictCode(data.district_code);
-          setDistrictName(data.district_name);
+          let resolvedDistrictName = data.district_name ?? '';
+          if (data.district_code && resolvedDistrictName) {
+            const sido = ELECTION_DISTRICTS[data.district_code];
+            if (sido) {
+              const matchedDistrict = sido.districts.find((d) => resolvedDistrictName.includes(d.name));
+              if (matchedDistrict) {
+                resolvedDistrictName = matchedDistrict.name;
+              }
+            }
+          }
+          setDistrictName(resolvedDistrictName);
           setElectionType((data.election_type ?? 'local_mayor') as ElectionType);
           setParty(data.party);
           setBackground(data.background ?? '');
@@ -130,13 +140,21 @@ export function ProfileForm() {
     setSaving(true);
     setFeedback(null);
     try {
+      let fullDistrictName = districtName;
+      if (districtCode && districtName) {
+        const sido = ELECTION_DISTRICTS[districtCode];
+        if (sido && sido.districts.some((d) => d.name === districtName)) {
+          fullDistrictName = `${sido.name} ${districtName}`;
+        }
+      }
+
       const res = await fetch('/api/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
           district_code: districtCode,
-          district_name: districtName,
+          district_name: fullDistrictName,
           election_type: electionType,
           party,
           background: background || undefined,
