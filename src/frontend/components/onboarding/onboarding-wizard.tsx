@@ -10,7 +10,12 @@ import type { Tone, Demographic } from '@/shared/types';
 import { Loader2, Check, ChevronLeft } from 'lucide-react';
 import { LocaleToggle } from '@/frontend/components/layout/locale-toggle';
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 8;
+
+const COMMON_PARTIES = [
+  { id: 'independent', labelKey: 'partyIndependent' },
+  { id: 'custom', labelKey: 'partyCustom' },
+] as const;
 
 export function OnboardingWizard() {
   const t = useTranslations('Onboarding');
@@ -25,12 +30,20 @@ export function OnboardingWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<{
+    name: string;
+    party: string;
+    partyCustom: string;
+    background: string;
     electionType: ElectionType | '';
     sido: string;
     district: string;
     tone: Tone | '';
     targetDemo: Demographic[];
   }>({
+    name: '',
+    party: '',
+    partyCustom: '',
+    background: '',
     electionType: '',
     sido: '',
     district: '',
@@ -66,9 +79,18 @@ export function OnboardingWizard() {
         }
       }
 
+      const resolvedParty = data.party === 'custom'
+        ? data.partyCustom.trim()
+        : data.party === 'independent'
+          ? ''
+          : data.party;
+
       const body: Record<string, unknown> = {
         locale: locale,
       };
+      if (data.name.trim()) body.name = data.name.trim();
+      if (resolvedParty) body.party = resolvedParty;
+      if (data.background.trim()) body.background = data.background.trim();
       if (data.sido) body.district_code = data.sido;
       if (districtName) body.district_name = districtName;
       if (data.electionType) body.election_type = data.electionType;
@@ -120,6 +142,24 @@ export function OnboardingWizard() {
     });
   };
 
+  const isNextDisabled = (): boolean => {
+    switch (step) {
+      case 2: return !data.name.trim();
+      case 3: return !data.electionType;
+      case 4: {
+        if (!data.sido) return true;
+        if (['local_mayor', 'local_council'].includes(data.electionType) && !data.district) return true;
+        return false;
+      }
+      case 5: return !data.party || (data.party === 'custom' && !data.partyCustom.trim());
+      case 6: return false; // background is optional
+      case 7: return !data.tone;
+      case 8: return data.targetDemo.length === 0;
+      default: return false;
+    }
+  };
+
+  // Step 1: Welcome
   if (step === 1) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
@@ -167,7 +207,26 @@ export function OnboardingWizard() {
           </div>
         )}
 
+        {/* Step 2: Name */}
         {step === 2 && (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold">{t('stepNameTitle')}</h2>
+              <p className="text-lg text-muted-foreground">{t('stepNameDesc')}</p>
+            </div>
+            <input
+              type="text"
+              value={data.name}
+              onChange={(e) => handleSelection('name', e.target.value)}
+              placeholder={t('stepNamePlaceholder')}
+              autoFocus
+              className="w-full rounded-xl border-2 border-border bg-background p-4 text-lg outline-none transition-colors focus:border-primary placeholder:text-muted-foreground/50"
+            />
+          </div>
+        )}
+
+        {/* Step 3: Election Type */}
+        {step === 3 && (
           <div className="space-y-6">
             <h2 className="text-3xl font-bold">{t('step1Title')}</h2>
             <div className="space-y-3">
@@ -196,7 +255,8 @@ export function OnboardingWizard() {
           </div>
         )}
 
-        {step === 3 && (
+        {/* Step 4: Region */}
+        {step === 4 && (
           <div className="space-y-6">
             <h2 className="text-3xl font-bold">{t('step2Title')}</h2>
             <div className="space-y-4">
@@ -238,7 +298,65 @@ export function OnboardingWizard() {
           </div>
         )}
 
-        {step === 4 && (
+        {/* Step 5: Party */}
+        {step === 5 && (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold">{t('stepPartyTitle')}</h2>
+              <p className="text-lg text-muted-foreground">{t('stepPartyDesc')}</p>
+            </div>
+            <div className="space-y-3">
+              {COMMON_PARTIES.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => handleSelection('party', p.id)}
+                  className={cn(
+                    "flex w-full items-center justify-between rounded-xl border-2 p-5 text-left transition-all duration-200",
+                    data.party === p.id
+                      ? "border-primary bg-primary/5 text-primary"
+                      : "border-border bg-card hover:border-primary/30"
+                  )}
+                >
+                  <span className="text-lg font-medium">{t(p.labelKey)}</span>
+                  {data.party === p.id && <Check className="h-5 w-5" />}
+                </button>
+              ))}
+            </div>
+            {data.party === 'custom' && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                <input
+                  type="text"
+                  value={data.partyCustom}
+                  onChange={(e) => handleSelection('partyCustom', e.target.value)}
+                  placeholder={t('stepPartyPlaceholder')}
+                  autoFocus
+                  className="w-full rounded-xl border-2 border-border bg-background p-4 text-lg outline-none transition-colors focus:border-primary placeholder:text-muted-foreground/50"
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Step 6: Background / Campaign Context */}
+        {step === 6 && (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold">{t('stepBackgroundTitle')}</h2>
+              <p className="text-lg text-muted-foreground">{t('stepBackgroundDesc')}</p>
+            </div>
+            <textarea
+              value={data.background}
+              onChange={(e) => handleSelection('background', e.target.value)}
+              placeholder={t('stepBackgroundPlaceholder')}
+              rows={5}
+              className="w-full resize-none rounded-xl border-2 border-border bg-background p-4 text-lg leading-relaxed outline-none transition-colors focus:border-primary placeholder:text-muted-foreground/50"
+            />
+            <p className="text-sm text-muted-foreground/70">{t('stepBackgroundHint')}</p>
+          </div>
+        )}
+
+        {/* Step 7: Tone */}
+        {step === 7 && (
           <div className="space-y-6">
             <h2 className="text-3xl font-bold">{t('step3Title')}</h2>
             <div className="space-y-3">
@@ -269,7 +387,8 @@ export function OnboardingWizard() {
           </div>
         )}
 
-        {step === 5 && (
+        {/* Step 8: Target Demographics */}
+        {step === 8 && (
           <div className="space-y-6">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold">{t('step4Title')}</h2>
@@ -309,24 +428,30 @@ export function OnboardingWizard() {
       </div>
 
       <div className="fixed bottom-0 left-0 w-full border-t bg-background/80 p-4 backdrop-blur-md">
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-lg flex gap-3">
+          {step === 6 && !data.background.trim() && (
+            <button
+              onClick={handleNext}
+              className="flex-1 rounded-xl border-2 border-border py-4 text-lg font-bold text-muted-foreground transition-all hover:bg-accent active:scale-95"
+            >
+              {t('skip')}
+            </button>
+          )}
           <button
             onClick={step === TOTAL_STEPS ? handleSubmit : handleNext}
-            disabled={
-              (step === 2 && !data.electionType) ||
-              (step === 3 && !data.sido) ||
-              (step === 3 && ['local_mayor', 'local_council'].includes(data.electionType) && !data.district) ||
-              (step === 4 && !data.tone) ||
-              (step === 5 && data.targetDemo.length === 0) ||
-              isSubmitting
-            }
-            className="w-full rounded-xl bg-primary py-4 text-lg font-bold text-primary-foreground transition-all active:scale-95 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
+            disabled={isNextDisabled() || isSubmitting}
+            className={cn(
+              "rounded-xl bg-primary py-4 text-lg font-bold text-primary-foreground transition-all active:scale-95 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground",
+              step === 6 && !data.background.trim() ? "flex-1" : "w-full"
+            )}
           >
             {isSubmitting ? (
               <span className="flex items-center justify-center gap-2">
                 <Loader2 className="h-5 w-5 animate-spin" />
                 {t('completing')}
               </span>
+            ) : step === TOTAL_STEPS ? (
+              t('complete')
             ) : (
               t('next')
             )}
@@ -336,4 +461,3 @@ export function OnboardingWizard() {
     </div>
   );
 }
-
