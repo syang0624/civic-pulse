@@ -310,6 +310,9 @@
     "platform": "플랫폼",
     "goal": "목표",
     "focusAreas": "중점 분야",
+    "exportPdf": "PDF 내보내기",
+    "exportDocx": "DOCX 내보내기",
+    "exporting": "내보내는 중...",
     "totalItems": "총 {count}개",
     "page": "{page} / {total} 페이지"
   },
