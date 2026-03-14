@@ -2,15 +2,88 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { CrawlProgressOverlay } from '@/frontend/components/dashboard/crawl-progress-overlay';
+import type { Locale } from '@/shared/types';
 
-export function RefreshIssuesButton() {
+interface IssuesResponse {
+  data: Array<{ last_seen: string }>;
+}
+
+function formatRelativeTime(lastSeen: string, locale: Locale): string {
+  const then = new Date(lastSeen).getTime();
+  if (!Number.isFinite(then)) {
+    return '-';
+  }
+
+  const now = Date.now();
+  const diffSeconds = Math.round((then - now) / 1000);
+  const absSeconds = Math.abs(diffSeconds);
+
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+
+  if (absSeconds < 60) {
+    return rtf.format(diffSeconds, 'second');
+  }
+
+  const diffMinutes = Math.round(diffSeconds / 60);
+  if (Math.abs(diffMinutes) < 60) {
+    return rtf.format(diffMinutes, 'minute');
+  }
+
+  const diffHours = Math.round(diffMinutes / 60);
+  if (Math.abs(diffHours) < 24) {
+    return rtf.format(diffHours, 'hour');
+  }
+
+  const diffDays = Math.round(diffHours / 24);
+  return rtf.format(diffDays, 'day');
+}
+
+export function RefreshIssuesButton({ districtCode }: { districtCode?: string }) {
   const router = useRouter();
+  const locale = useLocale() as Locale;
   const t = useTranslations('Dashboard');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'error' | 'info' } | null>(null);
+  const [lastUpdatedText, setLastUpdatedText] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchLastUpdated() {
+      try {
+        const params = new URLSearchParams({ sort: 'recent', page: '1', limit: '1' });
+        if (districtCode) {
+          params.set('region_code', districtCode);
+        }
+
+        const response = await fetch(`/api/issues?${params.toString()}`);
+        if (!response.ok) {
+          return;
+        }
+
+        const result = (await response.json()) as IssuesResponse;
+        const lastSeen = result.data?.[0]?.last_seen;
+
+        if (!cancelled) {
+          setLastUpdatedText(lastSeen ? formatRelativeTime(lastSeen, locale) : null);
+        }
+      } catch {
+        if (!cancelled) {
+          setLastUpdatedText(null);
+        }
+      }
+    }
+
+    fetchLastUpdated();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [districtCode, locale, loading]);
 
   async function handleRefreshIssues() {
     setLoading(true);
@@ -58,6 +131,11 @@ export function RefreshIssuesButton() {
           {message.text}
         </p>
       )}
+
+      <div className="text-right text-xs text-muted-foreground">
+        <p>{t('autoUpdateEnabled')}</p>
+        {lastUpdatedText && <p>{t('lastUpdated', { time: lastUpdatedText })}</p>}
+      </div>
     </div>
   );
 }
