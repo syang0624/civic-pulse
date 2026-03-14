@@ -12,7 +12,7 @@ export type Tone = 'formal' | 'conversational' | 'passionate' | 'data_driven';
 export type Priority = 'high' | 'medium' | 'low';
 export type Urgency = 'high' | 'medium' | 'low';
 export type Trend = 'rising' | 'stable' | 'declining';
-export type GenerationTool = 'speech' | 'ad' | 'pledge';
+export type GenerationTool = 'speech' | 'ad' | 'pledge' | 'strategy';
 
 export type IssueCategory =
   | 'education'
@@ -185,6 +185,11 @@ export interface PledgeGenerationRequest {
   focus_areas: string[];
   num_pledges: number;
   region_context?: string;
+}
+
+export interface StrategyGenerationRequest {
+  issue_id: string;
+  focus?: string;
 }
 
 // --- Context Assembly ---

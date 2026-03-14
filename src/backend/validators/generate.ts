@@ -43,3 +43,8 @@ export const pledgeGenerationSchema = z.object({
   num_pledges: z.union([z.literal(3), z.literal(5), z.literal(10)]),
   region_context: z.string().optional(),
 });
+
+export const strategyGenerationSchema = z.object({
+  issue_id: z.string().uuid(),
+  focus: z.string().max(500).optional(),
+});

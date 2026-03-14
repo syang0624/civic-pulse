@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   Mic,
   Share2,
+  Target,
   Calendar,
   MapPin,
   TrendingUp,
@@ -227,6 +228,13 @@ function IssueDetailContent({ issue, locale }: { issue: Issue; locale: string })
               >
                 <Share2 className="h-4 w-4" />
                 {t('createPost')}
+              </Link>
+              <Link
+                href={`/${locale}/generate/strategy?issueId=${issue.id}`}
+                className="flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+              >
+                <Target className="h-4 w-4" />
+                {t('createStrategy')}
               </Link>
             </div>
           </div>

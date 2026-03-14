@@ -16,6 +16,7 @@ const toolBadgeStyle: Record<GenerationTool, string> = {
   speech: 'bg-blue-500/10 text-blue-700 dark:text-blue-300',
   ad: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
   pledge: 'bg-amber-500/10 text-amber-700 dark:text-amber-300',
+  strategy: 'bg-purple-500/10 text-purple-700 dark:text-purple-300',
 };
 
 function readString(
@@ -48,6 +49,7 @@ function readStringArray(
 function toolLabel(tool: GenerationTool, t: ReturnType<typeof useTranslations<'Workspace'>>) {
   if (tool === 'speech') return t('tabs.speech');
   if (tool === 'ad') return t('tabs.ad');
+  if (tool === 'strategy') return t('tabs.strategy');
   return t('tabs.pledge');
 }
 
@@ -76,6 +78,17 @@ export function GenerationCard({ generation, onOpen, onDelete }: GenerationCardP
         lines: [
           `${t('platform')}: ${readString(params, 'platform') ?? '-'}`,
           `${t('goal')}: ${readString(params, 'goal') ?? '-'}`,
+        ],
+      };
+    }
+
+    if (generation.tool === 'strategy') {
+      const issueTitle = readString(params, 'issue_title') ?? readString(params, 'topic');
+      return {
+        title: issueTitle ?? title,
+        lines: [
+          `Issue: ${issueTitle ?? '-'}`,
+          `Focus: ${readString(params, 'focus') ?? '-'}`,
         ],
       };
     }

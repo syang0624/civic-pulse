@@ -7,6 +7,7 @@ import {
   PenTool,
   Share2,
   ScrollText,
+  Target,
   FolderOpen,
   User,
   LogOut,
@@ -20,6 +21,7 @@ const navItems = [
   { href: '/generate/speech', labelKey: 'speech' as const, icon: PenTool },
   { href: '/generate/ad', labelKey: 'ad' as const, icon: Share2 },
   { href: '/generate/pledge', labelKey: 'pledge' as const, icon: ScrollText },
+  { href: '/generate/strategy', labelKey: 'strategy' as const, icon: Target },
   { href: '/workspace', labelKey: 'workspace' as const, icon: FolderOpen },
   { href: '/profile', labelKey: 'profile' as const, icon: User },
 ];

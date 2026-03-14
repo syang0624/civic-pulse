@@ -11,7 +11,7 @@ import { GenerationDetail } from './generation-detail';
 type Tab = 'all' | GenerationTool;
 type Sort = 'newest' | 'oldest';
 
-const tabOrder: Tab[] = ['all', 'speech', 'ad', 'pledge'];
+const tabOrder: Tab[] = ['all', 'speech', 'ad', 'pledge', 'strategy'];
 
 export function WorkspaceContent() {
   const t = useTranslations('Workspace');
@@ -114,6 +114,7 @@ export function WorkspaceContent() {
     speech: t('tabs.speech'),
     ad: t('tabs.ad'),
     pledge: t('tabs.pledge'),
+    strategy: t('tabs.strategy'),
   };
 
   const totalPages = result?.pagination.total_pages ?? 1;
