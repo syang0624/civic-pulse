@@ -7,6 +7,7 @@ import {
   PenTool,
   Share2,
   ScrollText,
+  FolderOpen,
   User,
   LogOut,
 } from 'lucide-react';
@@ -19,6 +20,7 @@ const navItems = [
   { href: '/generate/speech', labelKey: 'speech' as const, icon: PenTool },
   { href: '/generate/ad', labelKey: 'ad' as const, icon: Share2 },
   { href: '/generate/pledge', labelKey: 'pledge' as const, icon: ScrollText },
+  { href: '/workspace', labelKey: 'workspace' as const, icon: FolderOpen },
   { href: '/profile', labelKey: 'profile' as const, icon: User },
 ];
 

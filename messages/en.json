@@ -26,7 +26,8 @@
     "logout": "Log out",
     "speech": "Speech",
     "ad": "Social Media",
-    "pledge": "Pledges"
+    "pledge": "Pledges",
+    "workspace": "Library"
   },
   "Auth": {
     "login": "Log in",
@@ -248,6 +249,32 @@
       "priorityReason": "Priority Reason",
       "budget": "Estimated Budget"
     }
+  },
+  "Workspace": {
+    "title": "Content Library",
+    "subtitle": "Manage all your generated content.",
+    "tabs": { "all": "All", "speech": "Speeches", "ad": "Social Media", "pledge": "Pledges" },
+    "search": "Search content...",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "empty": "No content generated yet.",
+    "emptyHint": "Generated speeches, social posts, and pledges will be automatically saved here.",
+    "detail": "View Details",
+    "editContent": "Edit Content",
+    "saveEdit": "Save Changes",
+    "cancelEdit": "Cancel",
+    "deleteConfirm": "Delete this content?",
+    "deleted": "Deleted successfully.",
+    "saved": "Saved successfully.",
+    "createdAt": "Created",
+    "editedBadge": "Edited",
+    "inputParams": "Generation Settings",
+    "occasion": "Occasion",
+    "platform": "Platform",
+    "goal": "Goal",
+    "focusAreas": "Focus Areas",
+    "totalItems": "{count} items",
+    "page": "Page {page} of {total}"
   },
   "Regions": {
     "seoul": "Seoul",

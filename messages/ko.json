@@ -26,7 +26,8 @@
     "logout": "로그아웃",
     "speech": "연설문",
     "ad": "SNS",
-    "pledge": "공약"
+    "pledge": "공약",
+    "workspace": "보관함"
   },
   "Auth": {
     "login": "로그인",
@@ -248,6 +249,32 @@
       "priorityReason": "우선순위 이유",
       "budget": "예상 예산"
     }
+  },
+  "Workspace": {
+    "title": "콘텐츠 보관함",
+    "subtitle": "생성된 모든 콘텐츠를 관리하세요.",
+    "tabs": { "all": "전체", "speech": "연설문", "ad": "SNS", "pledge": "공약" },
+    "search": "콘텐츠 검색...",
+    "sortNewest": "최신순",
+    "sortOldest": "오래된순",
+    "empty": "아직 생성된 콘텐츠가 없습니다.",
+    "emptyHint": "연설문, SNS 콘텐츠, 공약을 생성하면 여기에 자동으로 저장됩니다.",
+    "detail": "상세 보기",
+    "editContent": "내용 수정",
+    "saveEdit": "수정 저장",
+    "cancelEdit": "취소",
+    "deleteConfirm": "이 콘텐츠를 삭제하시겠습니까?",
+    "deleted": "삭제되었습니다.",
+    "saved": "저장되었습니다.",
+    "createdAt": "생성일",
+    "editedBadge": "수정됨",
+    "inputParams": "생성 설정",
+    "occasion": "행사 유형",
+    "platform": "플랫폼",
+    "goal": "목표",
+    "focusAreas": "중점 분야",
+    "totalItems": "총 {count}개",
+    "page": "{page} / {total} 페이지"
   },
   "Regions": {
     "seoul": "서울",
