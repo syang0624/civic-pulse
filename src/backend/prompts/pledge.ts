@@ -32,14 +32,16 @@ export function buildPledgeUserPrompt(params: {
   numPledges: number;
   regionContext: string | null;
   issueContext: string | null;
+  minutesContext?: string | null;
 }): string {
-  const { focusAreas, numPledges, regionContext, issueContext } = params;
+  const { focusAreas, numPledges, regionContext, issueContext, minutesContext } = params;
 
   const prompt = `Generate exactly ${numPledges} campaign pledges (공약).
 
 FOCUS AREAS: ${focusAreas.join(', ')}
 ${regionContext ? `\nADDITIONAL REGIONAL CONTEXT: ${regionContext}` : ''}
 ${issueContext ? `\nCURRENT LOCAL ISSUES:\n${issueContext}` : ''}
+${minutesContext ? `\nRELATED LOCAL COUNCIL PROCEEDINGS (지방의회 회의록):\n${minutesContext}\n\nUse these council proceedings to ground your pledges in real legislative context. Reference specific discussions or agenda items where relevant.` : ''}
 
 Return a JSON array of pledges, ranked from highest to lowest priority. Each pledge object must have:
 {
