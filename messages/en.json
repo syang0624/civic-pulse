@@ -60,6 +60,19 @@
     "ad": "Social",
     "pledge": "Pledge",
     "strategy": "Strategy"
+    ,"userDetail": "User Details"
+    ,"userActivity": "Usage History"
+    ,"editUser": "Edit Info"
+    ,"saveChanges": "Save Changes"
+    ,"cancelEdit": "Cancel"
+    ,"userUpdated": "User info updated."
+    ,"viewUser": "View Details"
+    ,"backToList": "Back to List"
+    ,"noActivity": "No activity yet."
+    ,"generatedAt": "Generated at"
+    ,"tool": "Tool"
+    ,"content": "Content"
+    ,"locale": "Locale"
   },
   "Auth": {
     "login": "Log in",
