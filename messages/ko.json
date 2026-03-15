@@ -73,6 +73,7 @@
     ,"tool": "도구"
     ,"content": "내용"
     ,"locale": "로케일"
+    ,"recentActivity": "최근 활동"
   },
   "Auth": {
     "login": "로그인",
@@ -368,7 +369,36 @@
     "dateOlder": "이전",
     "gridView": "그리드",
     "listView": "리스트",
-    "itemCount": "{count}건"
+    "itemCount": "{count}건",
+    "editTitle": "제목",
+    "editContentLabel": "내용",
+    "editHashtags": "해시태그",
+    "editImageSuggestions": "이미지 제안",
+    "editProblem": "문제점",
+    "editSolution": "해결 방안",
+    "editTimeline": "추진 일정",
+    "editBudget": "예상 예산",
+    "editIssueSummary": "이슈 요약",
+    "editVoterGroups": "핵심 유권자 그룹",
+    "editMessagingAngle": "메시지 전략",
+    "editCampaignActions": "캠페인 행동 계획",
+    "editTalkingPoints": "주요 논점",
+    "editSocialMediaStrategy": "소셜 미디어 전략",
+    "editRisksAndCounters": "리스크 및 대응",
+    "editCoreMessage": "핵심 메시지",
+    "editFraming": "프레이밍",
+    "editToneRecommendation": "권장 톤",
+    "editKeyHashtags": "핵심 해시태그",
+    "editContentThemes": "콘텐츠 테마",
+    "editRecommendedPlatforms": "추천 플랫폼",
+    "editPostFrequency": "게시 빈도",
+    "editRisk": "리스크",
+    "editCounter": "대응",
+    "editAction": "행동",
+    "editExpectedImpact": "기대 효과",
+    "editGroup": "그룹",
+    "editConcern": "관심사",
+    "editApproach": "접근"
   },
   "Teleprompter": {
     "title": "텔레프롬프터",

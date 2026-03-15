@@ -73,6 +73,7 @@
     ,"tool": "Tool"
     ,"content": "Content"
     ,"locale": "Locale"
+    ,"recentActivity": "Recent Activity"
   },
   "Auth": {
     "login": "Log in",
@@ -368,7 +369,36 @@
     "dateOlder": "Older",
     "gridView": "Grid",
     "listView": "List",
-    "itemCount": "{count}"
+    "itemCount": "{count}",
+    "editTitle": "Title",
+    "editContentLabel": "Content",
+    "editHashtags": "Hashtags",
+    "editImageSuggestions": "Image Suggestions",
+    "editProblem": "Problem",
+    "editSolution": "Solution",
+    "editTimeline": "Timeline",
+    "editBudget": "Budget",
+    "editIssueSummary": "Issue Summary",
+    "editVoterGroups": "Key Voter Groups",
+    "editMessagingAngle": "Messaging Angle",
+    "editCampaignActions": "Campaign Actions",
+    "editTalkingPoints": "Talking Points",
+    "editSocialMediaStrategy": "Social Media Strategy",
+    "editRisksAndCounters": "Risks & Counters",
+    "editCoreMessage": "Core Message",
+    "editFraming": "Framing",
+    "editToneRecommendation": "Tone Recommendation",
+    "editKeyHashtags": "Key Hashtags",
+    "editContentThemes": "Content Themes",
+    "editRecommendedPlatforms": "Recommended Platforms",
+    "editPostFrequency": "Post Frequency",
+    "editRisk": "Risk",
+    "editCounter": "Counter",
+    "editAction": "Action",
+    "editExpectedImpact": "Expected Impact",
+    "editGroup": "Group",
+    "editConcern": "Concern",
+    "editApproach": "Approach"
   },
   "Teleprompter": {
     "title": "Teleprompter",
