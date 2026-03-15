@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { Monitor } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
+import { GeneratingOverlay } from './generating-overlay';
 import type {
   SpeechOccasion,
   SpeechLength,
@@ -12,6 +13,16 @@ import type {
   Tone,
   Generation,
 } from '@/shared/types';
+
+interface IssueItem {
+  id: string;
+  title_ko: string;
+  title_en: string | null;
+}
+
+interface IssueApiResponse {
+  data: IssueItem[];
+}
 
 const OCCASIONS: SpeechOccasion[] = [
   'campaign_rally',
@@ -28,6 +39,7 @@ const TONES: Tone[] = ['formal', 'conversational', 'passionate', 'data_driven'];
 export function SpeechForm() {
   const t = useTranslations('Generate.Speech');
   const tg = useTranslations('Generate');
+  const tStrategy = useTranslations('Strategy');
   const tCommon = useTranslations('Common');
   const tProfile = useTranslations('Profile'); // For tone labels
   const currentLocale = useLocale();
@@ -36,6 +48,11 @@ export function SpeechForm() {
   const issueId = searchParams.get('issueId');
 
   const [loading, setLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [issuesLoading, setIssuesLoading] = useState(false);
+  const [districtCode, setDistrictCode] = useState('');
+  const [issues, setIssues] = useState<IssueItem[]>([]);
+  const [selectedIssueId, setSelectedIssueId] = useState('');
   const [topic, setTopic] = useState('');
   const [occasion, setOccasion] = useState<SpeechOccasion>('campaign_rally');
   const [tone, setTone] = useState<Tone>('formal');
@@ -50,14 +67,72 @@ export function SpeechForm() {
     if (!issueId) return;
     fetch(`/api/issues/${issueId}`)
       .then((res) => res.json())
-      .then((data: { title_ko?: string; title_en?: string }) => {
+      .then((data: { id?: string; title_ko?: string; title_en?: string }) => {
         const title = currentLocale === 'ko'
           ? data.title_ko
           : (data.title_en || data.title_ko);
-        if (title) setTopic(title);
+        if (title) {
+          setTopic(title);
+        }
+        if (data.id) {
+          setSelectedIssueId(data.id);
+        }
       })
       .catch(() => {});
   }, [issueId, currentLocale]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function fetchProfile() {
+      try {
+        const response = await fetch('/api/profile');
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json()) as { district_code?: string | null };
+        if (mounted) {
+          setDistrictCode(data.district_code ?? '');
+        }
+      } catch {
+        if (mounted) {
+          setDistrictCode('');
+        }
+      } finally {
+        if (mounted) {
+          setProfileLoading(false);
+        }
+      }
+    }
+
+    fetchProfile();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (profileLoading) {
+      return;
+    }
+
+    setIssuesLoading(true);
+    fetch('/api/issues?limit=20&region_code=' + encodeURIComponent(districtCode))
+      .then((res) => res.json())
+      .then((data: IssueApiResponse) => {
+        const items = Array.isArray(data.data) ? data.data : [];
+        setIssues(items);
+      })
+      .catch(() => {
+        setIssues([]);
+      })
+      .finally(() => {
+        setIssuesLoading(false);
+      });
+  }, [profileLoading, districtCode]);
+
+  const noIssues = !issuesLoading && issues.length === 0;
 
   const occasionLabels: Record<SpeechOccasion, string> = {
     campaign_rally: t('occasionRally'),
@@ -141,6 +216,36 @@ export function SpeechForm() {
   return (
     <div className="space-y-10 animate-fade-in">
       <section className="space-y-8 rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
+        <div className="space-y-3">
+          <label htmlFor="speech-issue" className="block text-sm font-semibold tracking-wide text-foreground">
+            {tStrategy('selectIssue')}
+          </label>
+          <select
+            id="speech-issue"
+            value={selectedIssueId}
+            onChange={(event) => {
+              const issueIdValue = event.target.value;
+              setSelectedIssueId(issueIdValue);
+              const selectedIssue = issues.find((issue) => issue.id === issueIdValue);
+              if (selectedIssue) {
+                const title = currentLocale === 'ko'
+                  ? selectedIssue.title_ko
+                  : selectedIssue.title_en || selectedIssue.title_ko;
+                setTopic(title);
+              }
+            }}
+            disabled={issuesLoading || noIssues}
+            className="w-full appearance-none rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:opacity-60"
+          >
+            <option value="">{tStrategy('selectIssuePlaceholder')}</option>
+            {issues.map((issue) => (
+              <option key={issue.id} value={issue.id}>
+                {currentLocale === 'ko' ? issue.title_ko : issue.title_en || issue.title_ko}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="space-y-4">
           <label htmlFor="speech-topic" className="block text-sm font-semibold tracking-wide text-foreground">
             {tg('topicLabel')}
@@ -300,6 +405,7 @@ export function SpeechForm() {
           </div>
         </section>
       )}
+      <GeneratingOverlay visible={loading} />
     </div>
   );
 }
