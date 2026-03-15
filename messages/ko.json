@@ -183,6 +183,7 @@
     "titleGeneral": "주요 이슈",
     "subtitle": "지역의 최신 민생 이슈를 확인하세요.",
     "noIssues": "아직 등록된 이슈가 없습니다.",
+    "autoCrawling": "해당 지역의 이슈를 자동으로 수집하고 있습니다. 잠시만 기다려주세요...",
     "filter": "필터",
     "filterByCategory": "카테고리",
     "filterByUrgency": "긴급도",

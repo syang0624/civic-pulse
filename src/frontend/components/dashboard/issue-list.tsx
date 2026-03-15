@@ -18,6 +18,8 @@ export function IssueList({ districtCode }: { districtCode?: string }) {
   const [data, setData] = useState<PaginatedResponse<Issue> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [autoCrawling, setAutoCrawling] = useState(false);
+  const autoCrawlAttempted = useState(false);
 
   useEffect(() => {
     async function fetchIssues() {
@@ -30,8 +32,33 @@ export function IssueList({ districtCode }: { districtCode?: string }) {
         }
         const res = await fetch(`/api/issues?${params.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch');
-        const json = await res.json();
+        const json = await res.json() as PaginatedResponse<Issue>;
         setData(json);
+
+        if (
+          json.data.length === 0 &&
+          json.pagination.total === 0 &&
+          districtCode &&
+          !autoCrawlAttempted[0]
+        ) {
+          autoCrawlAttempted[0] = true;
+          setAutoCrawling(true);
+          try {
+            const crawlRes = await fetch('/api/issues/crawl', { method: 'POST' });
+            if (crawlRes.ok) {
+              const retryParams = new URLSearchParams(searchParams.toString());
+              retryParams.set('region_code', districtCode);
+              const retryRes = await fetch(`/api/issues?${retryParams.toString()}`);
+              if (retryRes.ok) {
+                const retryJson = await retryRes.json() as PaginatedResponse<Issue>;
+                setData(retryJson);
+              }
+            }
+          } catch {
+          } finally {
+            setAutoCrawling(false);
+          }
+        }
       } catch {
         setError(true);
       } finally {
@@ -66,6 +93,15 @@ export function IssueList({ districtCode }: { districtCode?: string }) {
         >
           {tCommon('retry')}
         </button>
+      </div>
+    );
+  }
+
+  if (autoCrawling) {
+    return (
+      <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-lg border border-dashed text-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-muted-foreground">{t('autoCrawling')}</p>
       </div>
     );
   }

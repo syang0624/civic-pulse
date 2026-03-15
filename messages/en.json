@@ -183,6 +183,7 @@
     "titleGeneral": "Key Issues",
     "subtitle": "Stay updated with the latest civic issues in your district.",
     "noIssues": "No issues registered yet.",
+    "autoCrawling": "Automatically collecting issues for your region. Please wait...",
     "filter": "Filter",
     "filterByCategory": "Category",
     "filterByUrgency": "Urgency",
