@@ -9,7 +9,6 @@ type UserProfile = {
   district_code: string | null;
   party: string | null;
   tone: string | null;
-  target_demographics: string[] | null;
   background: string | null;
   created_at: string;
 };
@@ -36,7 +35,7 @@ export async function GET(
 
   const { data: profile, error: profileError } = await admin
     .from('profiles')
-    .select('id, name, district_name, district_code, party, tone, target_demographics, background, created_at')
+    .select('id, name, district_name, district_code, party, tone, background, created_at')
     .eq('id', id)
     .maybeSingle<UserProfile>();
 
@@ -148,7 +147,7 @@ export async function PATCH(
     .from('profiles')
     .update(updates)
     .eq('id', id)
-    .select('id, name, district_name, district_code, party, tone, target_demographics, background, created_at')
+    .select('id, name, district_name, district_code, party, tone, background, created_at')
     .maybeSingle<UserProfile>();
 
   if (updateError) {

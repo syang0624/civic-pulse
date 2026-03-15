@@ -39,6 +39,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# supabase local
+/supabase
+
 # spec docs (internal only)
 CIVIC-PULSE.md
 FUNC-SPEC-FE.md

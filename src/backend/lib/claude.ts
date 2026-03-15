@@ -13,11 +13,6 @@ function getGeminiClient(): GoogleGenAI {
 
 const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'] as const;
 
-export const GEMINI_MODEL = GEMINI_MODELS[0];
-
-// kept for backward compat — callers reference CLAUDE_MODEL
-export const CLAUDE_MODEL = GEMINI_MODEL;
-
 export interface GeminiSchema {
   type: string;
   description?: string;

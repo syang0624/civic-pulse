@@ -181,7 +181,7 @@ export function AdminDashboard() {
         </article>
 
         <article className="rounded-3xl border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-semibold tracking-tight">Recent Activity</h2>
+          <h2 className="text-lg font-semibold tracking-tight">{t('recentActivity')}</h2>
           <ul className="mt-4 space-y-3">
             {stats.recent_activity.map((item) => (
               <li
