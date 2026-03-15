@@ -6,30 +6,35 @@ export interface NewsArticle {
   publishedAt: string;
 }
 
-/** Tries district-specific search first, broadens to region if < 5 results. */
+const CIVIC_KEYWORDS = ['정책', '교통', '교육', '개발', '복지', '안전', '환경', '경제', '주거', '의회'];
+
 export async function fetchDistrictNews(
   districtName: string,
   regionName: string,
 ): Promise<NewsArticle[]> {
-  const specific = await fetchGoogleNewsRSS(districtName);
+  const region = districtName || regionName;
+  const queries = [
+    region,
+    `${region} 지역 이슈`,
+    `${region} 시정`,
+    ...CIVIC_KEYWORDS.slice(0, 4).map((kw) => `${region} ${kw}`),
+  ];
 
-  if (specific.length >= 5) {
-    return specific.slice(0, 20);
-  }
-
-  const broad = await fetchGoogleNewsRSS(regionName);
+  const results = await Promise.all(queries.map(fetchGoogleNewsRSS));
 
   const seen = new Set<string>();
   const combined: NewsArticle[] = [];
 
-  for (const article of [...specific, ...broad]) {
-    const key = article.title.toLowerCase().slice(0, 40);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    combined.push(article);
+  for (const articles of results) {
+    for (const article of articles) {
+      const key = article.title.toLowerCase().slice(0, 40);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      combined.push(article);
+    }
   }
 
-  return combined.slice(0, 20);
+  return combined.slice(0, 40);
 }
 
 async function fetchGoogleNewsRSS(query: string): Promise<NewsArticle[]> {
