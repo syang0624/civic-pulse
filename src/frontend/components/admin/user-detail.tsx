@@ -81,7 +81,7 @@ function extractContentLabel(generation: AdminUserGeneration): string {
   return '-';
 }
 
-export function UserDetail({ userId }: { userId: string }) {
+export function UserDetail({ userId, onBack }: { userId: string; onBack?: () => void }) {
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
   const router = useRouter();
@@ -204,7 +204,11 @@ export function UserDetail({ userId }: { userId: string }) {
         throw new Error(tCommon('error'));
       }
 
-      router.push('/admin/users');
+      if (onBack) {
+        onBack();
+      } else {
+        router.push('/admin/users');
+      }
     } catch (err) {
       setFeedback({ kind: 'error', text: err instanceof Error ? err.message : tCommon('error') });
       setDeleting(false);
@@ -415,13 +419,24 @@ export function UserDetail({ userId }: { userId: string }) {
             {t('deleteUser')}
           </button>
 
-          <Link
-            href="/admin/users"
-            className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition hover:bg-secondary"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            {t('backToList')}
-          </Link>
+          {onBack ? (
+            <button
+              type="button"
+              onClick={onBack}
+              className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition hover:bg-secondary"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {t('backToList')}
+            </button>
+          ) : (
+            <Link
+              href="/admin/users"
+              className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition hover:bg-secondary"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {t('backToList')}
+            </Link>
+          )}
         </div>
       </article>
     </section>

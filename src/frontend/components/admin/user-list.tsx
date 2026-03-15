@@ -26,7 +26,7 @@ type UserResponse = {
   };
 };
 
-export function UserList() {
+export function UserList({ onViewUser }: { onViewUser?: (userId: string) => void }) {
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
   const router = useRouter();
@@ -191,7 +191,13 @@ export function UserList() {
                     <td className="px-4 py-3 text-right">
                       <button
                         type="button"
-                        onClick={() => router.push(`/admin/users/${user.id}`)}
+                        onClick={() => {
+                          if (onViewUser) {
+                            onViewUser(user.id);
+                          } else {
+                            router.push(`/admin/users/${user.id}`);
+                          }
+                        }}
                         className="inline-flex items-center gap-1 rounded-xl border px-3 py-1.5 text-xs font-medium transition hover:bg-secondary"
                       >
                         <Eye className="h-3.5 w-3.5" />
