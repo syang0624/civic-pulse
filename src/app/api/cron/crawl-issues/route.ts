@@ -3,7 +3,7 @@ import { createAdminClient } from '@/backend/lib/supabase/admin';
 import { crawlIssuesForDistrict } from '@/backend/services/issue-crawler';
 import { ELECTION_DISTRICTS } from '@/shared/constants';
 
-const MAX_DISTRICTS_PER_RUN = 10;
+const MAX_DISTRICTS_PER_RUN = 5;
 const DISTRICT_DELAY_MS = 4_000;
 
 function sleep(ms: number): Promise<void> {

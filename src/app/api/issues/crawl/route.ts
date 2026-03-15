@@ -34,6 +34,25 @@ export async function POST(request: Request) {
   const districtName = profile.district_name ?? '';
   const regionName = ELECTION_DISTRICTS[districtCode]?.name ?? districtCode;
 
+  const COOLDOWN_HOURS = 6;
+  const cooldownCutoff = new Date(Date.now() - COOLDOWN_HOURS * 60 * 60 * 1000).toISOString();
+
+  const { count: recentCount } = await admin
+    .from('issues')
+    .select('id', { count: 'exact', head: true })
+    .eq('region_code', districtCode)
+    .gte('last_seen', cooldownCutoff);
+
+  if (recentCount && recentCount >= 5) {
+    return NextResponse.json({
+      data: [],
+      inserted: 0,
+      updated: 0,
+      skipped: true,
+      message: `Issues were already crawled within the last ${COOLDOWN_HOURS} hours`,
+    });
+  }
+
   const result = await crawlIssuesForDistrict(
     admin,
     districtCode,
