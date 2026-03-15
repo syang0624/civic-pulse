@@ -60,6 +60,19 @@
     "ad": "SNS",
     "pledge": "공약",
     "strategy": "전략"
+    ,"userDetail": "사용자 상세"
+    ,"userActivity": "사용 내역"
+    ,"editUser": "정보 수정"
+    ,"saveChanges": "변경사항 저장"
+    ,"cancelEdit": "취소"
+    ,"userUpdated": "사용자 정보가 수정되었습니다."
+    ,"viewUser": "상세보기"
+    ,"backToList": "목록으로 돌아가기"
+    ,"noActivity": "아직 활동 내역이 없습니다."
+    ,"generatedAt": "생성일시"
+    ,"tool": "도구"
+    ,"content": "내용"
+    ,"locale": "로케일"
   },
   "Auth": {
     "login": "로그인",

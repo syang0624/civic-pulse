@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Eye, Trash2 } from 'lucide-react';
+import { useRouter } from '@/i18n/navigation';
+import { cn } from '@/frontend/lib/utils';
 
 type AdminUser = {
   id: string;
@@ -26,6 +28,8 @@ type UserResponse = {
 
 export function UserList() {
   const t = useTranslations('Admin');
+  const tCommon = useTranslations('Common');
+  const router = useRouter();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,11 +37,13 @@ export function UserList() {
   const [page, setPage] = useState(1);
   const [result, setResult] = useState<UserResponse | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     async function fetchUsers() {
       setLoading(true);
       setError(null);
+      setFeedback(null);
       try {
         const params = new URLSearchParams();
         params.set('page', String(page));
@@ -45,20 +51,20 @@ export function UserList() {
 
         const response = await fetch(`/api/admin/users?${params.toString()}`, { cache: 'no-store' });
         if (!response.ok) {
-          throw new Error('Failed to fetch users');
+          throw new Error(tCommon('error'));
         }
 
         const data = (await response.json()) as UserResponse;
         setResult(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch users');
+        setError(err instanceof Error ? err.message : tCommon('error'));
       } finally {
         setLoading(false);
       }
     }
 
     fetchUsers();
-  }, [page]);
+  }, [page, tCommon]);
 
   const filteredUsers = useMemo(() => {
     const users = result?.users ?? [];
@@ -80,10 +86,11 @@ export function UserList() {
     }
 
     setDeletingId(user.id);
+    setFeedback(null);
     try {
       const response = await fetch(`/api/admin/users/${user.id}`, { method: 'DELETE' });
       if (!response.ok) {
-        throw new Error('Failed to delete user');
+        throw new Error(tCommon('error'));
       }
 
       setResult((current) => {
@@ -103,28 +110,41 @@ export function UserList() {
         };
       });
 
-      window.alert(t('userDeleted'));
-    } catch {
-      window.alert('Failed to delete user');
+      setFeedback({ kind: 'success', text: t('userDeleted') });
+    } catch (err) {
+      setFeedback({ kind: 'error', text: err instanceof Error ? err.message : tCommon('error') });
     } finally {
       setDeletingId(null);
     }
   }
 
   if (loading) {
-    return <div className="rounded-3xl border bg-card p-8 text-sm text-muted-foreground">Loading users...</div>;
+    return <div className="rounded-3xl border bg-card p-8 text-sm text-muted-foreground">{tCommon('loading')}</div>;
   }
 
   if (error || !result) {
     return (
       <div className="rounded-3xl border border-destructive/30 bg-destructive/10 p-8 text-sm text-destructive">
-        {error ?? 'Failed to load users'}
+        {error ?? tCommon('error')}
       </div>
     );
   }
 
   return (
     <section className="space-y-5">
+      {feedback && (
+        <div
+          className={cn(
+            'rounded-2xl border px-4 py-3 text-sm',
+            feedback.kind === 'success'
+              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+              : 'border-destructive/30 bg-destructive/10 text-destructive',
+          )}
+        >
+          {feedback.text}
+        </div>
+      )}
+
       <div className="rounded-3xl border bg-card p-4 shadow-sm">
         <input
           type="text"
@@ -146,13 +166,14 @@ export function UserList() {
                 <th className="px-4 py-3 font-medium">{t('userParty')}</th>
                 <th className="px-4 py-3 font-medium">{t('userSignup')}</th>
                 <th className="px-4 py-3 text-right font-medium">{t('userGenerations')}</th>
+                <th className="px-4 py-3 text-right font-medium">{t('viewUser')}</th>
                 <th className="px-4 py-3 text-right font-medium">{t('deleteUser')}</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
                     {t('noUsers')}
                   </td>
                 </tr>
@@ -167,6 +188,16 @@ export function UserList() {
                       {new Date(user.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3 text-right font-semibold">{user.generations_count.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => router.push(`/admin/users/${user.id}`)}
+                        className="inline-flex items-center gap-1 rounded-xl border px-3 py-1.5 text-xs font-medium transition hover:bg-secondary"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        {t('viewUser')}
+                      </button>
+                    </td>
                     <td className="px-4 py-3 text-right">
                       <button
                         type="button"
