@@ -10,6 +10,7 @@ interface GenerationCardProps {
   generation: Generation;
   onOpen: (generation: Generation) => void;
   onDelete: (generation: Generation) => void;
+  viewMode?: 'grid' | 'list';
 }
 
 const toolBadgeStyle: Record<GenerationTool, string> = {
@@ -17,6 +18,13 @@ const toolBadgeStyle: Record<GenerationTool, string> = {
   ad: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
   pledge: 'bg-amber-500/10 text-amber-700 dark:text-amber-300',
   strategy: 'bg-purple-500/10 text-purple-700 dark:text-purple-300',
+};
+
+const toolBorderColor: Record<GenerationTool, string> = {
+  speech: 'border-l-blue-500',
+  ad: 'border-l-emerald-500',
+  pledge: 'border-l-amber-500',
+  strategy: 'border-l-purple-500',
 };
 
 function readString(
@@ -53,7 +61,7 @@ function toolLabel(tool: GenerationTool, t: ReturnType<typeof useTranslations<'W
   return t('tabs.pledge');
 }
 
-export function GenerationCard({ generation, onOpen, onDelete }: GenerationCardProps) {
+export function GenerationCard({ generation, onOpen, onDelete, viewMode = 'grid' }: GenerationCardProps) {
   const t = useTranslations('Workspace');
   const content = generation.edited_text?.trim() || generation.output_text;
 
@@ -114,6 +122,71 @@ export function GenerationCard({ generation, onOpen, onDelete }: GenerationCardP
 
   const handleOpen = () => onOpen(generation);
 
+  if (viewMode === 'list') {
+    return (
+      <article
+        role="button"
+        tabIndex={0}
+        onClick={handleOpen}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleOpen();
+          }
+        }}
+        className={cn(
+          'group flex items-center gap-4 rounded-xl border bg-card p-3 shadow-sm transition-all hover:bg-accent/5 border-l-[3px]',
+          toolBorderColor[generation.tool],
+        )}
+      >
+        <span
+          className={cn(
+            'inline-flex shrink-0 items-center justify-center rounded-full px-2.5 py-1 text-xs font-semibold',
+            toolBadgeStyle[generation.tool],
+          )}
+        >
+          {toolLabel(generation.tool, t)}
+        </span>
+
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-base font-semibold text-foreground">
+            {meta.title}
+          </h3>
+          <p className="truncate text-xs text-muted-foreground">
+            {meta.lines.join(' · ')}
+          </p>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-4 text-xs text-muted-foreground">
+          <span className="hidden sm:inline-block">{dateLabel}</span>
+          
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpen(generation);
+              }}
+              className="rounded-lg p-2 hover:bg-secondary hover:text-foreground"
+            >
+              <Eye className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onDelete(generation);
+              }}
+              className="rounded-lg p-2 hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <article
       role="button"
@@ -125,59 +198,56 @@ export function GenerationCard({ generation, onOpen, onDelete }: GenerationCardP
           handleOpen();
         }
       }}
-      className="group rounded-2xl border bg-card p-6 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+      className={cn(
+        'group flex flex-col justify-between rounded-2xl border bg-card p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/20 border-l-[3px]',
+        toolBorderColor[generation.tool],
+      )}
     >
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div className="space-y-2">
+      <div>
+        <div className="mb-3 flex items-start justify-between gap-3">
           <span
             className={cn(
-              'inline-flex rounded-full px-3 py-1 text-xs font-semibold',
+              'inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold',
               toolBadgeStyle[generation.tool],
             )}
           >
             {toolLabel(generation.tool, t)}
           </span>
-          <h3 className="line-clamp-2 text-lg font-semibold leading-tight text-foreground">
-            {meta.title}
-          </h3>
+          <span className="rounded-full border bg-muted/50 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+            {generation.locale.toUpperCase()}
+          </span>
         </div>
-        <span className="rounded-full border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
-          {generation.locale.toUpperCase()}
-        </span>
+
+        <h3 className="mb-2 line-clamp-2 text-lg font-bold leading-tight text-foreground group-hover:text-primary transition-colors">
+          {meta.title}
+        </h3>
+
+        <div className="mb-4 space-y-1 text-xs text-muted-foreground">
+          {meta.lines.map((line) => (
+            <p key={line} className="line-clamp-1">{line}</p>
+          ))}
+        </div>
+
+        <p className="mb-5 line-clamp-4 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+          {content}
+        </p>
       </div>
 
-      <div className="mb-4 space-y-1 text-sm text-muted-foreground">
-        {meta.lines.map((line) => (
-          <p key={line} className="line-clamp-1">{line}</p>
-        ))}
-      </div>
-
-      <p className="mb-5 line-clamp-4 whitespace-pre-wrap text-sm leading-relaxed text-foreground/85">
-        {content.slice(0, 150)}
-        {content.length > 150 ? '…' : ''}
-      </p>
-
-      <div className="flex items-center justify-between border-t border-border/60 pt-4 text-xs text-muted-foreground">
+      <div className="flex items-center justify-between border-t border-border/40 pt-4 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
           <Calendar className="h-3.5 w-3.5" />
-          {t('createdAt')} {dateLabel}
+          {dateLabel}
         </span>
-        <div className="flex items-center gap-2">
-          {generation.user_edited && (
-            <span className="rounded-full bg-secondary px-2.5 py-1 font-medium text-secondary-foreground">
-              {t('editedBadge')}
-            </span>
-          )}
+        <div className="flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
           <button
             type="button"
             onClick={(event) => {
               event.stopPropagation();
               onDelete(generation);
             }}
-            className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-medium transition-colors hover:bg-destructive/10 hover:text-destructive"
+            className="rounded-md p-1.5 hover:bg-destructive/10 hover:text-destructive"
           >
-            <Trash2 className="h-3.5 w-3.5" />
-            Delete
+            <Trash2 className="h-4 w-4" />
           </button>
           <button
             type="button"
@@ -185,10 +255,9 @@ export function GenerationCard({ generation, onOpen, onDelete }: GenerationCardP
               event.stopPropagation();
               onOpen(generation);
             }}
-            className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 font-medium text-foreground transition-colors hover:bg-secondary"
+            className="rounded-md bg-secondary p-1.5 text-secondary-foreground hover:bg-secondary/80"
           >
-            <Eye className="h-3.5 w-3.5" />
-            {t('detail')}
+            <Eye className="h-4 w-4" />
           </button>
         </div>
       </div>
