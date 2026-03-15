@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { GeneratingOverlay } from './generating-overlay';
 import type { Generation, IssueCategory } from '@/shared/types';
 import { ISSUE_CATEGORIES, CATEGORY_COLORS, CATEGORY_EMOJIS } from '@/shared/constants';
 
@@ -293,6 +294,7 @@ export function PledgeForm() {
             })}
         </section>
       )}
+      <GeneratingOverlay visible={loading} />
     </div>
   );
 }
