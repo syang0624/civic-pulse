@@ -348,7 +348,14 @@
     "exporting": "Exporting...",
     "totalItems": "{count} items",
     "page": "Page {page} of {total}",
-    "teleprompter": "Teleprompter"
+    "teleprompter": "Teleprompter",
+    "dateToday": "Today",
+    "dateThisWeek": "This Week",
+    "dateThisMonth": "This Month",
+    "dateOlder": "Older",
+    "gridView": "Grid",
+    "listView": "List",
+    "itemCount": "{count}"
   },
   "Teleprompter": {
     "title": "Teleprompter",
