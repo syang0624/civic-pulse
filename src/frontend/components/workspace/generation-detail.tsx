@@ -96,7 +96,10 @@ export function GenerationDetail({
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [exporting, setExporting] = useState<'pdf' | 'docx' | null>(null);
-  const [draft, setDraft] = useState(generation.edited_text ?? generation.output_text);
+  const [textDraft, setTextDraft] = useState('');
+  const [adDraft, setAdDraft] = useState<AdStructured | null>(null);
+  const [pledgeDraft, setPledgeDraft] = useState<PledgeStructured[] | null>(null);
+  const [strategyDraft, setStrategyDraft] = useState<StrategyStructured | null>(null);
 
   const content = generation.edited_text?.trim() || generation.output_text;
 
@@ -117,6 +120,27 @@ export function GenerationDetail({
     () => (generation.tool === 'strategy' ? parseJson<StrategyStructured>(content) : null),
     [content, generation.tool],
   );
+
+  function startEditing() {
+    if (generation.tool === 'ad') {
+      setAdDraft(adStructured || { title: '', content: '', hashtags: [], image_suggestions: [] });
+    } else if (generation.tool === 'pledge') {
+      setPledgeDraft(pledges.length > 0 ? pledges : [{ title: '', problem: '', solution: '', timeline: '', estimated_budget: '' }]);
+    } else if (generation.tool === 'strategy') {
+      setStrategyDraft(strategyStructured || {});
+    } else {
+      setTextDraft(content);
+    }
+    setIsEditMode(true);
+  }
+
+  function cancelEditing() {
+    setIsEditMode(false);
+    setAdDraft(null);
+    setPledgeDraft(null);
+    setStrategyDraft(null);
+    setTextDraft('');
+  }
 
   const toolLabel = useMemo(() => {
     if (generation.tool === 'speech') return t('tabs.speech');
@@ -191,7 +215,19 @@ export function GenerationDetail({
   }
 
   async function handleSave() {
-    if (!draft.trim()) {
+    let finalText = '';
+
+    if (generation.tool === 'ad' && adDraft) {
+      finalText = JSON.stringify(adDraft);
+    } else if (generation.tool === 'pledge' && pledgeDraft) {
+      finalText = JSON.stringify(pledgeDraft);
+    } else if (generation.tool === 'strategy' && strategyDraft) {
+      finalText = JSON.stringify(strategyDraft);
+    } else {
+      finalText = textDraft;
+    }
+
+    if (!finalText.trim()) {
       return;
     }
 
@@ -200,7 +236,7 @@ export function GenerationDetail({
       const res = await fetch(`/api/generations/${generation.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ edited_text: draft }),
+        body: JSON.stringify({ edited_text: finalText }),
       });
 
       if (!res.ok) {
@@ -269,7 +305,7 @@ export function GenerationDetail({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsEditMode(true)}
+                  onClick={startEditing}
                   className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
                 >
                   <Pencil className="h-4 w-4" />
@@ -307,18 +343,368 @@ export function GenerationDetail({
             )}
 
             {isEditMode ? (
-              <div className="space-y-4">
-                <textarea
-                  value={draft}
-                  onChange={(event) => setDraft(event.target.value)}
-                  rows={20}
-                  className="w-full rounded-xl border bg-background px-4 py-3 text-base leading-relaxed shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
-                />
-                <div className="flex items-center gap-2">
+              <div className="space-y-8 pb-10">
+                {generation.tool === 'ad' && adDraft ? (
+                  <div className="space-y-6">
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('editTitle')}</label>
+                      <input
+                        value={adDraft.title || ''}
+                        onChange={(e) => setAdDraft({ ...adDraft, title: e.target.value })}
+                        className="w-full rounded-xl border bg-background px-4 py-3 text-sm shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+                      />
+                    </div>
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('editContentLabel')}</label>
+                      <textarea
+                        value={adDraft.content || ''}
+                        onChange={(e) => setAdDraft({ ...adDraft, content: e.target.value })}
+                        rows={10}
+                        className="w-full rounded-xl border bg-background px-4 py-3 text-base leading-relaxed shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+                      />
+                    </div>
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('editHashtags')}</label>
+                      <input
+                        value={adDraft.hashtags?.join(', ') || ''}
+                        onChange={(e) => setAdDraft({ ...adDraft, hashtags: e.target.value.split(',').map((s) => s.trim()) })}
+                        className="w-full rounded-xl border bg-background px-4 py-3 text-sm shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+                      />
+                    </div>
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('editImageSuggestions')}</label>
+                      <textarea
+                        value={adDraft.image_suggestions?.join('\n') || ''}
+                        onChange={(e) => setAdDraft({ ...adDraft, image_suggestions: e.target.value.split('\n') })}
+                        rows={5}
+                        className="w-full rounded-xl border bg-background px-4 py-3 text-base leading-relaxed shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+                      />
+                    </div>
+                  </div>
+                ) : generation.tool === 'pledge' && pledgeDraft ? (
+                  <div className="space-y-4">
+                    {pledgeDraft.map((pledge, idx) => (
+                      <details key={idx} className="group rounded-xl border bg-muted/10 open:bg-muted/20" open>
+                        <summary className="cursor-pointer list-none px-5 py-4 font-semibold text-foreground hover:text-primary">
+                          #{pledge.rank || idx + 1} {pledge.title || 'Pledge'}
+                        </summary>
+                        <div className="space-y-4 border-t px-5 py-4">
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t('editTitle')}</label>
+                            <input
+                              value={pledge.title || ''}
+                              onChange={(e) => {
+                                const newPledges = [...pledgeDraft];
+                                newPledges[idx] = { ...pledge, title: e.target.value };
+                                setPledgeDraft(newPledges);
+                              }}
+                              className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t('editProblem')}</label>
+                            <textarea
+                              value={pledge.problem || ''}
+                              onChange={(e) => {
+                                const newPledges = [...pledgeDraft];
+                                newPledges[idx] = { ...pledge, problem: e.target.value };
+                                setPledgeDraft(newPledges);
+                              }}
+                              rows={3}
+                              className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t('editSolution')}</label>
+                            <textarea
+                              value={pledge.solution || ''}
+                              onChange={(e) => {
+                                const newPledges = [...pledgeDraft];
+                                newPledges[idx] = { ...pledge, solution: e.target.value };
+                                setPledgeDraft(newPledges);
+                              }}
+                              rows={3}
+                              className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div>
+                              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t('editTimeline')}</label>
+                              <input
+                                value={pledge.timeline || ''}
+                                onChange={(e) => {
+                                  const newPledges = [...pledgeDraft];
+                                  newPledges[idx] = { ...pledge, timeline: e.target.value };
+                                  setPledgeDraft(newPledges);
+                                }}
+                                className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                              />
+                            </div>
+                            <div>
+                              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t('editBudget')}</label>
+                              <input
+                                value={pledge.estimated_budget || ''}
+                                onChange={(e) => {
+                                  const newPledges = [...pledgeDraft];
+                                  newPledges[idx] = { ...pledge, estimated_budget: e.target.value };
+                                  setPledgeDraft(newPledges);
+                                }}
+                                className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                ) : generation.tool === 'strategy' && strategyDraft ? (
+                  <div className="space-y-6">
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('editIssueSummary')}</label>
+                      <textarea
+                        value={strategyDraft.issue_summary || ''}
+                        onChange={(e) => setStrategyDraft({ ...strategyDraft, issue_summary: e.target.value })}
+                        rows={4}
+                        className="w-full rounded-xl border bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                      />
+                    </div>
+
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-4 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('editVoterGroups')}</label>
+                      <div className="space-y-4">
+                        {(strategyDraft.key_voter_groups || []).map((group, idx) => (
+                          <div key={idx} className="rounded-lg border bg-background p-4">
+                            <div className="mb-2 grid gap-2">
+                              <input
+                                placeholder={t('editGroup')}
+                                value={group.group || ''}
+                                onChange={(e) => {
+                                  const newGroups = [...(strategyDraft.key_voter_groups || [])];
+                                  newGroups[idx] = { ...group, group: e.target.value };
+                                  setStrategyDraft({ ...strategyDraft, key_voter_groups: newGroups });
+                                }}
+                                className="w-full border-b bg-transparent px-2 py-1 font-medium focus:border-primary focus:outline-none"
+                              />
+                              <input
+                                placeholder={t('editConcern')}
+                                value={group.concern || ''}
+                                onChange={(e) => {
+                                  const newGroups = [...(strategyDraft.key_voter_groups || [])];
+                                  newGroups[idx] = { ...group, concern: e.target.value };
+                                  setStrategyDraft({ ...strategyDraft, key_voter_groups: newGroups });
+                                }}
+                                className="w-full border-b bg-transparent px-2 py-1 text-sm text-muted-foreground focus:border-primary focus:outline-none"
+                              />
+                              <input
+                                placeholder={t('editApproach')}
+                                value={group.approach || ''}
+                                onChange={(e) => {
+                                  const newGroups = [...(strategyDraft.key_voter_groups || [])];
+                                  newGroups[idx] = { ...group, approach: e.target.value };
+                                  setStrategyDraft({ ...strategyDraft, key_voter_groups: newGroups });
+                                }}
+                                className="w-full border-b bg-transparent px-2 py-1 text-sm text-muted-foreground focus:border-primary focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('editMessagingAngle')}</label>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="mb-1 text-xs text-muted-foreground">{t('editCoreMessage')}</label>
+                          <textarea
+                            value={strategyDraft.messaging_angle?.core_message || ''}
+                            onChange={(e) => setStrategyDraft({
+                              ...strategyDraft,
+                              messaging_angle: { ...strategyDraft.messaging_angle, core_message: e.target.value },
+                            })}
+                            rows={3}
+                            className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          <div>
+                            <label className="mb-1 text-xs text-muted-foreground">{t('editFraming')}</label>
+                            <input
+                              value={strategyDraft.messaging_angle?.framing || ''}
+                              onChange={(e) => setStrategyDraft({
+                                ...strategyDraft,
+                                messaging_angle: { ...strategyDraft.messaging_angle, framing: e.target.value },
+                              })}
+                              className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 text-xs text-muted-foreground">{t('editToneRecommendation')}</label>
+                            <input
+                              value={strategyDraft.messaging_angle?.tone_recommendation || ''}
+                              onChange={(e) => setStrategyDraft({
+                                ...strategyDraft,
+                                messaging_angle: { ...strategyDraft.messaging_angle, tone_recommendation: e.target.value },
+                              })}
+                              className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('editTalkingPoints')}</label>
+                      <textarea
+                        value={strategyDraft.talking_points?.join('\n') || ''}
+                        onChange={(e) => setStrategyDraft({ ...strategyDraft, talking_points: e.target.value.split('\n') })}
+                        rows={5}
+                        className="w-full rounded-xl border bg-background px-4 py-3 text-base leading-relaxed shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+                      />
+                    </div>
+
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-4 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('editCampaignActions')}</label>
+                      <div className="space-y-4">
+                        {(strategyDraft.campaign_actions || []).map((action, idx) => (
+                          <div key={idx} className="rounded-lg border bg-background p-4">
+                            <div className="grid gap-2">
+                              <input
+                                placeholder={t('editAction')}
+                                value={action.action || ''}
+                                onChange={(e) => {
+                                  const newActions = [...(strategyDraft.campaign_actions || [])];
+                                  newActions[idx] = { ...action, action: e.target.value };
+                                  setStrategyDraft({ ...strategyDraft, campaign_actions: newActions });
+                                }}
+                                className="w-full border-b bg-transparent px-2 py-1 font-medium focus:border-primary focus:outline-none"
+                              />
+                              <div className="grid grid-cols-2 gap-2">
+                                <input
+                                  placeholder={t('editTimeline')}
+                                  value={action.timeline || ''}
+                                  onChange={(e) => {
+                                    const newActions = [...(strategyDraft.campaign_actions || [])];
+                                    newActions[idx] = { ...action, timeline: e.target.value };
+                                    setStrategyDraft({ ...strategyDraft, campaign_actions: newActions });
+                                  }}
+                                  className="w-full border-b bg-transparent px-2 py-1 text-sm text-muted-foreground focus:border-primary focus:outline-none"
+                                />
+                                <input
+                                  placeholder={t('editExpectedImpact')}
+                                  value={action.expected_impact || ''}
+                                  onChange={(e) => {
+                                    const newActions = [...(strategyDraft.campaign_actions || [])];
+                                    newActions[idx] = { ...action, expected_impact: e.target.value };
+                                    setStrategyDraft({ ...strategyDraft, campaign_actions: newActions });
+                                  }}
+                                  className="w-full border-b bg-transparent px-2 py-1 text-sm text-muted-foreground focus:border-primary focus:outline-none"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('editSocialMediaStrategy')}</label>
+                      <div className="grid gap-4">
+                        <div>
+                          <label className="mb-1 text-xs text-muted-foreground">{t('editKeyHashtags')}</label>
+                          <input
+                            value={strategyDraft.social_media_strategy?.key_hashtags?.join(', ') || ''}
+                            onChange={(e) => setStrategyDraft({
+                              ...strategyDraft,
+                              social_media_strategy: { ...strategyDraft.social_media_strategy, key_hashtags: e.target.value.split(',').map(s => s.trim()) },
+                            })}
+                            className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-1 text-xs text-muted-foreground">{t('editContentThemes')}</label>
+                          <input
+                            value={strategyDraft.social_media_strategy?.content_themes?.join(', ') || ''}
+                            onChange={(e) => setStrategyDraft({
+                              ...strategyDraft,
+                              social_media_strategy: { ...strategyDraft.social_media_strategy, content_themes: e.target.value.split(',').map(s => s.trim()) },
+                            })}
+                            className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          <div>
+                            <label className="mb-1 text-xs text-muted-foreground">{t('editRecommendedPlatforms')}</label>
+                            <input
+                              value={strategyDraft.social_media_strategy?.recommended_platforms?.join(', ') || ''}
+                              onChange={(e) => setStrategyDraft({
+                                ...strategyDraft,
+                                social_media_strategy: { ...strategyDraft.social_media_strategy, recommended_platforms: e.target.value.split(',').map(s => s.trim()) },
+                              })}
+                              className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 text-xs text-muted-foreground">{t('editPostFrequency')}</label>
+                            <input
+                              value={strategyDraft.social_media_strategy?.post_frequency || ''}
+                              onChange={(e) => setStrategyDraft({
+                                ...strategyDraft,
+                                social_media_strategy: { ...strategyDraft.social_media_strategy, post_frequency: e.target.value },
+                              })}
+                              className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-4 block text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('editRisksAndCounters')}</label>
+                      <div className="space-y-4">
+                        {(strategyDraft.risks_and_counters || []).map((risk, idx) => (
+                          <div key={idx} className="rounded-lg border bg-background p-4">
+                            <div className="grid gap-2">
+                              <input
+                                placeholder={t('editRisk')}
+                                value={risk.risk || ''}
+                                onChange={(e) => {
+                                  const newRisks = [...(strategyDraft.risks_and_counters || [])];
+                                  newRisks[idx] = { ...risk, risk: e.target.value };
+                                  setStrategyDraft({ ...strategyDraft, risks_and_counters: newRisks });
+                                }}
+                                className="w-full border-b bg-transparent px-2 py-1 font-medium text-destructive focus:border-primary focus:outline-none"
+                              />
+                              <input
+                                placeholder={t('editCounter')}
+                                value={risk.counter || ''}
+                                onChange={(e) => {
+                                  const newRisks = [...(strategyDraft.risks_and_counters || [])];
+                                  newRisks[idx] = { ...risk, counter: e.target.value };
+                                  setStrategyDraft({ ...strategyDraft, risks_and_counters: newRisks });
+                                }}
+                                className="w-full border-b bg-transparent px-2 py-1 text-sm text-muted-foreground focus:border-primary focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <textarea
+                    value={textDraft}
+                    onChange={(event) => setTextDraft(event.target.value)}
+                    rows={20}
+                    className="w-full rounded-xl border bg-background px-4 py-3 text-base leading-relaxed shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+                  />
+                )}
+                
+                <div className="flex items-center gap-2 border-t pt-6">
                   <button
                     type="button"
                     onClick={handleSave}
-                    disabled={saving || !draft.trim()}
+                    disabled={saving}
                     className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
                   >
                     <Save className="h-4 w-4" />
@@ -326,10 +712,7 @@ export function GenerationDetail({
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      setDraft(content);
-                      setIsEditMode(false);
-                    }}
+                    onClick={cancelEditing}
                     className="rounded-full border px-5 py-2 text-sm font-medium transition-colors hover:bg-muted"
                   >
                     {t('cancelEdit')}

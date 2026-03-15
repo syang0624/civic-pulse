@@ -27,6 +27,82 @@ const toolBorderColor: Record<GenerationTool, string> = {
   strategy: 'border-l-purple-500',
 };
 
+interface AdStructured {
+  title?: string;
+  content?: string;
+  hashtags?: string[];
+  image_suggestions?: string[];
+}
+
+interface PledgeStructured {
+  rank?: number;
+  title?: string;
+  problem?: string;
+  solution?: string;
+  timeline?: string;
+  expected_outcomes?: string[];
+  talking_points?: string[];
+  priority_reason?: string;
+  estimated_budget?: string;
+}
+
+interface StrategyStructured {
+  issue_summary?: string;
+  key_voter_groups?: Array<{
+    group?: string;
+    concern?: string;
+    approach?: string;
+  }>;
+  messaging_angle?: {
+    core_message?: string;
+    framing?: string;
+    tone_recommendation?: string;
+  };
+  campaign_actions?: Array<{
+    action?: string;
+    timeline?: string;
+    expected_impact?: string;
+  }>;
+  talking_points?: string[];
+  social_media_strategy?: {
+    key_hashtags?: string[];
+    content_themes?: string[];
+    recommended_platforms?: string[];
+    post_frequency?: string;
+  };
+  risks_and_counters?: Array<{
+    risk?: string;
+    counter?: string;
+  }>;
+}
+
+function getPreviewText(generation: Generation): string {
+  const content = generation.edited_text?.trim() || generation.output_text;
+
+  try {
+    if (generation.tool === 'ad') {
+      const parsed = JSON.parse(content) as AdStructured;
+      return parsed.content || content;
+    }
+    if (generation.tool === 'pledge') {
+      const parsed = JSON.parse(content) as PledgeStructured[];
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const first = parsed[0];
+        return [first.title, first.problem].filter(Boolean).join('\n');
+      }
+      return content;
+    }
+    if (generation.tool === 'strategy') {
+      const parsed = JSON.parse(content) as StrategyStructured;
+      return parsed.issue_summary || content;
+    }
+  } catch {
+    return content;
+  }
+
+  return content;
+}
+
 function readString(
   params: Record<string, unknown>,
   key: string,
@@ -63,7 +139,7 @@ function toolLabel(tool: GenerationTool, t: ReturnType<typeof useTranslations<'W
 
 export function GenerationCard({ generation, onOpen, onDelete, viewMode = 'grid' }: GenerationCardProps) {
   const t = useTranslations('Workspace');
-  const content = generation.edited_text?.trim() || generation.output_text;
+  const content = getPreviewText(generation);
 
   const meta = useMemo(() => {
     const params = generation.input_params;
