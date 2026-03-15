@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import { GeneratingOverlay } from './generating-overlay';
 import type { Generation } from '@/shared/types';
 
 interface IssueItem {
@@ -62,8 +63,10 @@ export function StrategyForm() {
   const issueIdFromUrl = searchParams.get('issueId');
 
   const [loading, setLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [issuesLoading, setIssuesLoading] = useState(false);
   const [issues, setIssues] = useState<IssueItem[]>([]);
+  const [districtCode, setDistrictCode] = useState('');
   const [selectedIssueId, setSelectedIssueId] = useState(issueIdFromUrl ?? '');
   const [selectedIssue, setSelectedIssue] = useState<IssueItem | null>(null);
   const [focus, setFocus] = useState('');
@@ -75,6 +78,37 @@ export function StrategyForm() {
   useEffect(() => {
     setSelectedIssueId(issueIdFromUrl ?? '');
   }, [issueIdFromUrl]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function fetchProfile() {
+      try {
+        const response = await fetch('/api/profile');
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json()) as { district_code?: string | null };
+        if (mounted) {
+          setDistrictCode(data.district_code ?? '');
+        }
+      } catch {
+        if (mounted) {
+          setDistrictCode('');
+        }
+      } finally {
+        if (mounted) {
+          setProfileLoading(false);
+        }
+      }
+    }
+
+    fetchProfile();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (issueIdFromUrl) {
@@ -93,8 +127,12 @@ export function StrategyForm() {
       return;
     }
 
+    if (profileLoading) {
+      return;
+    }
+
     setIssuesLoading(true);
-    fetch('/api/issues?limit=20')
+    fetch('/api/issues?limit=20&region_code=' + encodeURIComponent(districtCode))
       .then((res) => res.json())
       .then((data: IssueApiResponse) => {
         const items = Array.isArray(data.data) ? data.data : [];
@@ -106,7 +144,7 @@ export function StrategyForm() {
       .finally(() => {
         setIssuesLoading(false);
       });
-  }, [issueIdFromUrl]);
+  }, [issueIdFromUrl, profileLoading, districtCode]);
 
   useEffect(() => {
     if (!selectedIssueId || issueIdFromUrl) {
@@ -448,6 +486,7 @@ export function StrategyForm() {
           </div>
         </section>
       )}
+      <GeneratingOverlay visible={loading} />
     </div>
   );
 }

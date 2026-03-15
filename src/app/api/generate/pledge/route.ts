@@ -8,6 +8,7 @@ import {
   buildPledgeSystemPrompt,
   buildPledgeUserPrompt,
 } from '@/backend/prompts/pledge';
+import { searchCouncilMinutes, formatMinutesContext } from '@/backend/services/council-minutes';
 import type { Locale, IssueCategory } from '@/shared/types';
 
 interface StructuredPledge {
@@ -75,12 +76,25 @@ export async function POST(request: NextRequest) {
 
   const issueContext = formatIssueContext(ctx);
 
+  const searchKeywords = params.focus_areas.slice(0, 3);
+  const minutesResults = await Promise.all(
+    searchKeywords.map((area) =>
+      searchCouncilMinutes(`${ctx.profile.district_name} ${area}`, 3),
+    ),
+  );
+  const allMinutes = minutesResults.flat();
+  const uniqueMinutes = allMinutes.filter(
+    (m, i, arr) => arr.findIndex((x) => x.docId === m.docId) === i,
+  );
+  const minutesContext = formatMinutesContext(uniqueMinutes.slice(0, 5));
+
   const systemPrompt = buildPledgeSystemPrompt(ctx);
   const userPrompt = buildPledgeUserPrompt({
     focusAreas: params.focus_areas,
     numPledges: params.num_pledges,
     regionContext: params.region_context ?? null,
     issueContext,
+    minutesContext,
   });
 
   try {

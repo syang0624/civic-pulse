@@ -40,10 +40,15 @@ export function buildAdUserPrompt(params: {
   platform: AdPlatform;
   topic: string;
   goal: AdGoal;
+  locale: 'ko' | 'en';
   issueContext: string | null;
 }): string {
-  const { platform, topic, goal, issueContext } = params;
+  const { platform, topic, goal, locale, issueContext } = params;
   const charLimit = PLATFORM_CHAR_LIMITS[platform];
+  const imageSuggestionLanguage = locale === 'ko' ? 'Korean' : 'English';
+  const imageSuggestionExample = locale === 'ko'
+    ? '["시장 골목에서 주민과 인사하는 후보의 따뜻한 장면", "지역 지도와 핵심 공약이 함께 보이는 정보형 카드뉴스", "해 질 무렵 광장에서 시민들과 대화하는 현장 사진"]'
+    : '["A warm candid shot of the candidate greeting residents in a local market", "An infographic-style visual combining a local map with key campaign pledges", "An evening town-square scene with the candidate engaging citizens in conversation"]';
 
   let prompt = `Create a ${platform} campaign post about "${topic}".
 
@@ -58,10 +63,11 @@ Return a JSON object with exactly these fields:
   "title": "A catchy, attention-grabbing title/headline (10-30 chars)",
   "content": "The main post content (respect the character limit above)",
   "hashtags": ["hashtag1", "hashtag2", ...up to 10 relevant hashtags without # prefix],
-  "image_suggestions": ["Description of suggested image 1", "Description of suggested image 2", "Description of suggested image 3"]
+  "image_suggestions": ${imageSuggestionExample}
 }
 
 For image_suggestions, describe 3 images that would complement this post. Be specific about composition, subjects, and mood. These are descriptions for image generation or stock photo search.
+Write all image_suggestions descriptions in ${imageSuggestionLanguage}.
 
 Return ONLY valid JSON, no markdown, no explanation.`;
 

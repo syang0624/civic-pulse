@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import { GeneratingOverlay } from './generating-overlay';
 import type { AdPlatform, AdGoal, Generation } from '@/shared/types';
 import { PLATFORM_CHAR_LIMITS } from '@/shared/constants';
 
@@ -357,6 +358,7 @@ export function AdForm() {
           </div>
         </section>
       )}
+      <GeneratingOverlay visible={loading} />
     </div>
   );
 }

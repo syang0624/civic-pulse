@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import {
@@ -17,7 +18,7 @@ import { cn } from '@/frontend/lib/utils';
 import { createClient } from '@/backend/lib/supabase/client';
 import { AdminNavItem } from './admin-nav-item';
 
-const navItems = [
+const userNavItems = [
   { href: '/dashboard', labelKey: 'dashboard' as const, icon: LayoutDashboard },
   { href: '/generate/speech', labelKey: 'speech' as const, icon: PenTool },
   { href: '/generate/ad', labelKey: 'ad' as const, icon: Share2 },
@@ -27,10 +28,52 @@ const navItems = [
   { href: '/profile', labelKey: 'profile' as const, icon: User },
 ];
 
+const adminNavItems = [
+  { href: '/dashboard', labelKey: 'dashboard' as const, icon: LayoutDashboard },
+  { href: '/profile', labelKey: 'profile' as const, icon: User },
+];
+
 export function NavBar() {
   const t = useTranslations('Nav');
   const pathname = usePathname();
   const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdminChecked, setIsAdminChecked] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function checkAdmin() {
+      try {
+        const response = await fetch('/api/admin/check', { cache: 'no-store' });
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json()) as { isAdmin?: boolean };
+        if (mounted) {
+          setIsAdmin(Boolean(data.isAdmin));
+        }
+      } catch {
+        if (mounted) {
+          setIsAdmin(false);
+        }
+      } finally {
+        if (mounted) {
+          setIsAdminChecked(true);
+        }
+      }
+    }
+
+    checkAdmin();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const navItems = isAdminChecked
+    ? (isAdmin ? adminNavItems : userNavItems)
+    : adminNavItems;
 
   async function handleLogout() {
     const supabase = createClient();
@@ -72,7 +115,7 @@ export function NavBar() {
               </Link>
             );
           })}
-          <AdminNavItem />
+          <AdminNavItem isAdmin={isAdminChecked && isAdmin} />
         </nav>
 
         <div className="ml-auto flex items-center gap-2">

@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
     platform: params.platform,
     topic: params.topic,
     goal: params.goal,
+    locale,
     issueContext,
   });
 

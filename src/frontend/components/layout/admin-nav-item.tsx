@@ -1,42 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Shield } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/frontend/lib/utils';
 
-export function AdminNavItem() {
+export function AdminNavItem({ isAdmin }: { isAdmin: boolean }) {
   const t = useTranslations('Nav');
   const pathname = usePathname();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function checkAdmin() {
-      try {
-        const response = await fetch('/api/admin/check', { cache: 'no-store' });
-        if (!response.ok) {
-          return;
-        }
-
-        const data = (await response.json()) as { isAdmin?: boolean };
-        if (mounted) {
-          setIsAdmin(Boolean(data.isAdmin));
-        }
-      } catch {
-        if (mounted) {
-          setIsAdmin(false);
-        }
-      }
-    }
-
-    checkAdmin();
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   if (!isAdmin) {
     return null;
