@@ -19,54 +19,66 @@ export function IssueList({ districtCode }: { districtCode?: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [autoCrawling, setAutoCrawling] = useState(false);
-  const autoCrawlAttempted = useState(false);
+  const [crawlAttempted, setCrawlAttempted] = useState(false);
+
+  const fetchIssueData = async () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (districtCode) {
+      params.set('region_code', districtCode);
+    }
+    const res = await fetch(`/api/issues?${params.toString()}`);
+    if (!res.ok) throw new Error('Failed to fetch');
+    return await res.json() as PaginatedResponse<Issue>;
+  };
 
   useEffect(() => {
-    async function fetchIssues() {
+    let cancelled = false;
+
+    async function loadDashboard() {
       setLoading(true);
       setError(false);
       try {
-        const params = new URLSearchParams(searchParams.toString());
-        if (districtCode) {
-          params.set('region_code', districtCode);
-        }
-        const res = await fetch(`/api/issues?${params.toString()}`);
-        if (!res.ok) throw new Error('Failed to fetch');
-        const json = await res.json() as PaginatedResponse<Issue>;
-        setData(json);
+        const json = await fetchIssueData();
+
+        if (cancelled) return;
 
         if (
           json.data.length === 0 &&
           json.pagination.total === 0 &&
           districtCode &&
-          !autoCrawlAttempted[0]
+          !crawlAttempted
         ) {
-          autoCrawlAttempted[0] = true;
+          setCrawlAttempted(true);
           setAutoCrawling(true);
+          setLoading(false);
+
           try {
-            const crawlRes = await fetch('/api/issues/crawl', { method: 'POST' });
-            if (crawlRes.ok) {
-              const retryParams = new URLSearchParams(searchParams.toString());
-              retryParams.set('region_code', districtCode);
-              const retryRes = await fetch(`/api/issues?${retryParams.toString()}`);
-              if (retryRes.ok) {
-                const retryJson = await retryRes.json() as PaginatedResponse<Issue>;
-                setData(retryJson);
-              }
-            }
+            await fetch('/api/issues/crawl', { method: 'POST' });
           } catch {
-          } finally {
-            setAutoCrawling(false);
           }
+
+          if (cancelled) return;
+
+          try {
+            const refreshed = await fetchIssueData();
+            if (!cancelled) setData(refreshed);
+          } catch {
+          }
+
+          if (!cancelled) setAutoCrawling(false);
+          return;
         }
+
+        setData(json);
       } catch {
-        setError(true);
+        if (!cancelled) setError(true);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
 
-    fetchIssues();
+    loadDashboard();
+    return () => { cancelled = true; };
   }, [searchParams, districtCode]);
 
   const handlePageChange = (newPage: number) => {
