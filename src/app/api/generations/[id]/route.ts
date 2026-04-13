@@ -61,6 +61,18 @@ export async function PUT(
     .update({
       edited_text: editedText,
       user_edited: true,
+      context_used: {
+        ...(existing.context_used ?? {}),
+        version_history: [
+          ...((Array.isArray(existing.context_used?.version_history)
+            ? existing.context_used.version_history
+            : []) as Array<{ at: string; text: string }>),
+          {
+            at: new Date().toISOString(),
+            text: existing.edited_text?.trim() || existing.output_text,
+          },
+        ],
+      },
     })
     .eq('id', id)
     .eq('profile_id', user.id)
