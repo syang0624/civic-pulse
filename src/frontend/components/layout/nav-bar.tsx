@@ -6,9 +6,12 @@ import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import {
   LayoutDashboard,
   PenTool,
+  Mail,
   Share2,
   ScrollText,
   Target,
+  BarChart3,
+  CalendarCheck2,
   FolderOpen,
   User,
   LogOut,
@@ -21,9 +24,12 @@ import { AdminNavItem } from './admin-nav-item';
 const userNavItems = [
   { href: '/dashboard', labelKey: 'dashboard' as const, icon: LayoutDashboard },
   { href: '/generate/speech', labelKey: 'speech' as const, icon: PenTool },
+  { href: '/generate/email', labelKey: 'email' as const, icon: Mail },
   { href: '/generate/ad', labelKey: 'ad' as const, icon: Share2 },
+  { href: '/generate/sentiment', labelKey: 'sentiment' as const, icon: BarChart3 },
   { href: '/generate/pledge', labelKey: 'pledge' as const, icon: ScrollText },
   { href: '/generate/strategy', labelKey: 'strategy' as const, icon: Target },
+  { href: '/campaign', labelKey: 'campaign' as const, icon: CalendarCheck2 },
   { href: '/workspace', labelKey: 'workspace' as const, icon: FolderOpen },
   { href: '/profile', labelKey: 'profile' as const, icon: User },
 ];

@@ -25,9 +25,12 @@
     "profile": "Profile",
     "logout": "Log out",
     "speech": "Speech",
+    "email": "Email",
     "ad": "Social Media",
+    "sentiment": "Sentiment",
     "pledge": "Pledges",
     "strategy": "Strategy",
+    "campaign": "Campaign",
     "workspace": "Library",
     "admin": "Admin"
   },
@@ -59,7 +62,9 @@
     "speech": "Speech",
     "ad": "Social",
     "pledge": "Pledge",
-    "strategy": "Strategy"
+    "strategy": "Strategy",
+    "email": "Email",
+    "sentiment": "Sentiment"
     ,"userDetail": "User Details"
     ,"userActivity": "Usage History"
     ,"editUser": "Edit Info"
@@ -261,7 +266,22 @@
       "dataLight": "Story-driven",
       "dataMedium": "Some stats",
       "dataHeavy": "Data-rich",
-      "openTeleprompter": "Open in Teleprompter"
+      "openTeleprompter": "Open in Teleprompter",
+      "strictFactualHint": "Use only conservative, verifiable claims."
+    },
+    "Email": {
+      "title": "Constituent Email Responder",
+      "subtitle": "Draft respectful, policy-aligned replies to citizen emails.",
+      "inboundEmail": "Inbound Email",
+      "inboundPlaceholder": "Paste the citizen email you want to respond to...",
+      "strictFactual": "Strict factual mode",
+      "strictFactualHint": "Avoid unverified numbers and keep claims conservative.",
+      "replyDraft": "Reply Draft",
+      "sourceConfidence": "Source confidence",
+      "policyAlignment": "Policy alignment",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "generate": "Generate Reply"
     },
     "Ad": {
       "title": "Social Media Post",
@@ -282,7 +302,33 @@
       "sectionTitle": "Title",
       "sectionContent": "Content",
       "sectionHashtags": "Hashtags",
-      "sectionImageSuggestions": "Image Suggestions"
+      "sectionImageSuggestions": "Image Suggestions",
+      "strictFactualHint": "Avoid speculative or unverified numbers."
+    },
+    "Sentiment": {
+      "title": "Weekly Sentiment Brief",
+      "subtitle": "Get a concise strategic digest of district issue momentum.",
+      "period": "Period",
+      "period1week": "Last 1 week",
+      "period2weeks": "Last 2 weeks",
+      "period4weeks": "Last 4 weeks",
+      "period8weeks": "Last 8 weeks",
+      "compareTo": "Compare to",
+      "compareNone": "No comparison",
+      "compareNeighboring": "Neighboring districts",
+      "strictFactual": "Strict factual mode",
+      "strictFactualHint": "Use only grounded issue patterns from collected data.",
+      "briefTitle": "Sentiment Brief ({period})",
+      "trendingUp": "Trending Up",
+      "trendingDown": "Trending Down",
+      "newIssues": "New Issues",
+      "negativeHotspots": "Negative Hotspots",
+      "recommendedActions": "Recommended Actions",
+      "sourceConfidence": "Source confidence",
+      "policyAlignment": "Policy alignment",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "generate": "Generate Brief"
     },
     "Pledge": {
       "title": "Policy Pledge Generator",
@@ -299,7 +345,8 @@
       "outcomes": "Expected Outcomes",
       "talkingPoints": "Talking Points",
       "priorityReason": "Priority Reason",
-      "budget": "Estimated Budget"
+      "budget": "Estimated Budget",
+      "strictFactualHint": "Keep promises realistic and evidence-grounded."
     }
   },
   "Strategy": {
@@ -333,12 +380,30 @@
     "risksAndCounters": "Risks & Counters",
     "risk": "Risk",
     "counter": "Counter",
-    "noIssues": "No issues available for analysis. Collect issues from the dashboard first."
+    "noIssues": "No issues available for analysis. Collect issues from the dashboard first.",
+    "strictFactualHint": "Prioritize grounded, data-backed recommendations."
+  },
+  "Campaign": {
+    "title": "Campaign Execution Planner",
+    "subtitle": "Turn generated insights into concrete tasks, timeline, and follow-through.",
+    "taskPlaceholder": "Add a campaign action (e.g., Draft follow-up post on school overcrowding)",
+    "sourceManual": "Manual",
+    "sourceSpeech": "Speech",
+    "sourceEmail": "Email",
+    "sourceAd": "Social",
+    "sourceSentiment": "Sentiment",
+    "sourceStrategy": "Strategy",
+    "addTask": "Add Task",
+    "empty": "No tasks yet. Add your first campaign action.",
+    "markDone": "Mark as done",
+    "markUndone": "Mark as not done",
+    "removeTask": "Remove task",
+    "sourceLabel": "Source"
   },
   "Workspace": {
     "title": "Content Library",
     "subtitle": "Manage all your generated content.",
-    "tabs": { "all": "All", "speech": "Speeches", "ad": "Social Media", "pledge": "Pledges", "strategy": "Strategy" },
+    "tabs": { "all": "All", "speech": "Speeches", "email": "Email", "ad": "Social Media", "sentiment": "Sentiment", "pledge": "Pledges", "strategy": "Strategy" },
     "search": "Search content...",
     "sortNewest": "Newest first",
     "sortOldest": "Oldest first",
