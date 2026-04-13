@@ -4,6 +4,7 @@ import { createClient } from '@/backend/lib/supabase/server';
 import { generateWithClaude } from '@/backend/lib/claude';
 import { speechGenerationSchema } from '@/backend/validators/generate';
 import { assembleContext, formatIssueContext } from '@/backend/services/context';
+import { buildQualityMeta } from '@/backend/services/quality';
 import {
   buildSpeechSystemPrompt,
   buildSpeechUserPrompt,
@@ -28,6 +29,7 @@ export async function POST(request: NextRequest) {
 
   const params = result.data;
   const locale = (request.headers.get('x-locale') ?? 'ko') as Locale;
+  const strictFactual = Boolean(params.strict_factual);
 
   const ctx = await assembleContext(user.id, locale, params.issue_id);
   if (!ctx) {
@@ -57,7 +59,13 @@ export async function POST(request: NextRequest) {
       system: systemPrompt,
       prompt: userPrompt,
       maxTokens: Math.max(8192, targetWords * 4),
-      temperature: 0.7,
+      temperature: strictFactual ? 0.2 : 0.7,
+    });
+
+    const quality = buildQualityMeta({
+      strictFactual,
+      ctx,
+      outputText,
     });
 
     const supabase = await createClient();
@@ -70,6 +78,7 @@ export async function POST(request: NextRequest) {
         context_used: {
           profile_fields: ['name', 'district_name', 'party', 'tone', 'target_demo'],
           issues_referenced: ctx.issues.map((i) => i.title),
+          quality,
         },
         output_text: outputText,
         locale,
@@ -81,7 +90,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ output_text: outputText });
     }
 
-    return NextResponse.json(generation);
+    return NextResponse.json({ ...generation, quality });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Generation failed';
     return NextResponse.json({ error: message }, { status: 500 });
