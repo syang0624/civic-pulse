@@ -12,7 +12,7 @@ export type Tone = 'formal' | 'conversational' | 'passionate' | 'data_driven';
 export type Priority = 'high' | 'medium' | 'low';
 export type Urgency = 'high' | 'medium' | 'low';
 export type Trend = 'rising' | 'stable' | 'declining';
-export type GenerationTool = 'speech' | 'ad' | 'pledge' | 'strategy';
+export type GenerationTool = 'speech' | 'email' | 'ad' | 'pledge' | 'strategy' | 'sentiment';
 
 export type IssueCategory =
   | 'education'
@@ -161,6 +161,16 @@ export interface Generation {
 export interface ContextUsed {
   profile_fields: string[];
   issues_referenced: string[];
+  quality?: {
+    source_confidence: 'high' | 'medium' | 'low';
+    policy_alignment: 'aligned' | 'needs_review';
+    strict_factual: boolean;
+    notes: string[];
+  };
+  version_history?: Array<{
+    at: string;
+    text: string;
+  }>;
 }
 
 // --- Generation Request Types ---
@@ -190,6 +200,19 @@ export interface PledgeGenerationRequest {
 export interface StrategyGenerationRequest {
   issue_id: string;
   focus?: string;
+}
+
+export interface EmailGenerationRequest {
+  inbound_email: string;
+  tone?: Tone;
+  issue_id?: string;
+  strict_factual?: boolean;
+}
+
+export interface SentimentGenerationRequest {
+  period?: '1week' | '2weeks' | '4weeks' | '8weeks';
+  compare_to?: 'none' | 'neighboring';
+  strict_factual?: boolean;
 }
 
 // --- Context Assembly ---
