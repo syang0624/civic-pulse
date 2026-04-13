@@ -58,6 +58,7 @@ export function SpeechForm() {
   const [tone, setTone] = useState<Tone>('formal');
   const [length, setLength] = useState<SpeechLength>('3min');
   const [dataLevel, setDataLevel] = useState<DataLevel>('medium');
+  const [strictFactual, setStrictFactual] = useState(true);
   const [output, setOutput] = useState<string | null>(null);
   const [generationId, setGenerationId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -181,6 +182,7 @@ export function SpeechForm() {
           tone,
           length,
           data_level: dataLevel,
+          strict_factual: strictFactual,
         }),
       });
 
@@ -357,6 +359,16 @@ export function SpeechForm() {
             ))}
           </div>
         </div>
+
+        <label className="flex items-center gap-3 rounded-xl border bg-background px-4 py-3 text-sm">
+          <input
+            type="checkbox"
+            checked={strictFactual}
+            onChange={(e) => setStrictFactual(e.target.checked)}
+            className="h-4 w-4"
+          />
+          <span>{t('strictFactualHint')}</span>
+        </label>
 
         {/* Generate Button */}
         <button

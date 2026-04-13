@@ -54,6 +54,7 @@ export function AdForm() {
   const [platform, setPlatform] = useState<AdPlatform>('instagram');
   const [topic, setTopic] = useState('');
   const [goal, setGoal] = useState<AdGoal>('awareness');
+  const [strictFactual, setStrictFactual] = useState(true);
   const [output, setOutput] = useState<string | null>(null);
   const [structuredOutput, setStructuredOutput] =
     useState<SocialMediaOutput | null>(null);
@@ -99,6 +100,7 @@ export function AdForm() {
           platform,
           topic,
           goal,
+          strict_factual: strictFactual,
         }),
       });
 
@@ -217,6 +219,16 @@ export function AdForm() {
             className="w-full rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all placeholder:text-muted-foreground/50 hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
           />
         </div>
+
+        <label className="flex items-center gap-3 rounded-xl border bg-background px-4 py-3 text-sm">
+          <input
+            type="checkbox"
+            checked={strictFactual}
+            onChange={(e) => setStrictFactual(e.target.checked)}
+            className="h-4 w-4"
+          />
+          <span>{t('strictFactualHint')}</span>
+        </label>
 
         <button
           type="button"
