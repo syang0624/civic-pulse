@@ -15,14 +15,18 @@ interface GenerationCardProps {
 
 const toolBadgeStyle: Record<GenerationTool, string> = {
   speech: 'bg-blue-500/10 text-blue-700 dark:text-blue-300',
+  email: 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300',
   ad: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+  sentiment: 'bg-rose-500/10 text-rose-700 dark:text-rose-300',
   pledge: 'bg-amber-500/10 text-amber-700 dark:text-amber-300',
   strategy: 'bg-purple-500/10 text-purple-700 dark:text-purple-300',
 };
 
 const toolBorderColor: Record<GenerationTool, string> = {
   speech: 'border-l-blue-500',
+  email: 'border-l-cyan-500',
   ad: 'border-l-emerald-500',
+  sentiment: 'border-l-rose-500',
   pledge: 'border-l-amber-500',
   strategy: 'border-l-purple-500',
 };
@@ -132,7 +136,9 @@ function readStringArray(
 
 function toolLabel(tool: GenerationTool, t: ReturnType<typeof useTranslations<'Workspace'>>) {
   if (tool === 'speech') return t('tabs.speech');
+  if (tool === 'email') return t('tabs.email');
   if (tool === 'ad') return t('tabs.ad');
+  if (tool === 'sentiment') return t('tabs.sentiment');
   if (tool === 'strategy') return t('tabs.strategy');
   return t('tabs.pledge');
 }
@@ -162,6 +168,26 @@ export function GenerationCard({ generation, onOpen, onDelete, viewMode = 'grid'
         lines: [
           `${t('platform')}: ${readString(params, 'platform') ?? '-'}`,
           `${t('goal')}: ${readString(params, 'goal') ?? '-'}`,
+        ],
+      };
+    }
+
+    if (generation.tool === 'email') {
+      return {
+        title: readString(params, 'subject') ?? title,
+        lines: [
+          `Tone: ${readString(params, 'tone') ?? '-'}`,
+          `Strict factual: ${String(Boolean(params.strict_factual))}`,
+        ],
+      };
+    }
+
+    if (generation.tool === 'sentiment') {
+      return {
+        title,
+        lines: [
+          `Period: ${readString(params, 'period') ?? '-'}`,
+          `Compare: ${readString(params, 'compare_to') ?? '-'}`,
         ],
       };
     }

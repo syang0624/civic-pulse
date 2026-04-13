@@ -12,11 +12,13 @@ type Tab = 'all' | GenerationTool;
 type Sort = 'newest' | 'oldest';
 type ViewMode = 'grid' | 'list';
 
-const tabOrder: Tab[] = ['all', 'speech', 'ad', 'pledge', 'strategy'];
+const tabOrder: Tab[] = ['all', 'speech', 'email', 'ad', 'sentiment', 'pledge', 'strategy'];
 
 const toolColors: Record<GenerationTool, string> = {
   speech: 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+  email: 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800',
   ad: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+  sentiment: 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800',
   pledge: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
   strategy: 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
 };
@@ -37,7 +39,9 @@ export function WorkspaceContent() {
   const [selected, setSelected] = useState<Generation | null>(null);
   const [stats, setStats] = useState<Record<GenerationTool, number>>({
     speech: 0,
+    email: 0,
     ad: 0,
+    sentiment: 0,
     pledge: 0,
     strategy: 0,
   });
@@ -53,7 +57,7 @@ export function WorkspaceContent() {
 
   useEffect(() => {
     async function fetchStats() {
-      const tools: GenerationTool[] = ['speech', 'ad', 'pledge', 'strategy'];
+      const tools: GenerationTool[] = ['speech', 'email', 'ad', 'sentiment', 'pledge', 'strategy'];
       try {
         const promises = tools.map(async (tool) => {
           const params = new URLSearchParams({ tool, limit: '1' });
@@ -160,7 +164,9 @@ export function WorkspaceContent() {
   const tabLabels: Record<Tab, string> = {
     all: t('tabs.all'),
     speech: t('tabs.speech'),
+    email: t('tabs.email'),
     ad: t('tabs.ad'),
+    sentiment: t('tabs.sentiment'),
     pledge: t('tabs.pledge'),
     strategy: t('tabs.strategy'),
   };

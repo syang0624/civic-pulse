@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import { getAdminUser } from '@/backend/lib/admin-auth';
 import { createAdminClient } from '@/backend/lib/supabase/admin';
 
-type ToolKey = 'speech' | 'ad' | 'pledge' | 'strategy';
+type ToolKey = 'speech' | 'email' | 'ad' | 'sentiment' | 'pledge' | 'strategy';
 
-const TOOLS: ToolKey[] = ['speech', 'ad', 'pledge', 'strategy'];
+const TOOLS: ToolKey[] = ['speech', 'email', 'ad', 'sentiment', 'pledge', 'strategy'];
 
 export async function GET() {
   const adminUser = await getAdminUser();
@@ -50,7 +50,9 @@ export async function GET() {
 
   const byTool: Record<ToolKey, number> = {
     speech: 0,
+    email: 0,
     ad: 0,
+    sentiment: 0,
     pledge: 0,
     strategy: 0,
   };

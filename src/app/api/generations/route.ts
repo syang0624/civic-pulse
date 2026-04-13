@@ -3,7 +3,7 @@ import { getAuthUser } from '@/backend/lib/auth';
 import { createClient } from '@/backend/lib/supabase/server';
 import type { GenerationTool } from '@/shared/types';
 
-const TOOLS: GenerationTool[] = ['speech', 'ad', 'pledge'];
+const TOOLS: GenerationTool[] = ['speech', 'email', 'ad', 'pledge', 'strategy', 'sentiment'];
 
 export async function GET(request: NextRequest) {
   const user = await getAuthUser();
