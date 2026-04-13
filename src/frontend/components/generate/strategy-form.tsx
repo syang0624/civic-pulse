@@ -70,6 +70,7 @@ export function StrategyForm() {
   const [selectedIssueId, setSelectedIssueId] = useState(issueIdFromUrl ?? '');
   const [selectedIssue, setSelectedIssue] = useState<IssueItem | null>(null);
   const [focus, setFocus] = useState('');
+  const [strictFactual, setStrictFactual] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [structuredOutput, setStructuredOutput] =
     useState<StrategyStructuredOutput | null>(null);
@@ -185,6 +186,7 @@ export function StrategyForm() {
         body: JSON.stringify({
           issue_id: selectedIssueId,
           focus: focus.trim() || undefined,
+          strict_factual: strictFactual,
         }),
       });
 
@@ -329,6 +331,16 @@ export function StrategyForm() {
             className="w-full rounded-xl border bg-background px-4 py-3 text-base shadow-sm transition-all placeholder:text-muted-foreground/50 hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
           />
         </div>
+
+        <label className="flex items-center gap-3 rounded-xl border bg-background px-4 py-3 text-sm">
+          <input
+            type="checkbox"
+            checked={strictFactual}
+            onChange={(e) => setStrictFactual(e.target.checked)}
+            className="h-4 w-4"
+          />
+          <span>{t('strictFactualHint')}</span>
+        </label>
 
         <button
           type="button"

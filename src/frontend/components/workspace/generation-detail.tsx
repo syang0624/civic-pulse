@@ -74,12 +74,34 @@ interface StrategyStructured {
   }>;
 }
 
+interface SentimentStructured {
+  period?: string;
+  top_trending_up?: string[];
+  top_trending_down?: string[];
+  new_issues?: string[];
+  negative_hotspots?: string[];
+  recommended_actions?: string[];
+}
+
 function parseJson<T>(input: string): T | null {
   try {
     return JSON.parse(input) as T;
   } catch {
     return null;
   }
+}
+
+function asObjectRecord(value: unknown): Record<string, unknown> | null {
+  if (typeof value === 'object' && value !== null) {
+    return value as Record<string, unknown>;
+  }
+  return null;
+}
+
+function parseContextText(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object' && value !== null) return JSON.stringify(value);
+  return '-';
 }
 
 export function GenerationDetail({
@@ -94,12 +116,15 @@ export function GenerationDetail({
   const router = useRouter();
   const [isEditMode, setIsEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [cloning, setCloning] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [exporting, setExporting] = useState<'pdf' | 'docx' | null>(null);
   const [textDraft, setTextDraft] = useState('');
   const [adDraft, setAdDraft] = useState<AdStructured | null>(null);
   const [pledgeDraft, setPledgeDraft] = useState<PledgeStructured[] | null>(null);
   const [strategyDraft, setStrategyDraft] = useState<StrategyStructured | null>(null);
+  const [sentimentDraft, setSentimentDraft] = useState<SentimentStructured | null>(null);
 
   const content = generation.edited_text?.trim() || generation.output_text;
 
@@ -121,6 +146,11 @@ export function GenerationDetail({
     [content, generation.tool],
   );
 
+  const sentimentStructured = useMemo(
+    () => (generation.tool === 'sentiment' ? parseJson<SentimentStructured>(content) : null),
+    [content, generation.tool],
+  );
+
   function startEditing() {
     if (generation.tool === 'ad') {
       setAdDraft(adStructured || { title: '', content: '', hashtags: [], image_suggestions: [] });
@@ -128,6 +158,8 @@ export function GenerationDetail({
       setPledgeDraft(pledges.length > 0 ? pledges : [{ title: '', problem: '', solution: '', timeline: '', estimated_budget: '' }]);
     } else if (generation.tool === 'strategy') {
       setStrategyDraft(strategyStructured || {});
+    } else if (generation.tool === 'sentiment') {
+      setSentimentDraft(sentimentStructured || {});
     } else {
       setTextDraft(content);
     }
@@ -139,12 +171,15 @@ export function GenerationDetail({
     setAdDraft(null);
     setPledgeDraft(null);
     setStrategyDraft(null);
+    setSentimentDraft(null);
     setTextDraft('');
   }
 
   const toolLabel = useMemo(() => {
     if (generation.tool === 'speech') return t('tabs.speech');
+    if (generation.tool === 'email') return t('tabs.email');
     if (generation.tool === 'ad') return t('tabs.ad');
+    if (generation.tool === 'sentiment') return t('tabs.sentiment');
     if (generation.tool === 'strategy') return t('tabs.strategy');
     return t('tabs.pledge');
   }, [generation.tool, t]);
@@ -182,6 +217,17 @@ export function GenerationDetail({
         `Talking Points\n${(strategyStructured.talking_points ?? []).map((point, index) => `${index + 1}. ${point}`).join('\n') || '-'}`,
         `Social Media Strategy\n- Hashtags: ${(strategyStructured.social_media_strategy?.key_hashtags ?? []).join(', ') || '-'}\n- Themes: ${(strategyStructured.social_media_strategy?.content_themes ?? []).join(', ') || '-'}\n- Platforms: ${(strategyStructured.social_media_strategy?.recommended_platforms ?? []).join(', ') || '-'}\n- Frequency: ${strategyStructured.social_media_strategy?.post_frequency ?? '-'}`,
         `Risks & Counters\n${(strategyStructured.risks_and_counters ?? []).map((item, index) => `${index + 1}. ${item.risk ?? '-'} -> ${item.counter ?? '-'}`).join('\n') || '-'}`,
+      ].join('\n\n');
+    }
+
+    if (generation.tool === 'sentiment' && sentimentStructured) {
+      return [
+        `Period\n${sentimentStructured.period ?? '-'}`,
+        `Trending Up\n${(sentimentStructured.top_trending_up ?? []).map((item, index) => `${index + 1}. ${item}`).join('\n') || '-'}`,
+        `Trending Down\n${(sentimentStructured.top_trending_down ?? []).map((item, index) => `${index + 1}. ${item}`).join('\n') || '-'}`,
+        `New Issues\n${(sentimentStructured.new_issues ?? []).map((item, index) => `${index + 1}. ${item}`).join('\n') || '-'}`,
+        `Negative Hotspots\n${(sentimentStructured.negative_hotspots ?? []).map((item, index) => `${index + 1}. ${item}`).join('\n') || '-'}`,
+        `Recommended Actions\n${(sentimentStructured.recommended_actions ?? []).map((item, index) => `${index + 1}. ${item}`).join('\n') || '-'}`,
       ].join('\n\n');
     }
 
@@ -223,6 +269,8 @@ export function GenerationDetail({
       finalText = JSON.stringify(pledgeDraft);
     } else if (generation.tool === 'strategy' && strategyDraft) {
       finalText = JSON.stringify(strategyDraft);
+    } else if (generation.tool === 'sentiment' && sentimentDraft) {
+      finalText = JSON.stringify(sentimentDraft);
     } else {
       finalText = textDraft;
     }
@@ -248,6 +296,41 @@ export function GenerationDetail({
       setIsEditMode(false);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleCloneTemplate() {
+    setCloning(true);
+    try {
+      const res = await fetch(`/api/generations/${generation.id}/clone`, { method: 'POST' });
+      if (!res.ok) {
+        throw new Error('Failed to clone');
+      }
+      const cloned = (await res.json()) as Generation;
+      onSaved(cloned);
+      router.refresh();
+    } finally {
+      setCloning(false);
+    }
+  }
+
+  async function handleRegenerateFromEdited() {
+    setRegenerating(true);
+    try {
+      const res = await fetch(`/api/generations/${generation.id}/regenerate`, {
+        method: 'POST',
+        headers: {
+          'x-locale': locale,
+        },
+      });
+      if (!res.ok) {
+        throw new Error('Failed to regenerate');
+      }
+      const regenerated = (await res.json()) as Generation;
+      onSaved(regenerated);
+      router.refresh();
+    } finally {
+      setRegenerating(false);
     }
   }
 
@@ -310,6 +393,24 @@ export function GenerationDetail({
                 >
                   <Pencil className="h-4 w-4" />
                   {t('editContent')}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRegenerateFromEdited}
+                  disabled={regenerating}
+                  className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
+                >
+                  {regenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Pencil className="h-4 w-4" />}
+                  Regenerate from edited
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCloneTemplate}
+                  disabled={cloning}
+                  className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
+                >
+                  {cloning ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
+                  Clone template
                 </button>
                 {generation.tool === 'speech' && (
                   <button
@@ -691,6 +792,47 @@ export function GenerationDetail({
                       </div>
                     </div>
                   </div>
+                ) : generation.tool === 'sentiment' && sentimentDraft ? (
+                  <div className="space-y-6">
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Period</label>
+                      <input
+                        value={sentimentDraft.period || ''}
+                        onChange={(e) => setSentimentDraft({ ...sentimentDraft, period: e.target.value })}
+                        className="w-full rounded-xl border bg-background px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                      />
+                    </div>
+
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Trending Up</label>
+                      <textarea
+                        value={(sentimentDraft.top_trending_up || []).join('\n')}
+                        onChange={(e) => setSentimentDraft({ ...sentimentDraft, top_trending_up: e.target.value.split('\n') })}
+                        rows={4}
+                        className="w-full rounded-xl border bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                      />
+                    </div>
+
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Trending Down</label>
+                      <textarea
+                        value={(sentimentDraft.top_trending_down || []).join('\n')}
+                        onChange={(e) => setSentimentDraft({ ...sentimentDraft, top_trending_down: e.target.value.split('\n') })}
+                        rows={4}
+                        className="w-full rounded-xl border bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                      />
+                    </div>
+
+                    <div className="rounded-xl border bg-muted/20 p-5">
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">Recommended Actions</label>
+                      <textarea
+                        value={(sentimentDraft.recommended_actions || []).join('\n')}
+                        onChange={(e) => setSentimentDraft({ ...sentimentDraft, recommended_actions: e.target.value.split('\n') })}
+                        rows={4}
+                        className="w-full rounded-xl border bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                      />
+                    </div>
+                  </div>
                 ) : (
                   <textarea
                     value={textDraft}
@@ -772,6 +914,47 @@ export function GenerationDetail({
                   </details>
                 ))}
               </div>
+            ) : generation.tool === 'sentiment' && sentimentStructured ? (
+              <div className="space-y-4">
+                <div className="rounded-xl border bg-muted/20 p-5">
+                  <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">Period</h3>
+                  <p className="text-base font-semibold text-foreground">{sentimentStructured.period ?? '-'}</p>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-xl border bg-muted/20 p-5">
+                    <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">Trending Up</h3>
+                    <ul className="space-y-1 text-sm text-foreground/90">
+                      {(sentimentStructured.top_trending_up ?? []).length > 0
+                        ? (sentimentStructured.top_trending_up ?? []).map((item, index) => (
+                          <li key={`${item}-${index}`}>• {item}</li>
+                        ))
+                        : <li className="text-muted-foreground">-</li>}
+                    </ul>
+                  </div>
+                  <div className="rounded-xl border bg-muted/20 p-5">
+                    <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">Trending Down</h3>
+                    <ul className="space-y-1 text-sm text-foreground/90">
+                      {(sentimentStructured.top_trending_down ?? []).length > 0
+                        ? (sentimentStructured.top_trending_down ?? []).map((item, index) => (
+                          <li key={`${item}-${index}`}>• {item}</li>
+                        ))
+                        : <li className="text-muted-foreground">-</li>}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border bg-muted/20 p-5">
+                  <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">Recommended Actions</h3>
+                  <ul className="space-y-1 text-sm text-foreground/90">
+                    {(sentimentStructured.recommended_actions ?? []).length > 0
+                      ? (sentimentStructured.recommended_actions ?? []).map((item, index) => (
+                        <li key={`${item}-${index}`}>• {item}</li>
+                      ))
+                      : <li className="text-muted-foreground">-</li>}
+                  </ul>
+                </div>
+              </div>
             ) : (
               <article className="prose prose-stone max-w-none whitespace-pre-wrap rounded-xl border bg-muted/10 p-6 leading-loose text-foreground/90 dark:prose-invert">
                 {content}
@@ -809,6 +992,41 @@ export function GenerationDetail({
                   </dd>
                 </div>
               ))}
+              {(() => {
+                const ctx = asObjectRecord(generation.context_used);
+                if (!ctx) return null;
+                const quality = asObjectRecord(ctx.quality);
+                if (!quality) return null;
+                return (
+                  <>
+                    <div>
+                      <dt className="text-muted-foreground">quality.source_confidence</dt>
+                      <dd className="mt-1 font-medium text-foreground">{parseContextText(quality.source_confidence)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted-foreground">quality.policy_alignment</dt>
+                      <dd className="mt-1 font-medium text-foreground">{parseContextText(quality.policy_alignment)}</dd>
+                    </div>
+                    {Array.isArray(ctx.version_history) && ctx.version_history.length > 0 && (
+                      <div>
+                        <dt className="text-muted-foreground">version_history</dt>
+                        <dd className="mt-1 space-y-1 text-xs text-foreground">
+                          {ctx.version_history.map((item, index) => {
+                            const entry = asObjectRecord(item);
+                            const at = entry?.at;
+                            const text = entry?.text;
+                            return (
+                              <p key={`${String(at)}-${index}`}>
+                                {String(at ?? '-')}: {String(text ?? '').slice(0, 80)}
+                              </p>
+                            );
+                          })}
+                        </dd>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </dl>
           </aside>
         </div>

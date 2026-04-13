@@ -25,9 +25,12 @@
     "profile": "프로필",
     "logout": "로그아웃",
     "speech": "연설문",
+    "email": "이메일",
     "ad": "SNS",
+    "sentiment": "민심",
     "pledge": "공약",
     "strategy": "전략",
+    "campaign": "실행",
     "workspace": "보관함",
     "admin": "관리자"
   },
@@ -59,7 +62,9 @@
     "speech": "연설문",
     "ad": "SNS",
     "pledge": "공약",
-    "strategy": "전략"
+    "strategy": "전략",
+    "email": "이메일",
+    "sentiment": "민심"
     ,"userDetail": "사용자 상세"
     ,"userActivity": "사용 내역"
     ,"editUser": "정보 수정"
@@ -261,7 +266,22 @@
       "dataLight": "스토리 중심",
       "dataMedium": "적절한 통계",
       "dataHeavy": "데이터 중심",
-      "openTeleprompter": "텔레프롬프터로 열기"
+      "openTeleprompter": "텔레프롬프터로 열기",
+      "strictFactualHint": "검증 가능한 보수적 표현만 사용합니다."
+    },
+    "Email": {
+      "title": "민원 이메일 답변 생성",
+      "subtitle": "유권자 이메일에 정책 정합적인 답변 초안을 작성합니다.",
+      "inboundEmail": "수신 이메일",
+      "inboundPlaceholder": "답변할 시민 이메일 내용을 붙여넣으세요...",
+      "strictFactual": "사실 엄격 모드",
+      "strictFactualHint": "검증되지 않은 수치 표현을 피하고 보수적으로 작성합니다.",
+      "replyDraft": "답변 초안",
+      "sourceConfidence": "근거 신뢰도",
+      "policyAlignment": "정책 정합성",
+      "enabled": "활성화",
+      "disabled": "비활성화",
+      "generate": "답변 생성"
     },
     "Ad": {
       "title": "SNS 콘텐츠 생성",
@@ -282,7 +302,33 @@
       "sectionTitle": "제목",
       "sectionContent": "본문",
       "sectionHashtags": "해시태그",
-      "sectionImageSuggestions": "이미지 제안"
+      "sectionImageSuggestions": "이미지 제안",
+      "strictFactualHint": "추정·미검증 수치 표현을 피합니다."
+    },
+    "Sentiment": {
+      "title": "주간 민심 브리프",
+      "subtitle": "지역 이슈 흐름을 요약해 전략용 브리프를 제공합니다.",
+      "period": "기간",
+      "period1week": "최근 1주",
+      "period2weeks": "최근 2주",
+      "period4weeks": "최근 4주",
+      "period8weeks": "최근 8주",
+      "compareTo": "비교 대상",
+      "compareNone": "비교 없음",
+      "compareNeighboring": "인접 지역",
+      "strictFactual": "사실 엄격 모드",
+      "strictFactualHint": "수집된 데이터 기반의 패턴만 사용합니다.",
+      "briefTitle": "민심 브리프 ({period})",
+      "trendingUp": "상승 이슈",
+      "trendingDown": "하락 이슈",
+      "newIssues": "신규 이슈",
+      "negativeHotspots": "부정 여론 핫스팟",
+      "recommendedActions": "권장 액션",
+      "sourceConfidence": "근거 신뢰도",
+      "policyAlignment": "정책 정합성",
+      "enabled": "활성화",
+      "disabled": "비활성화",
+      "generate": "브리프 생성"
     },
     "Pledge": {
       "title": "정책 공약 생성",
@@ -299,7 +345,8 @@
       "outcomes": "기대 효과",
       "talkingPoints": "핵심 논점",
       "priorityReason": "우선순위 이유",
-      "budget": "예상 예산"
+      "budget": "예상 예산",
+      "strictFactualHint": "실행 가능하고 근거 있는 공약만 제시합니다."
     }
   },
   "Strategy": {
@@ -333,12 +380,30 @@
     "risksAndCounters": "리스크 및 대응",
     "risk": "예상 리스크",
     "counter": "대응 방안",
-    "noIssues": "분석할 이슈가 없습니다. 먼저 대시보드에서 이슈를 수집하세요."
+    "noIssues": "분석할 이슈가 없습니다. 먼저 대시보드에서 이슈를 수집하세요.",
+    "strictFactualHint": "데이터 기반의 현실적인 제안에 집중합니다."
+  },
+  "Campaign": {
+    "title": "캠페인 실행 플래너",
+    "subtitle": "생성된 인사이트를 실제 실행 일정과 체크리스트로 연결하세요.",
+    "taskPlaceholder": "캠페인 실행 항목 추가 (예: 과밀학급 이슈 후속 SNS 게시물 작성)",
+    "sourceManual": "수동",
+    "sourceSpeech": "연설문",
+    "sourceEmail": "이메일",
+    "sourceAd": "SNS",
+    "sourceSentiment": "민심",
+    "sourceStrategy": "전략",
+    "addTask": "작업 추가",
+    "empty": "아직 작업이 없습니다. 첫 실행 항목을 추가해 보세요.",
+    "markDone": "완료 처리",
+    "markUndone": "미완료 처리",
+    "removeTask": "작업 삭제",
+    "sourceLabel": "출처"
   },
   "Workspace": {
     "title": "콘텐츠 보관함",
     "subtitle": "생성된 모든 콘텐츠를 관리하세요.",
-    "tabs": { "all": "전체", "speech": "연설문", "ad": "SNS", "pledge": "공약", "strategy": "전략" },
+    "tabs": { "all": "전체", "speech": "연설문", "email": "이메일", "ad": "SNS", "sentiment": "민심", "pledge": "공약", "strategy": "전략" },
     "search": "콘텐츠 검색...",
     "sortNewest": "최신순",
     "sortOldest": "오래된순",

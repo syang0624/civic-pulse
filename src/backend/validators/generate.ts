@@ -18,6 +18,7 @@ export const speechGenerationSchema = z.object({
   ]),
   data_level: z.enum(['light', 'medium', 'heavy']).optional(),
   issue_id: z.uuid().optional(),
+  strict_factual: z.boolean().optional(),
 });
 
 export const adGenerationSchema = z.object({
@@ -36,15 +37,33 @@ export const adGenerationSchema = z.object({
     'call_to_action',
   ]),
   issue_id: z.uuid().optional(),
+  strict_factual: z.boolean().optional(),
 });
 
 export const pledgeGenerationSchema = z.object({
   focus_areas: z.array(z.string()).min(1).max(10),
   num_pledges: z.union([z.literal(3), z.literal(5), z.literal(10)]),
   region_context: z.string().optional(),
+  strict_factual: z.boolean().optional(),
 });
 
 export const strategyGenerationSchema = z.object({
   issue_id: z.string().uuid(),
   focus: z.string().max(500).optional(),
+  strict_factual: z.boolean().optional(),
+});
+
+export const emailGenerationSchema = z.object({
+  inbound_email: z.string().min(1).max(5000),
+  tone: z
+    .enum(['formal', 'conversational', 'passionate', 'data_driven'])
+    .optional(),
+  issue_id: z.uuid().optional(),
+  strict_factual: z.boolean().optional(),
+});
+
+export const sentimentGenerationSchema = z.object({
+  period: z.enum(['1week', '2weeks', '4weeks', '8weeks']).optional(),
+  compare_to: z.enum(['none', 'neighboring']).optional(),
+  strict_factual: z.boolean().optional(),
 });
