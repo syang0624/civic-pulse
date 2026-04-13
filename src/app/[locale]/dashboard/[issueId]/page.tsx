@@ -9,6 +9,7 @@ import { CATEGORY_COLORS, ELECTION_DISTRICTS } from '@/shared/constants';
 import {
   ArrowLeft,
   Mic,
+  Mail,
   Share2,
   Target,
   Calendar,
@@ -221,6 +222,13 @@ function IssueDetailContent({ issue, locale }: { issue: Issue; locale: string })
               >
                 <Mic className="h-4 w-4" />
                 {t('draftSpeech')}
+              </Link>
+              <Link
+                href={`/${locale}/generate/email?issueId=${issue.id}`}
+                className="flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+              >
+                <Mail className="h-4 w-4" />
+                {t('draftReply')}
               </Link>
               <Link
                 href={`/${locale}/generate/ad?issueId=${issue.id}`}

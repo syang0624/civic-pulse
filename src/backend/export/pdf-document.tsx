@@ -86,13 +86,17 @@ function toDisplayDate(iso: string, locale: string) {
 function toolTitle(tool: GenerationTool, locale: string) {
   if (locale === 'ko') {
     if (tool === 'speech') return '연설문 스크립트';
+    if (tool === 'email') return '민원 이메일 답변';
     if (tool === 'ad') return 'SNS 콘텐츠';
+    if (tool === 'sentiment') return '주간 민심 브리프';
     if (tool === 'pledge') return '정책 공약';
     return '캠페인 전략 보고서';
   }
 
   if (tool === 'speech') return 'Speech Script';
+  if (tool === 'email') return 'Constituent Email Reply';
   if (tool === 'ad') return 'Social Media Content';
+  if (tool === 'sentiment') return 'Weekly Sentiment Brief';
   if (tool === 'pledge') return 'Campaign Pledges';
   return 'Campaign Strategy Report';
 }
@@ -426,6 +430,50 @@ function renderStrategy(content: string, locale: string) {
   );
 }
 
+function renderSentiment(content: string) {
+  const sentiment = parseJson<{
+    period?: string;
+    top_trending_up?: string[];
+    top_trending_down?: string[];
+    new_issues?: string[];
+    negative_hotspots?: string[];
+    recommended_actions?: string[];
+  }>(content);
+
+  if (!sentiment) {
+    return <Text style={styles.paragraph}>{content}</Text>;
+  }
+
+  return (
+    <View>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Period</Text>
+        <Text style={styles.paragraph}>{sentiment.period ?? '-'}</Text>
+      </View>
+
+      {[
+        { title: 'Trending Up', items: sentiment.top_trending_up },
+        { title: 'Trending Down', items: sentiment.top_trending_down },
+        { title: 'New Issues', items: sentiment.new_issues },
+        { title: 'Negative Hotspots', items: sentiment.negative_hotspots },
+        { title: 'Recommended Actions', items: sentiment.recommended_actions },
+      ].map(({ title, items }) => {
+        const list: string[] = Array.isArray(items) ? items : [];
+        return (
+          <View style={styles.section} key={title}>
+            <Text style={styles.sectionTitle}>{title}</Text>
+            {list.length > 0
+              ? list.map((item: string, index: number) => (
+                <Text key={`${title}-${index}`} style={styles.listItem}>• {item}</Text>
+              ))
+              : <Text style={styles.paragraph}>-</Text>}
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
 export function createExportPdfDocument({ generation, locale }: ExportPdfDocumentProps): ReactElement<DocumentProps> {
   const content = generation.edited_text?.trim() || generation.output_text;
   const date = toDisplayDate(generation.created_at, locale);
@@ -450,8 +498,9 @@ export function createExportPdfDocument({ generation, locale }: ExportPdfDocumen
             : <Text style={styles.paragraph}>-</Text>}
         </View>
 
-        {generation.tool === 'speech' && renderSpeech(content)}
+        {(generation.tool === 'speech' || generation.tool === 'email') && renderSpeech(content)}
         {generation.tool === 'ad' && renderAd(content, locale)}
+        {generation.tool === 'sentiment' && renderSentiment(content)}
         {generation.tool === 'pledge' && renderPledges(content, locale)}
         {generation.tool === 'strategy' && renderStrategy(content, locale)}
       </Page>

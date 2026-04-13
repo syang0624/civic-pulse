@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
-type ToolKey = 'speech' | 'ad' | 'pledge' | 'strategy';
+type ToolKey = 'speech' | 'email' | 'ad' | 'sentiment' | 'pledge' | 'strategy';
 
 type AdminStatsResponse = {
   totals: {
@@ -33,7 +33,7 @@ type AdminStatsResponse = {
   }>;
 };
 
-const TOOL_ORDER: ToolKey[] = ['speech', 'ad', 'pledge', 'strategy'];
+const TOOL_ORDER: ToolKey[] = ['speech', 'email', 'ad', 'sentiment', 'pledge', 'strategy'];
 
 export function AdminDashboard() {
   const t = useTranslations('Admin');
