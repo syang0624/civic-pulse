@@ -21,7 +21,7 @@ type AdminUserProfile = {
 
 type AdminUserGeneration = {
   id: string;
-  tool: 'speech' | 'ad' | 'pledge' | 'strategy' | string;
+  tool: 'speech' | 'email' | 'ad' | 'sentiment' | 'pledge' | 'strategy' | string;
   input_params: Record<string, unknown>;
   created_at: string;
   locale: string;
@@ -32,9 +32,11 @@ type AdminUserDetailResponse = {
   generations: AdminUserGeneration[];
 };
 
-const toolBadgeStyle: Record<'speech' | 'ad' | 'pledge' | 'strategy', string> = {
+const toolBadgeStyle: Record<'speech' | 'email' | 'ad' | 'sentiment' | 'pledge' | 'strategy', string> = {
   speech: 'bg-blue-500/10 text-blue-700 dark:text-blue-300',
+  email: 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300',
   ad: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+  sentiment: 'bg-rose-500/10 text-rose-700 dark:text-rose-300',
   pledge: 'bg-amber-500/10 text-amber-700 dark:text-amber-300',
   strategy: 'bg-purple-500/10 text-purple-700 dark:text-purple-300',
 };
@@ -130,7 +132,9 @@ export function UserDetail({ userId, onBack }: { userId: string; onBack?: () => 
   const toolLabels = useMemo(
     () => ({
       speech: t('speech'),
+      email: t('email'),
       ad: t('ad'),
+      sentiment: t('sentiment'),
       pledge: t('pledge'),
       strategy: t('strategy'),
     }),
@@ -379,7 +383,7 @@ export function UserDetail({ userId, onBack }: { userId: string; onBack?: () => 
               <tbody>
                 {generationRows.map((generation) => {
                   const isKnownTool = generation.tool in toolBadgeStyle;
-                  const tool = generation.tool as 'speech' | 'ad' | 'pledge' | 'strategy';
+                  const tool = generation.tool as 'speech' | 'email' | 'ad' | 'sentiment' | 'pledge' | 'strategy';
 
                   return (
                     <tr key={generation.id} className="border-b last:border-b-0">
