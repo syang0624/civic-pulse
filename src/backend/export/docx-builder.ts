@@ -73,13 +73,17 @@ function isKorean(locale: string) {
 function toolTitle(tool: GenerationTool, locale: string) {
   if (isKorean(locale)) {
     if (tool === 'speech') return '연설문 스크립트';
+    if (tool === 'email') return '민원 이메일 답변';
     if (tool === 'ad') return 'SNS 콘텐츠';
+    if (tool === 'sentiment') return '주간 민심 브리프';
     if (tool === 'pledge') return '정책 공약';
     return '캠페인 전략 보고서';
   }
 
   if (tool === 'speech') return 'Speech Script';
+  if (tool === 'email') return 'Constituent Email Reply';
   if (tool === 'ad') return 'Social Media Content';
+  if (tool === 'sentiment') return 'Weekly Sentiment Brief';
   if (tool === 'pledge') return 'Campaign Pledges';
   return 'Campaign Strategy Report';
 }
@@ -390,16 +394,56 @@ function appendStrategy(paragraphs: Paragraph[], content: string, locale: string
   }
 }
 
+function appendSentiment(paragraphs: Paragraph[], content: string) {
+  const sentiment = parseJson<{
+    period?: string;
+    top_trending_up?: string[];
+    top_trending_down?: string[];
+    new_issues?: string[];
+    negative_hotspots?: string[];
+    recommended_actions?: string[];
+  }>(content);
+
+  if (!sentiment) {
+    paragraphs.push(bodyParagraph(content));
+    return;
+  }
+
+  paragraphs.push(sectionHeading('Period'));
+  paragraphs.push(bodyParagraph(sentiment.period ?? '-'));
+
+  const sections: Array<[string, string[] | undefined]> = [
+    ['Trending Up', sentiment.top_trending_up],
+    ['Trending Down', sentiment.top_trending_down],
+    ['New Issues', sentiment.new_issues],
+    ['Negative Hotspots', sentiment.negative_hotspots],
+    ['Recommended Actions', sentiment.recommended_actions],
+  ];
+
+  sections.forEach(([title, items]) => {
+    paragraphs.push(sectionHeading(title));
+    if ((items ?? []).length === 0) {
+      paragraphs.push(bodyParagraph('-'));
+      return;
+    }
+    (items ?? []).forEach((item) => {
+      paragraphs.push(bodyParagraph(`• ${item}`, 80));
+    });
+  });
+}
+
 export async function buildDocx(generation: Generation, locale: string): Promise<Buffer> {
   const content = generation.edited_text?.trim() || generation.output_text;
   const paragraphs: Paragraph[] = [];
 
   appendMetadata(paragraphs, generation, locale);
 
-  if (generation.tool === 'speech') {
+  if (generation.tool === 'speech' || generation.tool === 'email') {
     appendSpeech(paragraphs, content);
   } else if (generation.tool === 'ad') {
     appendAd(paragraphs, content, locale);
+  } else if (generation.tool === 'sentiment') {
+    appendSentiment(paragraphs, content);
   } else if (generation.tool === 'pledge') {
     appendPledges(paragraphs, content, locale);
   } else {

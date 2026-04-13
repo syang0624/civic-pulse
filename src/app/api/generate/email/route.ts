@@ -2,15 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/backend/lib/auth';
 import { createClient } from '@/backend/lib/supabase/server';
 import { generateWithClaude } from '@/backend/lib/claude';
-import { speechGenerationSchema } from '@/backend/validators/generate';
+import { emailGenerationSchema } from '@/backend/validators/generate';
 import { assembleContext, formatIssueContext } from '@/backend/services/context';
+import { buildEmailSystemPrompt, buildEmailUserPrompt } from '@/backend/prompts/email';
 import { buildQualityMeta } from '@/backend/services/quality';
-import {
-  buildSpeechSystemPrompt,
-  buildSpeechUserPrompt,
-  speechLengthToWords,
-} from '@/backend/prompts/speech';
-import type { Locale } from '@/shared/types';
+import type { Generation, Locale } from '@/shared/types';
 
 export async function POST(request: NextRequest) {
   const user = await getAuthUser();
@@ -19,7 +15,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const result = speechGenerationSchema.safeParse(body);
+  const result = emailGenerationSchema.safeParse(body);
   if (!result.success) {
     return NextResponse.json(
       { error: 'Validation failed', details: result.error.issues },
@@ -40,46 +36,43 @@ export async function POST(request: NextRequest) {
   }
 
   const tone = params.tone ?? ctx.profile.tone;
-  const dataLevel = params.data_level ?? 'medium';
-  const targetWords = speechLengthToWords(params.length);
   const issueContext = formatIssueContext(ctx);
-
-  const systemPrompt = buildSpeechSystemPrompt(ctx);
-  const userPrompt = buildSpeechUserPrompt({
-    topic: params.topic,
-    occasion: params.occasion,
+  const systemPrompt = buildEmailSystemPrompt(ctx);
+  const userPrompt = buildEmailUserPrompt({
+    inboundEmail: params.inbound_email,
     tone,
-    targetWords,
-    dataLevel,
     issueContext,
+    strictFactual,
   });
 
   try {
     const outputText = await generateWithClaude({
       system: systemPrompt,
       prompt: userPrompt,
-      maxTokens: Math.max(8192, targetWords * 4),
-      temperature: strictFactual ? 0.2 : 0.7,
+      maxTokens: 4096,
+      temperature: strictFactual ? 0.2 : 0.6,
     });
 
-    const quality = buildQualityMeta({
-      strictFactual,
-      ctx,
-      outputText,
-    });
+    const quality = buildQualityMeta({ strictFactual, ctx, outputText });
+    const contextUsed: Generation['context_used'] = {
+      profile_fields: ['name', 'district_name', 'party', 'tone'],
+      issues_referenced: ctx.issues.map((i) => i.title),
+      quality,
+    };
 
     const supabase = await createClient();
     const { data: generation, error: dbError } = await supabase
       .from('generations')
       .insert({
         profile_id: user.id,
-        tool: 'speech',
-        input_params: params,
-        context_used: {
-          profile_fields: ['name', 'district_name', 'party', 'tone', 'target_demo'],
-          issues_referenced: ctx.issues.map((i) => i.title),
-          quality,
+        tool: 'email',
+        input_params: {
+          inbound_email: params.inbound_email,
+          tone,
+          issue_id: params.issue_id,
+          strict_factual: strictFactual,
         },
+        context_used: contextUsed,
         output_text: outputText,
         locale,
       })
@@ -87,7 +80,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (dbError) {
-      return NextResponse.json({ output_text: outputText });
+      return NextResponse.json({ output_text: outputText, quality });
     }
 
     return NextResponse.json({ ...generation, quality });
