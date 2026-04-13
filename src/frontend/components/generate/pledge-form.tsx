@@ -29,6 +29,7 @@ export function PledgeForm() {
   const [focusAreas, setFocusAreas] = useState<IssueCategory[]>(['education', 'housing']);
   const [numPledges, setNumPledges] = useState<3 | 5 | 10>(5);
   const [regionContext, setRegionContext] = useState('');
+  const [strictFactual, setStrictFactual] = useState(true);
   const [pledges, setPledges] = useState<PledgeItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [copiedRank, setCopiedRank] = useState<number | null>(null);
@@ -51,6 +52,7 @@ export function PledgeForm() {
           focus_areas: focusAreas,
           num_pledges: numPledges,
           region_context: regionContext.trim() || undefined,
+          strict_factual: strictFactual,
         }),
       });
 
@@ -142,6 +144,16 @@ export function PledgeForm() {
             ))}
           </div>
         </div>
+
+        <label className="flex items-center gap-3 rounded-xl border bg-background px-4 py-3 text-sm">
+          <input
+            type="checkbox"
+            checked={strictFactual}
+            onChange={(e) => setStrictFactual(e.target.checked)}
+            className="h-4 w-4"
+          />
+          <span>{t('strictFactualHint')}</span>
+        </label>
 
         <div className="space-y-4">
           <span className="block text-sm font-semibold tracking-wide text-foreground">{t('numPledges')}</span>
